@@ -335,7 +335,6 @@ namespace ReaLTaiizor.Controls
             get => baseTextBox.ContextMenuStrip;
             set
             {
-                ContextMenuStrip = value;
                 baseTextBox.ContextMenuStrip = value;
             }
         }
