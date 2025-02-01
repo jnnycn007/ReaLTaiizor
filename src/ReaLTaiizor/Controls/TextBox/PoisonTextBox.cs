@@ -136,6 +136,14 @@ namespace ReaLTaiizor.Controls
 
         private PromptedTextBox baseTextBox;
 
+        private bool useCustomFont = false;
+        [DefaultValue(false)]
+        [Category(PoisonDefaults.PropertyCategory.Appearance)]
+        public bool UseCustomFont {
+            get => useCustomFont;
+            set { useCustomFont = value; Refresh(); }
+        }
+
         private PoisonTextBoxSize poisonTextBoxSize = PoisonTextBoxSize.Small;
         [DefaultValue(PoisonTextBoxSize.Small)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
@@ -317,6 +325,19 @@ namespace ReaLTaiizor.Controls
         #endregion
 
         #region Routing Fields
+
+        public override Font Font {
+            get {
+                if (useCustomFont)
+                    return base.Font;
+                else
+                    return PoisonFonts.TextBox(poisonTextBoxSize, poisonTextBoxWeight);
+            }
+            set {
+                base.Font = value;
+                Refresh();
+            }
+        }
 
 #if !NETCOREAPP3_1 && !NET6_0 && !NET7_0 && !NET8_0 && !NET9_0
         public override ContextMenu ContextMenu
@@ -740,7 +761,7 @@ namespace ReaLTaiizor.Controls
             baseTextBox = new PromptedTextBox
             {
                 BorderStyle = BorderStyle.None,
-                Font = PoisonFonts.TextBox(poisonTextBoxSize, poisonTextBoxWeight),
+                Font = this.Font,
                 Location = new(3, 3),
                 Size = new(Width - 6, Height - 6)
             };
@@ -910,7 +931,7 @@ namespace ReaLTaiizor.Controls
                 return;
             }
 
-            baseTextBox.Font = PoisonFonts.TextBox(poisonTextBoxSize, poisonTextBoxWeight);
+            baseTextBox.Font = Font;
 
             if (displayIcon)
             {

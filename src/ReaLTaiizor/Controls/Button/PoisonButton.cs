@@ -141,6 +141,15 @@ namespace ReaLTaiizor.Controls
         [DefaultValue(false)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public bool Highlight { get; set; } = false;
+
+        private bool useCustomFont = false;
+        [DefaultValue(false)]
+        [Category(PoisonDefaults.PropertyCategory.Appearance)]
+        public bool UseCustomFont {
+            get => useCustomFont;
+            set { useCustomFont = value; Refresh(); }
+        }
+
         [DefaultValue(PoisonButtonSize.Small)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public PoisonButtonSize FontSize { get; set; } = PoisonButtonSize.Small;
@@ -151,6 +160,22 @@ namespace ReaLTaiizor.Controls
         private bool isHovered = false;
         private bool isPressed = false;
         private bool isFocused = false;
+
+        #endregion
+
+        #region Routing Fields
+        public override Font Font {
+            get {
+                if (useCustomFont)
+                    return base.Font;
+                else
+                    return PoisonFonts.Button(FontSize, FontWeight);
+            }
+            set {
+                base.Font = value;
+                Refresh();
+            }
+        }
 
         #endregion
 
@@ -283,7 +308,7 @@ namespace ReaLTaiizor.Controls
                 e.Graphics.DrawRectangle(p, borderRect);
             }
 
-            TextRenderer.DrawText(e.Graphics, Text, PoisonFonts.Button(FontSize, FontWeight), ClientRectangle, foreColor, PoisonPaint.GetTextFormatFlags(TextAlign));
+            TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, foreColor, PoisonPaint.GetTextFormatFlags(TextAlign));
 
             OnCustomPaintForeground(new PoisonPaintEventArgs(Color.Empty, foreColor, e.Graphics));
 
