@@ -140,9 +140,14 @@ namespace ReaLTaiizor.Controls
         private bool useCustomFont=false;
         [DefaultValue(false)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
-        public bool UseCustomFont {
+        public bool UseCustomFont
+        {
             get => useCustomFont;
-            set { useCustomFont = value; Refresh(); }
+            set
+            {
+                useCustomFont = value;
+                Refresh();
+            }
         }
 
         private PoisonLabelSize poisonLabelSize = PoisonLabelSize.Medium;
@@ -179,14 +184,22 @@ namespace ReaLTaiizor.Controls
         #endregion
 
         #region Routing Fields
-        public override Font Font {
-            get {
-                if (useCustomFont) 
+
+        public override Font Font
+        {
+            get
+            {
+                if (UseCustomFont)
+                {
                     return base.Font;
-                else 
-                    return PoisonFonts.Label(poisonLabelSize, poisonLabelWeight);
+                }
+                else
+                {
+                    return PoisonFonts.Label(FontSize, FontWeight);
+                }
             }
-            set {
+            set
+            {
                 base.Font = value;
                 Refresh();
             }
@@ -211,6 +224,7 @@ namespace ReaLTaiizor.Controls
             {
                 Visible = false
             };
+
             Controls.Add(baseTextBox);
         }
 
