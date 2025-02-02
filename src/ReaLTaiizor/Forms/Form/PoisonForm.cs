@@ -765,39 +765,30 @@ namespace ReaLTaiizor.Forms
 
             Dictionary<int, WindowButtons> priorityOrder = new(3) { { 0, WindowButtons.Close }, { 1, WindowButtons.Maximize }, { 2, WindowButtons.Minimize } };
 
-            Point firstButtonLocation = new(ClientRectangle.Width - borderWidth - 25, borderWidth);
-            int lastDrawedButtonPosition = firstButtonLocation.X - 25;
+            int firstButtonPosition = ClientRectangle.Width - borderWidth - 25;
+            int lastDrawedButtonPosition = firstButtonPosition - 25;
 
-            PoisonFormButton firstButton = null;
-
-            if (windowButtonList.Count == 1)
-            {
-                foreach (KeyValuePair<WindowButtons, PoisonFormButton> button in windowButtonList)
-                {
-                    button.Value.Location = firstButtonLocation;
-                }
+            bool firstButtonSet = false;
+            void SetButtonPosition(WindowButtons button,int x) {
+                windowButtonList[button].Anchor = AnchorStyles.None;//需要先解除锚点，否则在缩放设置不同的系统上会出现位置设置失败的bug
+                windowButtonList[button].Location = new(x, borderWidth);
+                windowButtonList[button].Anchor = AnchorStyles.Top | AnchorStyles.Right;//设置完位置后重新设置锚点
             }
-            else
-            {
-                foreach (KeyValuePair<int, WindowButtons> button in priorityOrder)
-                {
-                    bool buttonExists = windowButtonList.ContainsKey(button.Value);
+            foreach (KeyValuePair<int, WindowButtons> button in priorityOrder) {
+                bool buttonExists = windowButtonList.ContainsKey(button.Value);
 
-                    if (firstButton == null && buttonExists)
-                    {
-                        firstButton = windowButtonList[button.Value];
-                        firstButton.Location = firstButtonLocation;
-                        continue;
-                    }
-
-                    if (firstButton == null || !buttonExists)
-                    {
-                        continue;
-                    }
-
-                    windowButtonList[button.Value].Location = new(lastDrawedButtonPosition, borderWidth);
-                    lastDrawedButtonPosition -= 25;
+                if (firstButtonSet == false && buttonExists) {
+                    SetButtonPosition(button.Value, firstButtonPosition);
+                    firstButtonSet = true;
+                    continue;
                 }
+
+                if (firstButtonSet == false || !buttonExists) {
+                    continue;
+                }
+
+                SetButtonPosition(button.Value, lastDrawedButtonPosition);
+                lastDrawedButtonPosition -= 25;
             }
 
             Refresh();
@@ -987,7 +978,7 @@ namespace ReaLTaiizor.Forms
                 }
 
                 e.Graphics.Clear(backColor);
-                Font buttonFont = new("Webdings", 9.25f);
+                Font buttonFont = new("Webdings", 9.75f, GraphicsUnit.Pixel);
                 TextRenderer.DrawText(e.Graphics, Text, buttonFont, ClientRectangle, foreColor, backColor, TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter | TextFormatFlags.EndEllipsis);
             }
 

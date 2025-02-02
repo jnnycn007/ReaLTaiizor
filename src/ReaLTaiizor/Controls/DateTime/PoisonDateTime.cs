@@ -137,6 +137,15 @@ namespace ReaLTaiizor.Controls
         public bool DisplayFocus { get; set; } = false;
         [DefaultValue(PoisonDateTimeSize.Medium)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
+
+        private bool useCustomFont = false;
+        [DefaultValue(false)]
+        [Category(PoisonDefaults.PropertyCategory.Appearance)]
+        public bool UseCustomFont {
+            get => useCustomFont;
+            set { useCustomFont = value; Refresh(); }
+        }
+
         public PoisonDateTimeSize FontSize { get; set; } = PoisonDateTimeSize.Medium;
         [DefaultValue(PoisonDateTimeWeight.Regular)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
@@ -150,16 +159,25 @@ namespace ReaLTaiizor.Controls
             set => base.ShowUpDown = false;
         }
 
-        [Browsable(false)]
-        public override Font Font
-        {
-            get => base.Font;
-            set => base.Font = value;
-        }
-
         private bool isHovered = false;
         private bool isPressed = false;
         private bool isFocused = false;
+
+        #endregion
+
+        #region Routing Fields
+        public override Font Font {
+            get {
+                if (useCustomFont)
+                    return base.Font;
+                else
+                    return PoisonFonts.DateTime(FontSize, FontWeight);
+            }
+            set {
+                base.Font = value;
+                Refresh();
+            }
+        }
 
         #endregion
 
@@ -291,7 +309,7 @@ namespace ReaLTaiizor.Controls
 
             Rectangle textRect = new(2 + _check, 2, Width - 20, Height - 4);
 
-            TextRenderer.DrawText(e.Graphics, Text, PoisonFonts.DateTime(FontSize, FontWeight), textRect, foreColor, TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
+            TextRenderer.DrawText(e.Graphics, Text, Font, textRect, foreColor, TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
 
             OnCustomPaintForeground(new PoisonPaintEventArgs(Color.Empty, foreColor, e.Graphics));
 
@@ -430,7 +448,7 @@ namespace ReaLTaiizor.Controls
             {
                 string measureText = Text.Length > 0 ? Text : "MeasureText";
                 proposedSize = new(int.MaxValue, int.MaxValue);
-                preferredSize = TextRenderer.MeasureText(g, measureText, PoisonFonts.DateTime(FontSize, FontWeight), proposedSize, TextFormatFlags.Left | TextFormatFlags.LeftAndRightPadding | TextFormatFlags.VerticalCenter);
+                preferredSize = TextRenderer.MeasureText(g, measureText, Font, proposedSize, TextFormatFlags.Left | TextFormatFlags.LeftAndRightPadding | TextFormatFlags.VerticalCenter);
                 preferredSize.Height += 10;
             }
 

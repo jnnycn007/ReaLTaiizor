@@ -137,6 +137,14 @@ namespace ReaLTaiizor.Controls
 
         private readonly DoubleBufferedTextBox baseTextBox;
 
+        private bool useCustomFont=false;
+        [DefaultValue(false)]
+        [Category(PoisonDefaults.PropertyCategory.Appearance)]
+        public bool UseCustomFont {
+            get => useCustomFont;
+            set { useCustomFont = value; Refresh(); }
+        }
+
         private PoisonLabelSize poisonLabelSize = PoisonLabelSize.Medium;
         [DefaultValue(PoisonLabelSize.Medium)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
@@ -166,6 +174,22 @@ namespace ReaLTaiizor.Controls
         {
             get => wrapToLine;
             set { wrapToLine = value; Refresh(); }
+        }
+
+        #endregion
+
+        #region Routing Fields
+        public override Font Font {
+            get {
+                if (useCustomFont) 
+                    return base.Font;
+                else 
+                    return PoisonFonts.Label(poisonLabelSize, poisonLabelWeight);
+            }
+            set {
+                base.Font = value;
+                Refresh();
+            }
         }
 
         #endregion
@@ -312,13 +336,13 @@ namespace ReaLTaiizor.Controls
 
                 if (!baseTextBox.Visible)
                 {
-                    TextRenderer.DrawText(e.Graphics, Text, PoisonFonts.Label(poisonLabelSize, poisonLabelWeight), ClientRectangle, foreColor, PoisonPaint.GetTextFormatFlags(TextAlign));
+                    TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, foreColor, PoisonPaint.GetTextFormatFlags(TextAlign));
                 }
             }
             else
             {
                 DestroyBaseTextbox();
-                TextRenderer.DrawText(e.Graphics, Text, PoisonFonts.Label(poisonLabelSize, poisonLabelWeight), ClientRectangle, foreColor, PoisonPaint.GetTextFormatFlags(TextAlign, wrapToLine));
+                TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, foreColor, PoisonPaint.GetTextFormatFlags(TextAlign, wrapToLine));
                 OnCustomPaintForeground(new PoisonPaintEventArgs(Color.Empty, foreColor, e.Graphics));
             }
         }
@@ -345,7 +369,7 @@ namespace ReaLTaiizor.Controls
             using (Graphics g = CreateGraphics())
             {
                 proposedSize = new(int.MaxValue, int.MaxValue);
-                preferredSize = TextRenderer.MeasureText(g, Text, PoisonFonts.Label(poisonLabelSize, poisonLabelWeight), proposedSize, PoisonPaint.GetTextFormatFlags(TextAlign));
+                preferredSize = TextRenderer.MeasureText(g, Text, Font, proposedSize, PoisonPaint.GetTextFormatFlags(TextAlign));
             }
 
             return preferredSize;
@@ -418,7 +442,7 @@ namespace ReaLTaiizor.Controls
             baseTextBox.BackColor = Color.Transparent;
             baseTextBox.Visible = true;
             baseTextBox.BorderStyle = BorderStyle.None;
-            baseTextBox.Font = PoisonFonts.Label(poisonLabelSize, poisonLabelWeight);
+            baseTextBox.Font = Font;
             baseTextBox.Location = new(1, 0);
             baseTextBox.Text = Text;
             baseTextBox.ReadOnly = true;
@@ -544,7 +568,7 @@ namespace ReaLTaiizor.Controls
                 }
             }
 
-            baseTextBox.Font = PoisonFonts.Label(poisonLabelSize, poisonLabelWeight);
+            baseTextBox.Font = Font;
             baseTextBox.Text = Text;
             baseTextBox.BorderStyle = BorderStyle.None;
 
