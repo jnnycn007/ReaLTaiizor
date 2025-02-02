@@ -141,9 +141,14 @@ namespace ReaLTaiizor.Controls
         private bool useCustomFont = false;
         [DefaultValue(false)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
-        public bool UseCustomFont {
+        public bool UseCustomFont
+        {
             get => useCustomFont;
-            set { useCustomFont = value; Refresh(); }
+            set
+            {
+                useCustomFont = value;
+                Refresh();
+            }
         }
 
         [DefaultValue(PoisonCheckBoxSize.Small)]
@@ -160,14 +165,22 @@ namespace ReaLTaiizor.Controls
         #endregion
 
         #region Routing Fields
-        public override Font Font {
-            get {
-                if (useCustomFont)
+
+        public override Font Font
+        {
+            get
+            {
+                if (UseCustomFont)
+                {
                     return base.Font;
+                }
                 else
+                {
                     return PoisonFonts.CheckBox(FontSize, FontWeight);
+                }
             }
-            set {
+            set
+            {
                 base.Font = value;
                 Refresh();
             }
