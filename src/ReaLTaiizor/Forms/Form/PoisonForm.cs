@@ -720,7 +720,7 @@ namespace ReaLTaiizor.Forms
             newButton.Tag = button;
             newButton.Size = new(25, 20);
             newButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            newButton.TabStop = false; //remove the form controls from the tab stop
+            newButton.TabStop = false; //Remove the form controls from the tab stop
             newButton.Click += WindowButton_Click;
             Controls.Add(newButton);
 
@@ -763,27 +763,38 @@ namespace ReaLTaiizor.Forms
                 return;
             }
 
-            Dictionary<int, WindowButtons> priorityOrder = new(3) { { 0, WindowButtons.Close }, { 1, WindowButtons.Maximize }, { 2, WindowButtons.Minimize } };
+            Dictionary<int, WindowButtons> priorityOrder = new(3)
+            {
+                { 0, WindowButtons.Close },
+                { 1, WindowButtons.Maximize },
+                { 2, WindowButtons.Minimize }
+            };
 
             int firstButtonPosition = ClientRectangle.Width - borderWidth - 25;
             int lastDrawedButtonPosition = firstButtonPosition - 25;
 
             bool firstButtonSet = false;
-            void SetButtonPosition(WindowButtons button,int x) {
-                windowButtonList[button].Anchor = AnchorStyles.None;//需要先解除锚点，否则在缩放设置不同的系统上会出现位置设置失败的bug
+
+            void SetButtonPosition(WindowButtons button, int x)
+            {
+                windowButtonList[button].Anchor = AnchorStyles.None; //You need to release the anchor point first; otherwise, a bug may occur where the position setting fails on systems with different scaling settings
                 windowButtonList[button].Location = new(x, borderWidth);
-                windowButtonList[button].Anchor = AnchorStyles.Top | AnchorStyles.Right;//设置完位置后重新设置锚点
+                windowButtonList[button].Anchor = AnchorStyles.Top | AnchorStyles.Right; //Reset the anchor point after setting the position
             }
-            foreach (KeyValuePair<int, WindowButtons> button in priorityOrder) {
+
+            foreach (KeyValuePair<int, WindowButtons> button in priorityOrder)
+            {
                 bool buttonExists = windowButtonList.ContainsKey(button.Value);
 
-                if (firstButtonSet == false && buttonExists) {
+                if (firstButtonSet == false && buttonExists)
+                {
                     SetButtonPosition(button.Value, firstButtonPosition);
                     firstButtonSet = true;
                     continue;
                 }
 
-                if (firstButtonSet == false || !buttonExists) {
+                if (firstButtonSet == false || !buttonExists)
+                {
                     continue;
                 }
 
