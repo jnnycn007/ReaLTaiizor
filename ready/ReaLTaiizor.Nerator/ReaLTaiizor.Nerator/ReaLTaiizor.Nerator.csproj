@@ -3,7 +3,7 @@
     <PropertyGroup>
         <OutputType>WinExe</OutputType>
         <!--<TargetFramework>net48</TargetFramework>-->
-        <TargetFrameworks>net48;net481;netcoreapp3.1-windows;net6.0-windows;net7.0-windows;net8.0-windows;net9.0-windows</TargetFrameworks>
+        <TargetFrameworks>net48;net481;netcoreapp3.1-windows;net6.0-windows;net7.0-windows;net8.0-windows;net9.0-windows;net10.0-windows</TargetFrameworks>
         <ApplicationIcon>Assets\ICO.ico</ApplicationIcon>
         <StartupObject>ReaLTaiizor.Nerator.Program</StartupObject>
         <ApplicationManifest>App.manifest</ApplicationManifest>
@@ -60,9 +60,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="ReaLTaiizor" Version="3.8.1.1" />
+        <PackageReference Include="ReaLTaiizor" Version="3.8.1.2" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="Skylark.Clipboard" Version="3.1.4.3" />
+        <PackageReference Include="Skylark.Clipboard" Version="3.1.4.4" />
         <PackageReference Include="Costura.Fody" Version="6.0.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive; compile</IncludeAssets>
