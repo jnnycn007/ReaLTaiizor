@@ -84,7 +84,7 @@
         <Content Include="Resources\Twitter.png" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
         <PackageReference Include="ReaLTaiizor" Version="3.8.1.3" />
         <!--<Reference Include="ReaLTaiizor">
             <HintPath>..\..\..\src\ReaLTaiizor\bin\Release\$(TargetFramework)\ReaLTaiizor.dll</HintPath>
@@ -94,8 +94,8 @@
         <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
     </PropertyGroup>
     <ItemGroup Condition="'$(Configuration)|$(Platform)' == 'GitHub|AnyCPU'">
-        <PackageReference Include="System.Resources.Extensions" Version="9.0.5" />
-        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="9.0.5" />
+        <PackageReference Include="System.Resources.Extensions" Version="9.0.9" />
+        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="9.0.9" />
     </ItemGroup>
     <ItemGroup>
         <EmbeddedResource Update="Properties\Resources.resx">
