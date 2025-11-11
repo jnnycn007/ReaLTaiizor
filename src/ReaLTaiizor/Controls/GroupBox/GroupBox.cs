@@ -12,10 +12,6 @@ namespace ReaLTaiizor.Controls
 
     public class GroupBox : ContainerControl
     {
-        #region Variables
-
-        #endregion
-
         #region Custom Properties
 
         public SmoothingMode SmoothingType

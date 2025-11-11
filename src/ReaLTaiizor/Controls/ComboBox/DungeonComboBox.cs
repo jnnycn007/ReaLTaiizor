@@ -13,10 +13,6 @@ namespace ReaLTaiizor.Controls
 
     public class DungeonComboBox : ComboBox
     {
-        #region Variables
-
-        #endregion
-
         #region Custom Properties
 
         public int StartIndex

@@ -12,10 +12,6 @@ namespace ReaLTaiizor.Controls
 
     public class Badge : Control
     {
-        #region Variables
-
-        #endregion
-
         #region Properties
 
         public int Value

@@ -11,10 +11,6 @@ namespace ReaLTaiizor.Child.Cyber
 
     public partial class CyberController : Component
     {
-        #region Variables
-
-        #endregion
-
         #region Property Region
 
         [Category("Cyber")]
