@@ -3,6 +3,7 @@
 using ReaLTaiizor.Design.Metro;
 using ReaLTaiizor.Enum.Metro;
 using ReaLTaiizor.Interface.Metro;
+using ReaLTaiizor.Properties;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -38,7 +39,7 @@ namespace ReaLTaiizor.Manager
 
             if (_customTheme == null)
             {
-                string themePath = Properties.Settings.Default.ThemeFile;
+                string themePath = Settings.Default.ThemeFile;
 
                 if (File.Exists(themePath))
                 {
@@ -50,12 +51,12 @@ namespace ReaLTaiizor.Manager
                     }
                     else
                     {
-                        _customTheme = ThemeFilePath(Properties.Resources.Metro_Theme);
+                        _customTheme = ThemeFilePath(Resources.Metro_Theme);
                     }
                 }
                 else
                 {
-                    _customTheme = ThemeFilePath(Properties.Resources.Metro_Theme);
+                    _customTheme = ThemeFilePath(Resources.Metro_Theme);
                 }
             }
 
@@ -211,8 +212,8 @@ namespace ReaLTaiizor.Manager
                     case Style.Custom:
                         if (!string.IsNullOrEmpty(_customTheme) && File.Exists(_customTheme))
                         {
-                            Properties.Settings.Default.ThemeFile = _customTheme;
-                            Properties.Settings.Default.Save();
+                            Settings.Default.ThemeFile = _customTheme;
+                            Settings.Default.Save();
                             ControlProperties(_customTheme);
                         }
                         else
@@ -234,8 +235,8 @@ namespace ReaLTaiizor.Manager
             {
                 if (!string.IsNullOrEmpty(value) && File.Exists(value))
                 {
-                    Properties.Settings.Default.ThemeFile = value;
-                    Properties.Settings.Default.Save();
+                    Settings.Default.ThemeFile = value;
+                    Settings.Default.Save();
                     ControlProperties(value);
                     _customTheme = value;
                     Style = Style.Custom;
@@ -264,15 +265,25 @@ namespace ReaLTaiizor.Manager
             CustomTheme = ofd.FileName;
         }
 
+        public void SaveTheme()
+        {
+            ThemeFilePath(Resources.Metro_Theme);
+        }
+
         public void SetTheme(string path)
         {
             Style = Style.Custom;
             CustomTheme = path;
         }
 
+        public static string PathTheme()
+        {
+            return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Templates), "ThemeFile.xml");
+        }
+
         private static string ThemeFilePath(string str)
         {
-            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Templates), "ThemeFile.xml");
+            string path = PathTheme();
 
             File.WriteAllText(path, str);
 
