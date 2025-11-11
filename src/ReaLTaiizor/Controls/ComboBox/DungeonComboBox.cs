@@ -15,19 +15,16 @@ namespace ReaLTaiizor.Controls
     {
         #region Variables
 
-        private int _StartIndex = 0;
-        private Color _HoverSelectionColor; // VBConversions Note: Initial value cannot be assigned here since it is non-static. Assignment has been moved to the class constructors.
-
         #endregion
 
         #region Custom Properties
 
         public int StartIndex
         {
-            get => _StartIndex;
+            get;
             set
             {
-                _StartIndex = value;
+                field = value;
                 try
                 {
                     base.SelectedIndex = value;
@@ -37,14 +34,14 @@ namespace ReaLTaiizor.Controls
                 }
                 Invalidate();
             }
-        }
+        } = 0;
 
         public Color HoverSelectionColor
         {
-            get => _HoverSelectionColor;
+            get;
             set
             {
-                _HoverSelectionColor = value;
+                field = value;
                 Invalidate();
             }
         }

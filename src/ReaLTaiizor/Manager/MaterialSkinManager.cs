@@ -22,8 +22,6 @@ namespace ReaLTaiizor.Manager
 
     public class MaterialSkinManager
     {
-        private static MaterialSkinManager _instance;
-
         private readonly List<MaterialForm> _formsToManage = new();
 
         public delegate void SkinManagerEventHandler(object sender);
@@ -34,7 +32,7 @@ namespace ReaLTaiizor.Manager
 
         public bool EnforceBackcolorOnAllComponents = true;
 
-        public static MaterialSkinManager Instance => _instance ?? (_instance = new MaterialSkinManager());
+        public static MaterialSkinManager Instance => field ?? (field = new MaterialSkinManager());
 
         public int FORM_PADDING = 14;
 
@@ -97,27 +95,24 @@ namespace ReaLTaiizor.Manager
         }
 
         // Themes
-        private Themes _theme;
 
         public Themes Theme
         {
-            get => _theme;
+            get;
             set
             {
-                _theme = value;
+                field = value;
                 UpdateBackgrounds();
                 ThemeChanged?.Invoke(this);
             }
         }
 
-        private MaterialColorScheme _colorScheme;
-
         public MaterialColorScheme ColorScheme
         {
-            get => _colorScheme;
+            get;
             set
             {
-                _colorScheme = value;
+                field = value;
                 UpdateBackgrounds();
                 ColorSchemeChanged?.Invoke(this);
             }

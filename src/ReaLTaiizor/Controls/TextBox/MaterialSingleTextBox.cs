@@ -29,11 +29,10 @@ namespace ReaLTaiizor.Controls
         private readonly BaseTextBox _baseTextBox;
         private readonly AnimationManager _animationManager;
 
-        private bool useAccentColor;
         public bool UseAccentColor
         {
-            get => useAccentColor;
-            set { useAccentColor = value; Invalidate(); }
+            get;
+            set { field = value; Invalidate(); }
         }
 
         public override string Text { get => _baseTextBox.Text; set => _baseTextBox.Text = value; }
@@ -602,27 +601,25 @@ namespace ReaLTaiizor.Controls
             private const char VisualStylePasswordChar = '\u25CF';
             private const char NonVisualStylePasswordChar = '\u002A';
 
-            private string hint = string.Empty;
             public string Hint
             {
-                get => hint;
+                get;
                 set
                 {
-                    hint = value;
+                    field = value;
                     SendMessage(Handle, EM_SETCUEBANNER, (int)IntPtr.Zero, Hint);
                 }
-            }
+            } = string.Empty;
 
-            private char _passwordChar = EmptyChar;
             public new char PasswordChar
             {
-                get => _passwordChar;
+                get;
                 set
                 {
-                    _passwordChar = value;
+                    field = value;
                     SetBasePasswordChar();
                 }
-            }
+            } = EmptyChar;
 
             public new void SelectAll()
             {
@@ -667,7 +664,7 @@ namespace ReaLTaiizor.Controls
 
             private void SetBasePasswordChar()
             {
-                base.PasswordChar = UseSystemPasswordChar ? _useSystemPasswordChar : _passwordChar;
+                base.PasswordChar = UseSystemPasswordChar ? _useSystemPasswordChar : PasswordChar;
             }
 
             public BaseTextBox()

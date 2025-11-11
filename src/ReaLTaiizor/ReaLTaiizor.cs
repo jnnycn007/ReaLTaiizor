@@ -253,19 +253,18 @@ namespace ReaLTaiizor
             thisis.ColorTable = ColorTable;
         }
 
-        private ColorTable _ColorTable;
         public new ColorTable ColorTable
         {
             get
             {
-                if (_ColorTable == null)
+                if (field == null)
                 {
-                    _ColorTable = new MSColorTable();
+                    field = new MSColorTable();
                 }
 
-                return _ColorTable;
+                return field;
             }
-            set => _ColorTable = value;
+            set;
         }
 
         protected override void OnRenderToolStripBackground(ToolStripRenderEventArgs e)

@@ -162,8 +162,6 @@ namespace ReaLTaiizor.Manager
 
         #region Internal Vars
 
-        private Style _style;
-        private Form _ownerForm;
         private string _customTheme;
 
         #endregion Internal Vars
@@ -179,16 +177,16 @@ namespace ReaLTaiizor.Manager
         [Category("Metro"), Description("Gets or sets the form (MetroForm) to Apply themes for.")]
         public Form OwnerForm
         {
-            get => _ownerForm;
+            get;
             set
             {
-                if (_ownerForm != null)
+                if (field != null)
                 {
                     return;
                 }
 
-                _ownerForm = value;
-                _ownerForm.ControlAdded += ControlAdded;
+                field = value;
+                field.ControlAdded += ControlAdded;
                 UpdateForm();
             }
         }
@@ -196,10 +194,10 @@ namespace ReaLTaiizor.Manager
         [Category("Metro"), Description("Gets or sets the style.")]
         public Style Style
         {
-            get => _style;
+            get;
             set
             {
-                _style = value;
+                field = value;
                 switch (value)
                 {
                     case Style.Light:

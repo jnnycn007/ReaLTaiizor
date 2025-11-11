@@ -78,8 +78,8 @@ namespace ReaLTaiizor.Controls
         [Category("Material")]
         public bool UseAccentColor
         {
-            get => useAccentColor;
-            set { useAccentColor = value; Invalidate(); }
+            get;
+            set { field = value; Invalidate(); }
         }
 
         [Category("Material")]
@@ -88,8 +88,8 @@ namespace ReaLTaiizor.Controls
         /// </summary>
         public bool HighEmphasis
         {
-            get => highEmphasis;
-            set { highEmphasis = value; Invalidate(); }
+            get;
+            set { field = value; Invalidate(); }
         }
 
         [DefaultValue(true)]
@@ -97,15 +97,15 @@ namespace ReaLTaiizor.Controls
         [Description("Draw Shadows around control")]
         public bool DrawShadows
         {
-            get => drawShadows;
-            set { drawShadows = value; Invalidate(); }
+            get;
+            set { field = value; Invalidate(); }
         }
 
         [Category("Material")]
         public MaterialButtonType Type
         {
-            get => type;
-            set { type = value; preProcessIcons(); Invalidate(); }
+            get;
+            set { field = value; preProcessIcons(); Invalidate(); }
         }
 
         [Category("Material")]
@@ -114,11 +114,11 @@ namespace ReaLTaiizor.Controls
         /// </summary>
         public MaterialButtonDensity Density
         {
-            get => _density;
+            get;
             set
             {
-                _density = value;
-                if (_density == MaterialButtonDensity.Dense)
+                field = value;
+                if (field == MaterialButtonDensity.Dense)
                 {
                     Size = new Size(Size.Width, HEIGHTDENSE);
                 }
@@ -160,7 +160,7 @@ namespace ReaLTaiizor.Controls
         protected override void OnParentChanged(EventArgs e)
         {
             base.OnParentChanged(e);
-            if (drawShadows && Parent != null)
+            if (DrawShadows && Parent != null)
             {
                 AddShadowPaintEvent(Parent, drawShadowOnParent);
             }
@@ -234,27 +234,16 @@ namespace ReaLTaiizor.Controls
         /// </summary>
         private SizeF _textSize;
 
-        /// <summary>
-        /// Defines the _icon
-        /// </summary>
-        private Image _icon;
-
-        private bool drawShadows;
-        private bool highEmphasis;
-        private bool useAccentColor;
-        private MaterialButtonType type;
-        private MaterialButtonDensity _density;
-
         [Category("Material")]
         /// <summary>
         /// Gets or sets the Icon
         /// </summary>
         public Image Icon
         {
-            get => _icon;
+            get;
             set
             {
-                _icon = value;
+                field = value;
                 preProcessIcons();
 
                 if (AutoSize)
@@ -413,7 +402,7 @@ namespace ReaLTaiizor.Controls
             Bitmap IconResized = new(Icon, newWidth, newHeight);
 
             // Calculate lightness and color
-            float l = (SkinManager.Theme == MaterialSkinManager.Themes.LIGHT & (highEmphasis == false | Enabled == false | Type != MaterialButtonType.Contained)) ? 0f : 1.5f;
+            float l = (SkinManager.Theme == MaterialSkinManager.Themes.LIGHT & (HighEmphasis == false | Enabled == false | Type != MaterialButtonType.Contained)) ? 0f : 1.5f;
 
             // Create matrices
             float[][] matrixGray = {

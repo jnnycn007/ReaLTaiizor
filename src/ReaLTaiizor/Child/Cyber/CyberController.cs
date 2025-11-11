@@ -13,8 +13,6 @@ namespace ReaLTaiizor.Child.Cyber
     {
         #region Variables
 
-        private bool Temp = false;
-
         #endregion
 
         #region Property Region
@@ -23,13 +21,13 @@ namespace ReaLTaiizor.Child.Cyber
         [Description("Enable/Disable global RGB mode for all Cyber controls")]
         public bool Status
         {
-            get => Temp;
+            get;
             set
             {
-                Temp = value;
-                DrawEngine.TimerGlobalRGB(Temp);
+                field = value;
+                DrawEngine.TimerGlobalRGB(field);
             }
-        }
+        } = false;
 
         [Category("Cyber")]
         [Description("RGB Timer Update Interval")]

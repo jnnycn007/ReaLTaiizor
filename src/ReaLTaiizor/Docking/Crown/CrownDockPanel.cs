@@ -28,7 +28,6 @@ namespace ReaLTaiizor.Docking.Crown
         #region Field Region
 
         private readonly List<CrownDockContent> _contents;
-        private CrownDockContent _activeContent;
         private bool _switchingContent = false;
 
         #endregion
@@ -39,7 +38,7 @@ namespace ReaLTaiizor.Docking.Crown
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public CrownDockContent ActiveContent
         {
-            get => _activeContent;
+            get;
             set
             {
                 // Don't let content visibility changes re-trigger event
@@ -50,9 +49,9 @@ namespace ReaLTaiizor.Docking.Crown
 
                 _switchingContent = true;
 
-                _activeContent = value;
+                field = value;
 
-                ActiveGroup = _activeContent.DockGroup;
+                ActiveGroup = field.DockGroup;
                 ActiveRegion = ActiveGroup.DockRegion;
 
                 foreach (CrownDockRegion region in Regions.Values)
@@ -60,7 +59,7 @@ namespace ReaLTaiizor.Docking.Crown
                     region.Redraw();
                 }
 
-                ActiveContentChanged?.Invoke(this, new DockContentEventArgs(_activeContent));
+                ActiveContentChanged?.Invoke(this, new DockContentEventArgs(field));
 
                 _switchingContent = false;
             }

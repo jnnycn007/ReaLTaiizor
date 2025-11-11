@@ -54,59 +54,57 @@ namespace ReaLTaiizor.Controls
             }
         }
 
-        private ColorStyle poisonStyle = ColorStyle.Default;
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         [DefaultValue(ColorStyle.Default)]
         public ColorStyle Style
         {
             get
             {
-                if (DesignMode || poisonStyle != ColorStyle.Default)
+                if (DesignMode || field != ColorStyle.Default)
                 {
-                    return poisonStyle;
+                    return field;
                 }
 
-                if (StyleManager != null && poisonStyle == ColorStyle.Default)
+                if (StyleManager != null && field == ColorStyle.Default)
                 {
                     return StyleManager.Style;
                 }
 
-                if (StyleManager == null && poisonStyle == ColorStyle.Default)
+                if (StyleManager == null && field == ColorStyle.Default)
                 {
                     return PoisonDefaults.Style;
                 }
 
-                return poisonStyle;
+                return field;
             }
-            set => poisonStyle = value;
-        }
+            set;
+        } = ColorStyle.Default;
 
-        private ThemeStyle poisonTheme = ThemeStyle.Default;
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         [DefaultValue(ThemeStyle.Default)]
         public ThemeStyle Theme
         {
             get
             {
-                if (DesignMode || poisonTheme != ThemeStyle.Default)
+                if (DesignMode || field != ThemeStyle.Default)
                 {
-                    return poisonTheme;
+                    return field;
                 }
 
-                if (StyleManager != null && poisonTheme == ThemeStyle.Default)
+                if (StyleManager != null && field == ThemeStyle.Default)
                 {
                     return StyleManager.Theme;
                 }
 
-                if (StyleManager == null && poisonTheme == ThemeStyle.Default)
+                if (StyleManager == null && field == ThemeStyle.Default)
                 {
                     return PoisonDefaults.Theme;
                 }
 
-                return poisonTheme;
+                return field;
             }
-            set => poisonTheme = value;
-        }
+            set;
+        } = ThemeStyle.Default;
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -136,36 +134,33 @@ namespace ReaLTaiizor.Controls
 
         private PromptedTextBox baseTextBox;
 
-        private bool useCustomFont = false;
         [DefaultValue(false)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public bool UseCustomFont
         {
-            get => useCustomFont;
+            get;
             set
             {
-                useCustomFont = value;
+                field = value;
                 Refresh();
             }
-        }
+        } = false;
 
-        private PoisonTextBoxSize poisonTextBoxSize = PoisonTextBoxSize.Small;
         [DefaultValue(PoisonTextBoxSize.Small)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public PoisonTextBoxSize FontSize
         {
-            get => poisonTextBoxSize;
-            set { poisonTextBoxSize = value; UpdateBaseTextBox(); }
-        }
+            get;
+            set { field = value; UpdateBaseTextBox(); }
+        } = PoisonTextBoxSize.Small;
 
-        private PoisonTextBoxWeight poisonTextBoxWeight = PoisonTextBoxWeight.Regular;
         [DefaultValue(PoisonTextBoxWeight.Regular)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public PoisonTextBoxWeight FontWeight
         {
-            get => poisonTextBoxWeight;
-            set { poisonTextBoxWeight = value; UpdateBaseTextBox(); }
-        }
+            get;
+            set { field = value; UpdateBaseTextBox(); }
+        } = PoisonTextBoxWeight.Regular;
 
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
@@ -188,60 +183,57 @@ namespace ReaLTaiizor.Controls
             set => baseTextBox.WaterMark = value;
         }
 
-        private Image textBoxIcon = null;
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
         [DefaultValue(null)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public Image Icon
         {
-            get => textBoxIcon;
+            get;
             set
             {
-                textBoxIcon = value;
+                field = value;
                 Refresh();
             }
-        }
+        } = null;
 
-        private bool textBoxIconRight = false;
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
         [DefaultValue(false)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public bool IconRight
         {
-            get => textBoxIconRight;
+            get;
             set
             {
-                textBoxIconRight = value;
+                field = value;
                 Refresh();
             }
-        }
+        } = false;
 
-        private bool displayIcon = false;
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
         [DefaultValue(false)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public bool DisplayIcon
         {
-            get => displayIcon;
+            get;
             set
             {
-                displayIcon = value;
+                field = value;
                 Refresh();
             }
-        }
+        } = false;
 
         protected Size iconSize
         {
             get
             {
-                if (displayIcon && textBoxIcon != null)
+                if (DisplayIcon && Icon != null)
                 {
-                    int _height = textBoxIcon.Height > ClientRectangle.Height ? ClientRectangle.Height : textBoxIcon.Height;
+                    int _height = Icon.Height > ClientRectangle.Height ? ClientRectangle.Height : Icon.Height;
 
-                    Size originalSize = textBoxIcon.Size;
+                    Size originalSize = Icon.Size;
                     double resizeFactor = _height / (double)originalSize.Height;
 
                     //Point iconLocation = new(1, 1);
@@ -253,7 +245,6 @@ namespace ReaLTaiizor.Controls
         }
 
         private PoisonTextButton _button;
-        private bool _showbutton = false;
 
         protected int ButtonWidth
         {
@@ -262,7 +253,7 @@ namespace ReaLTaiizor.Controls
                 int _butwidth = 0;
                 if (_button != null)
                 {
-                    _butwidth = _showbutton ? _button.Width : 0;
+                    _butwidth = ShowButton ? _button.Width : 0;
                 }
 
                 return _butwidth;
@@ -275,16 +266,15 @@ namespace ReaLTaiizor.Controls
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public bool ShowButton
         {
-            get => _showbutton;
+            get;
             set
             {
-                _showbutton = value;
+                field = value;
                 Refresh();
             }
-        }
+        } = false;
 
         private PoisonLinkLabel lnkClear;
-        private bool _showclear = false;
 
         [Browsable(true)]
         [EditorBrowsable(EditorBrowsableState.Always)]
@@ -292,13 +282,13 @@ namespace ReaLTaiizor.Controls
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public bool ShowClearButton
         {
-            get => _showclear;
+            get;
             set
             {
-                _showclear = value;
+                field = value;
                 Refresh();
             }
-        }
+        } = false;
 
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         [EditorBrowsable(EditorBrowsableState.Always)]
@@ -713,22 +703,22 @@ namespace ReaLTaiizor.Controls
 
         private void DrawIcon(Graphics g)
         {
-            if (displayIcon && textBoxIcon != null)
+            if (DisplayIcon && Icon != null)
             {
                 Point iconLocation = new(5, 5);
-                if (textBoxIconRight)
+                if (IconRight)
                 {
                     iconLocation = new(ClientRectangle.Width - iconSize.Width - 1, 1);
                 }
 
-                g.DrawImage(textBoxIcon, new Rectangle(iconLocation, iconSize));
+                g.DrawImage(Icon, new Rectangle(iconLocation, iconSize));
 
                 UpdateBaseTextBox();
             }
             else
             {
-                _button.Visible = _showbutton;
-                if (_showbutton && _button != null)
+                _button.Visible = ShowButton;
+                if (ShowButton && _button != null)
                 {
                     UpdateBaseTextBox();
                 }
@@ -922,14 +912,14 @@ namespace ReaLTaiizor.Controls
                     _button.Location = new(Width - _button.Width - 3, 2);
                 }
 
-                _button.Visible = _showbutton;
+                _button.Visible = ShowButton;
             }
 
             int _clearloc = 0;
             if (lnkClear != null)
             {
                 lnkClear.Visible = false;
-                if (_showclear && Text != "" && !ReadOnly && Enabled)
+                if (ShowClearButton && Text != "" && !ReadOnly && Enabled)
                 {
                     _clearloc = 16;
                     lnkClear.Location = new(Width - (ButtonWidth + 17), (Height - 14) / 2);
@@ -945,10 +935,10 @@ namespace ReaLTaiizor.Controls
 
             baseTextBox.Font = Font;
 
-            if (displayIcon)
+            if (DisplayIcon)
             {
                 Point textBoxLocation = new(iconSize.Width + 10, 5);
-                if (textBoxIconRight)
+                if (IconRight)
                 {
                     textBoxLocation = new(3, 3);
                 }
@@ -974,29 +964,27 @@ namespace ReaLTaiizor.Controls
 
             private bool drawPrompt;
 
-            private string promptText = "";
             [Browsable(true)]
             [EditorBrowsable(EditorBrowsableState.Always)]
             [DefaultValue("")]
             public string WaterMark
             {
-                get => promptText;
+                get;
                 set
                 {
-                    promptText = value.Trim();
+                    field = value.Trim();
                     Invalidate();
                 }
-            }
+            } = "";
 
-            private Color _waterMarkColor = PoisonPaint.ForeColor.Button.Disabled(ThemeStyle.Dark);
             public Color WaterMarkColor
             {
-                get => _waterMarkColor;
+                get;
                 set
                 {
-                    _waterMarkColor = value; Invalidate();
+                    field = value; Invalidate();
                 }
-            }
+            } = PoisonPaint.ForeColor.Button.Disabled(ThemeStyle.Dark);
 
             public Font WaterMarkFont { get; set; } = PoisonFonts.WaterMark(PoisonLabelSize.Small, PoisonWaterMarkWeight.Italic);
 
@@ -1034,7 +1022,7 @@ namespace ReaLTaiizor.Controls
 
                 //SolidBrush drawBrush = new(WaterMarkColor);
 
-                TextRenderer.DrawText(g, promptText, WaterMarkFont, clientRectangle, _waterMarkColor, BackColor, flags);
+                TextRenderer.DrawText(g, WaterMark, WaterMarkFont, clientRectangle, WaterMarkColor, BackColor, flags);
             }
 
             protected override void OnPaint(PaintEventArgs e)
@@ -1165,59 +1153,57 @@ namespace ReaLTaiizor.Controls
                 }
             }
 
-            private ColorStyle poisonStyle = ColorStyle.Default;
             [Category(PoisonDefaults.PropertyCategory.Appearance)]
             [DefaultValue(ColorStyle.Default)]
             public ColorStyle Style
             {
                 get
                 {
-                    if (DesignMode || poisonStyle != ColorStyle.Default)
+                    if (DesignMode || field != ColorStyle.Default)
                     {
-                        return poisonStyle;
+                        return field;
                     }
 
-                    if (StyleManager != null && poisonStyle == ColorStyle.Default)
+                    if (StyleManager != null && field == ColorStyle.Default)
                     {
                         return StyleManager.Style;
                     }
 
-                    if (StyleManager == null && poisonStyle == ColorStyle.Default)
+                    if (StyleManager == null && field == ColorStyle.Default)
                     {
                         return PoisonDefaults.Style;
                     }
 
-                    return poisonStyle;
+                    return field;
                 }
-                set => poisonStyle = value;
-            }
+                set;
+            } = ColorStyle.Default;
 
-            private ThemeStyle poisonTheme = ThemeStyle.Default;
             [Category(PoisonDefaults.PropertyCategory.Appearance)]
             [DefaultValue(ThemeStyle.Default)]
             public ThemeStyle Theme
             {
                 get
                 {
-                    if (DesignMode || poisonTheme != ThemeStyle.Default)
+                    if (DesignMode || field != ThemeStyle.Default)
                     {
-                        return poisonTheme;
+                        return field;
                     }
 
-                    if (StyleManager != null && poisonTheme == ThemeStyle.Default)
+                    if (StyleManager != null && field == ThemeStyle.Default)
                     {
                         return StyleManager.Theme;
                     }
 
-                    if (StyleManager == null && poisonTheme == ThemeStyle.Default)
+                    if (StyleManager == null && field == ThemeStyle.Default)
                     {
                         return PoisonDefaults.Theme;
                     }
 
-                    return poisonTheme;
+                    return field;
                 }
-                set => poisonTheme = value;
-            }
+                set;
+            } = ThemeStyle.Default;
 
             [Browsable(false)]
             [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

@@ -21,10 +21,6 @@ namespace ReaLTaiizor.Design.Poison
 
         private readonly DesignerVerbCollection designerVerbs = new();
 
-        private IDesignerHost designerHost;
-
-        private ISelectionService selectionService;
-
         public override SelectionRules SelectionRules => Control.Dock == DockStyle.Fill ? SelectionRules.Visible : base.SelectionRules;
         public override DesignerVerbCollection Verbs
         {
@@ -39,9 +35,9 @@ namespace ReaLTaiizor.Design.Poison
             }
         }
 
-        public IDesignerHost DesignerHost => designerHost ??= (IDesignerHost)GetService(typeof(IDesignerHost));
+        public IDesignerHost DesignerHost => field ??= (IDesignerHost)GetService(typeof(IDesignerHost));
 
-        public ISelectionService SelectionService => selectionService ??= (ISelectionService)GetService(typeof(ISelectionService));
+        public ISelectionService SelectionService { get => field ??= (ISelectionService)GetService(typeof(ISelectionService)); private set; }
 
         #endregion
 

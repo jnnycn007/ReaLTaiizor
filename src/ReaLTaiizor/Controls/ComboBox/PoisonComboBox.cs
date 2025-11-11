@@ -56,59 +56,57 @@ namespace ReaLTaiizor.Controls
             }
         }
 
-        private ColorStyle poisonStyle = ColorStyle.Default;
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         [DefaultValue(ColorStyle.Default)]
         public ColorStyle Style
         {
             get
             {
-                if (DesignMode || poisonStyle != ColorStyle.Default)
+                if (DesignMode || field != ColorStyle.Default)
                 {
-                    return poisonStyle;
+                    return field;
                 }
 
-                if (StyleManager != null && poisonStyle == ColorStyle.Default)
+                if (StyleManager != null && field == ColorStyle.Default)
                 {
                     return StyleManager.Style;
                 }
 
-                if (StyleManager == null && poisonStyle == ColorStyle.Default)
+                if (StyleManager == null && field == ColorStyle.Default)
                 {
                     return PoisonDefaults.Style;
                 }
 
-                return poisonStyle;
+                return field;
             }
-            set => poisonStyle = value;
-        }
+            set;
+        } = ColorStyle.Default;
 
-        private ThemeStyle poisonTheme = ThemeStyle.Default;
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         [DefaultValue(ThemeStyle.Default)]
         public ThemeStyle Theme
         {
             get
             {
-                if (DesignMode || poisonTheme != ThemeStyle.Default)
+                if (DesignMode || field != ThemeStyle.Default)
                 {
-                    return poisonTheme;
+                    return field;
                 }
 
-                if (StyleManager != null && poisonTheme == ThemeStyle.Default)
+                if (StyleManager != null && field == ThemeStyle.Default)
                 {
                     return StyleManager.Theme;
                 }
 
-                if (StyleManager == null && poisonTheme == ThemeStyle.Default)
+                if (StyleManager == null && field == ThemeStyle.Default)
                 {
                     return PoisonDefaults.Theme;
                 }
 
-                return poisonTheme;
+                return field;
             }
-            set => poisonTheme = value;
-        }
+            set;
+        } = ThemeStyle.Default;
 
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -158,13 +156,12 @@ namespace ReaLTaiizor.Controls
             set => base.DrawMode = DrawMode.OwnerDrawFixed;
         }
 
-        private ComboBoxStyle dropDownStyle = ComboBoxStyle.DropDownList;
         [DefaultValue(ComboBoxStyle.DropDownList)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         [Browsable(true)]
         public new ComboBoxStyle DropDownStyle
         {
-            get => dropDownStyle;
+            get;
             set
             {
                 // we don't support the Simple style
@@ -173,7 +170,7 @@ namespace ReaLTaiizor.Controls
                     value = ComboBoxStyle.DropDownList;
                 }
 
-                dropDownStyle = value;
+                field = value;
                 // fake out the base
                 base.DropDownStyle = ComboBoxStyle.DropDownList;
                 // if we are a dropdown and have focus, then show the edit box
@@ -188,20 +185,19 @@ namespace ReaLTaiizor.Controls
 
                 Invalidate();
             }
-        }
+        } = ComboBoxStyle.DropDownList;
 
-        private bool useCustomFont = false;
         [DefaultValue(false)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public bool UseCustomFont
         {
-            get => useCustomFont;
+            get;
             set
             {
-                useCustomFont = value;
+                field = value;
                 Refresh();
             }
-        }
+        } = false;
 
 
         [DefaultValue(PoisonComboBoxSize.Medium)]
@@ -234,13 +230,12 @@ namespace ReaLTaiizor.Controls
 
         private bool drawPrompt = false;
 
-        private AutoCompleteMode autoCompleteMode = AutoCompleteMode.None;
         public new AutoCompleteMode AutoCompleteMode
         {
-            get => autoCompleteMode;
+            get;
             set
             {
-                autoCompleteMode = value;
+                field = value;
                 textBox.AutoCompleteMode = value;
                 if (value != AutoCompleteMode.None)
                 {
@@ -258,7 +253,7 @@ namespace ReaLTaiizor.Controls
                     textBox.AutoCompleteCustomSource = null;
                 }
             }
-        }
+        } = AutoCompleteMode.None;
 
         [Browsable(false)]
         public new AutoCompleteSource AutoCompleteSource
@@ -350,7 +345,7 @@ namespace ReaLTaiizor.Controls
 
         private void TextBox_Enter(object sender, EventArgs e)
         {
-            if (autoCompleteMode != AutoCompleteMode.None)
+            if (AutoCompleteMode != AutoCompleteMode.None)
             {
                 textBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
                 textBox.AutoCompleteCustomSource = new AutoCompleteStringCollection();

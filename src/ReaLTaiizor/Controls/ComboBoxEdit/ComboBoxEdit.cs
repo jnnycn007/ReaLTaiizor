@@ -15,19 +15,16 @@ namespace ReaLTaiizor.Controls
     {
         #region Variables
 
-        private int _StartIndex = 0;
-        private Color _HoverSelectionColor = Color.FromArgb(241, 241, 241);
-
         #endregion
 
         #region Custom Properties
 
         public int StartIndex
         {
-            get => _StartIndex;
+            get;
             set
             {
-                _StartIndex = value;
+                field = value;
                 try
                 {
                     base.SelectedIndex = value;
@@ -37,17 +34,17 @@ namespace ReaLTaiizor.Controls
                 }
                 Invalidate();
             }
-        }
+        } = 0;
 
         public Color HoverSelectionColor
         {
-            get => _HoverSelectionColor;
+            get;
             set
             {
-                _HoverSelectionColor = value;
+                field = value;
                 Invalidate();
             }
-        }
+        } = Color.FromArgb(241, 241, 241);
 
         #endregion
 
@@ -57,7 +54,7 @@ namespace ReaLTaiizor.Controls
         {
             if ((e.State & DrawItemState.Selected) == DrawItemState.Selected)
             {
-                e.Graphics.FillRectangle(new SolidBrush(_HoverSelectionColor), e.Bounds);
+                e.Graphics.FillRectangle(new SolidBrush(HoverSelectionColor), e.Bounds);
             }
             else
             {

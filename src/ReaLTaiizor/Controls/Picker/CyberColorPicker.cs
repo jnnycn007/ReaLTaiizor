@@ -30,15 +30,14 @@ namespace ReaLTaiizor.Controls
 
         #region Property Region
 
-        private Color tmp_selectedcolor;
         [Category("Cyber")]
         [Description("Selected color")]
         public Color SelectedColor
         {
-            get => tmp_selectedcolor;
+            get;
             set
             {
-                tmp_selectedcolor = value;
+                field = value;
                 UpdateColorPickerFromColor(value);
                 ColorChanged(value);
             }

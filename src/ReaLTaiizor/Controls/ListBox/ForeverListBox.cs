@@ -8,7 +8,6 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
-using System.Linq;
 using System.Windows.Forms;
 
 #endregion
@@ -19,39 +18,36 @@ namespace ReaLTaiizor.Controls
 
     public class ForeverListBox : Control
     {
-        private ListBox withEventsField_ListBx = new();
         private ListBox ListBx
         {
-            get => withEventsField_ListBx;
+            get;
             set
             {
-                if (withEventsField_ListBx != null)
+                if (field != null)
                 {
-                    withEventsField_ListBx.DrawItem -= Drawitem;
+                    field.DrawItem -= Drawitem;
                 }
 
-                withEventsField_ListBx = value;
-                if (withEventsField_ListBx != null)
+                field = value;
+                if (field != null)
                 {
-                    withEventsField_ListBx.DrawItem += Drawitem;
+                    field.DrawItem += Drawitem;
                 }
             }
-        }
-
-        private string[] _items = Array.Empty<string>();
+        } = new();
 
         [Category("Options")]
         public string[] Items
         {
-            get => _items;
+            get;
             set
             {
-                _items = value;
+                field = value;
                 ListBx.Items.Clear();
                 ListBx.Items.AddRange(value);
                 Invalidate();
             }
-        }
+        } = Array.Empty<string>();
 
         public object[] ListItems
         {

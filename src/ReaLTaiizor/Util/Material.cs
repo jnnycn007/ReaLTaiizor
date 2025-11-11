@@ -314,7 +314,7 @@ namespace ReaLTaiizor.Util
 
                     if (flags.HasFlag(TextAlignFlags.Middle))
                     {
-                        pos.Y = ((size.Height) >> 1) - (strRect.Height >> 1);
+                        pos.Y = (size.Height >> 1) - (strRect.Height >> 1);
                     }
 
                     if (flags.HasFlag(TextAlignFlags.Bottom))
@@ -333,7 +333,7 @@ namespace ReaLTaiizor.Util
                     // Aligment
                     if (flags.HasFlag(TextAlignFlags.Center))
                     {
-                        pos.X = ((size.Width) >> 1) - (strSize.Width >> 1);
+                        pos.X = (size.Width >> 1) - (strSize.Width >> 1);
                     }
 
                     if (flags.HasFlag(TextAlignFlags.Right))
@@ -343,7 +343,7 @@ namespace ReaLTaiizor.Util
 
                     if (flags.HasFlag(TextAlignFlags.Middle))
                     {
-                        pos.Y = ((size.Height) >> 1) - (strSize.Height >> 1);
+                        pos.Y = (size.Height >> 1) - (strSize.Height >> 1);
                     }
 
                     if (flags.HasFlag(TextAlignFlags.Bottom))
@@ -1323,16 +1323,15 @@ namespace ReaLTaiizor.Util
     public class MaterialMouseWheelRedirector : IMessageFilter
     {
         private static MaterialMouseWheelRedirector instance = null;
-        private static bool _active = false;
 
         public static bool Active
         {
             set
             {
-                if (_active != value)
+                if (field != value)
                 {
-                    _active = value;
-                    if (_active)
+                    field = value;
+                    if (field)
                     {
                         if (instance == null)
                         {
@@ -1347,12 +1346,12 @@ namespace ReaLTaiizor.Util
                     }
                 }
             }
-            get => _active;
-        }
+            get;
+        } = false;
 
         public static void Attach(Control control)
         {
-            if (!_active)
+            if (!Active)
             {
                 Active = true;
             }
