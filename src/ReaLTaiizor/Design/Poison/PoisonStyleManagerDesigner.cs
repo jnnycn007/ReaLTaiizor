@@ -27,10 +27,10 @@ namespace ReaLTaiizor.Design.Poison
                     return designerVerbs;
                 }
 
-                designerVerbs = new DesignerVerbCollection
-                {
+                designerVerbs =
+                [
                     new DesignerVerb("Reset Styles to Default", OnResetStyles)
-                };
+                ];
 
                 return designerVerbs;
             }

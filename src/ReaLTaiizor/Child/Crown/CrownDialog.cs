@@ -82,11 +82,11 @@ namespace ReaLTaiizor.Child.Crown
         {
             InitializeComponent();
 
-            _buttons = new List<CrownButton>
-            {
+            _buttons =
+            [
                 btnAbort, btnRetry, btnIgnore, btnOk,
                 btnCancel, btnClose, btnYes, btnNo
-            };
+            ];
         }
 
         #endregion

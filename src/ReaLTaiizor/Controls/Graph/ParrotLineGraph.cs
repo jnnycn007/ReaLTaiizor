@@ -47,7 +47,7 @@ namespace ReaLTaiizor.Controls
                 field = value;
                 Refresh();
             }
-        } = new();
+        } = [];
 
         [Category("Parrot")]
         [Browsable(true)]
@@ -303,10 +303,10 @@ namespace ReaLTaiizor.Controls
             int num4 = num;
             int num5 = 0;
 
-            List<PointF> list = new()
-            {
+            List<PointF> list =
+            [
                 new Point(1, base.Height)
-            };
+            ];
 
             foreach (int num6 in Items)
             {

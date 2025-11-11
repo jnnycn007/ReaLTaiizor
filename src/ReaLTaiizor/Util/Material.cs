@@ -393,13 +393,15 @@ namespace ReaLTaiizor.Util
                 }
                 else
                 {
-                    dic1[font.Size] = new Dictionary<FontStyle, IntPtr>();
+                    dic1[font.Size] = [];
                 }
             }
             else
             {
-                _fontsCache[font.Name] = new Dictionary<float, Dictionary<FontStyle, IntPtr>>();
-                _fontsCache[font.Name][font.Size] = new Dictionary<FontStyle, IntPtr>();
+                _fontsCache[font.Name] = new Dictionary<float, Dictionary<FontStyle, IntPtr>>
+                {
+                    [font.Size] = []
+                };
             }
 
             if (hfont == IntPtr.Zero)
@@ -763,10 +765,10 @@ namespace ReaLTaiizor.Util
 
             public AnimationManager(bool singular = true)
             {
-                _animationProgresses = new List<double>();
-                _animationSources = new List<Point>();
-                _animationDirections = new List<AnimationDirection>();
-                _animationDatas = new List<object[]>();
+                _animationProgresses = [];
+                _animationSources = [];
+                _animationDirections = [];
+                _animationDatas = [];
 
                 Increment = 0.03;
                 SecondaryIncrement = 0.03;

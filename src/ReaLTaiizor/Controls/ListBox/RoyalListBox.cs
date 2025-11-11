@@ -69,10 +69,10 @@ namespace ReaLTaiizor.Controls
             SetStyle(ControlStyles.AllPaintingInWmPaint, true);
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
-            SelectedIndicies = new RoyalListBoxSelectedIndexCollection();
-            SelectedItems = new RoyalListBoxSelectedItemCollection();
+            SelectedIndicies = [];
+            SelectedItems = [];
 
-            Items = new RoyalListBoxItemCollection();
+            Items = [];
             Items.ItemAdded += new EventHandler(Items_ItemAdded);
             Items.ItemRemoved += new EventHandler(Items_ItemRemoved);
 

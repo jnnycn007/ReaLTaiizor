@@ -241,7 +241,7 @@ namespace ReaLTaiizor.Controls
                 {
                     // if using autocomplete, then the source will be the item list.
                     textBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
-                    textBox.AutoCompleteCustomSource = new AutoCompleteStringCollection();
+                    textBox.AutoCompleteCustomSource = [];
                     foreach (object item in Items)
                     {
                         textBox.AutoCompleteCustomSource.Add(item.ToString());
@@ -348,7 +348,7 @@ namespace ReaLTaiizor.Controls
             if (AutoCompleteMode != AutoCompleteMode.None)
             {
                 textBox.AutoCompleteSource = AutoCompleteSource.CustomSource;
-                textBox.AutoCompleteCustomSource = new AutoCompleteStringCollection();
+                textBox.AutoCompleteCustomSource = [];
 
                 for (int i = 0; i < Items.Count; i++)
                 {

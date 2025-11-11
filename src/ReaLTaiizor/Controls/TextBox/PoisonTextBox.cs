@@ -355,11 +355,7 @@ namespace ReaLTaiizor.Controls
 
         public override ContextMenuStrip ContextMenuStrip
         {
-            get => baseTextBox.ContextMenuStrip;
-            set
-            {
-                baseTextBox.ContextMenuStrip = value;
-            }
+            get => baseTextBox.ContextMenuStrip; set => baseTextBox.ContextMenuStrip = value;
         }
 
         [DefaultValue(false)]

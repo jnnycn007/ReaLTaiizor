@@ -437,9 +437,10 @@ namespace ReaLTaiizor.Controls
             }
 
             // added processed image to brush for drawing
-            TextureBrush textureBrushGray = new(bgray);
-
-            textureBrushGray.WrapMode = WrapMode.Clamp;
+            TextureBrush textureBrushGray = new(bgray)
+            {
+                WrapMode = WrapMode.Clamp
+            };
 
             // Translate the brushes to the correct positions
             Rectangle iconRect = new(8, (Height / 2) - (ICON_SIZE / 2), ICON_SIZE, ICON_SIZE);

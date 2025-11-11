@@ -88,8 +88,8 @@ namespace ReaLTaiizor.Controls
 
         public CrownListView()
         {
-            Items = new ObservableCollection<CrownListItem>();
-            SelectedIndices = new List<int>();
+            Items = [];
+            SelectedIndices = [];
         }
 
         #endregion

@@ -38,8 +38,8 @@ namespace ReaLTaiizor.Controls
                 field = value;
                 Invalidate();
             }
-        } = new()
-        {
+        } =
+        [
             Color.FromArgb(249, 55, 98),
             Color.FromArgb(219, 55, 128),
             Color.FromArgb(193, 58, 151),
@@ -54,7 +54,7 @@ namespace ReaLTaiizor.Controls
             Color.FromArgb(0, 152, 250),
             Color.FromArgb(0, 162, 250),
             Color.FromArgb(0, 150, 212)
-        };
+        ];
 
         public List<int> Numbers
         {
@@ -72,8 +72,8 @@ namespace ReaLTaiizor.Controls
                 }
                 Invalidate();
             }
-        } = new()
-        {
+        } =
+        [
             5,
             10,
             6,
@@ -87,7 +87,7 @@ namespace ReaLTaiizor.Controls
             3,
             4,
             6
-        };
+        ];
 
         protected override void OnPaint(PaintEventArgs e)
         {

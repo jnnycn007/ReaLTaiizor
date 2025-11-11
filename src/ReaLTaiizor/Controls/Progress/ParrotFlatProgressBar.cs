@@ -162,15 +162,15 @@ namespace ReaLTaiizor.Controls
                 field = value;
                 Invalidate();
             }
-        } = new()
-        {
+        } =
+        [
             0f,
             0.2f,
             0.4f,
             0.6f,
             0.8f,
             1f
-        };
+        ];
 
         [Category("Parrot")]
         [Browsable(true)]
@@ -183,15 +183,15 @@ namespace ReaLTaiizor.Controls
                 field = value;
                 Invalidate();
             }
-        } = new()
-        {
+        } =
+        [
             Color.FromArgb(76, 217, 100),
             Color.FromArgb(85, 205, 205),
             Color.FromArgb(2, 124, 255),
             Color.FromArgb(130, 75, 180),
             Color.FromArgb(255, 0, 150),
             Color.FromArgb(255, 45, 85)
-        };
+        ];
 
         [Category("Parrot")]
         [Browsable(true)]

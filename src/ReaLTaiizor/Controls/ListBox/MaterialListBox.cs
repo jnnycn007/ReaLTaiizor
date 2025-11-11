@@ -83,7 +83,7 @@ namespace ReaLTaiizor.Controls
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Content)]
         [Editor(typeof(MaterialItemCollectionEditor), typeof(UITypeEditor))]
         [Category("Material"), Description("Gets the items of the ListBox.")]
-        public ObservableCollection<MaterialListBoxItem> Items { get; } = new ObservableCollection<MaterialListBoxItem>();
+        public ObservableCollection<MaterialListBoxItem> Items { get; } = [];
 
         [Browsable(false)]
         [Category("Material"), Description("Gets a collection containing the currently selected items in the ListBox.")]
@@ -279,8 +279,8 @@ namespace ReaLTaiizor.Controls
             _hoveredItem = -1;
             _showScrollBar = false;
             Items.CollectionChanged += InvalidateScroll;
-            SelectedItems = new List<object>();
-            _indicates = new List<object>();
+            SelectedItems = [];
+            _indicates = [];
             _scrollBar = new MaterialScrollBar()
             {
                 Orientation = MateScrollOrientation.Vertical,

@@ -141,9 +141,9 @@ namespace ReaLTaiizor.Controls
 
         #region Fields
         //Additional variables to be used by HideTab and ShowTab
-        private readonly List<string> tabDisable = new();
-        private readonly List<string> tabOrder = new();
-        private readonly List<HiddenTabs> hidTabs = new();
+        private readonly List<string> tabDisable = [];
+        private readonly List<string> tabOrder = [];
+        private readonly List<HiddenTabs> hidTabs = [];
 
         private SubClass scUpDown = null;
         private bool bUpDown = false;

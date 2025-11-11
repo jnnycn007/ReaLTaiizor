@@ -118,9 +118,11 @@ namespace ReaLTaiizor.Controls
 
             Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, Width, Height, 6, 6));
 
-            _AnimationManager = new AnimationManager();
-            _AnimationManager.AnimationType = AnimationType.EaseOut;
-            _AnimationManager.Increment = 0.03;
+            _AnimationManager = new AnimationManager
+            {
+                AnimationType = AnimationType.EaseOut,
+                Increment = 0.03
+            };
             _AnimationManager.OnAnimationProgress += _AnimationManager_OnAnimationProgress;
 
             _duration.Tick += new EventHandler(duration_Tick);

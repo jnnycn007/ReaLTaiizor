@@ -375,31 +375,31 @@ namespace ReaLTaiizor.Manager
 
         private void EvaluateDicts()
         {
-            ButtonDictionary = new Dictionary<string, object>();
-            DefaultButtonDictionary = new Dictionary<string, object>();
-            LabelDictionary = new Dictionary<string, object>();
-            LinkLabelDictionary = new Dictionary<string, object>();
-            TextBoxDictionary = new Dictionary<string, object>();
-            RichTextBoxDictionary = new Dictionary<string, object>();
-            FormDictionary = new Dictionary<string, object>();
-            BadgeDictionary = new Dictionary<string, object>();
-            DividerDictionary = new Dictionary<string, object>();
-            CheckBoxDictionary = new Dictionary<string, object>();
-            RadioButtonDictionary = new Dictionary<string, object>();
-            SwitchBoxDictionary = new Dictionary<string, object>();
-            ToolTipDictionary = new Dictionary<string, object>();
-            ComboBoxDictionary = new Dictionary<string, object>();
-            NumericDictionary = new Dictionary<string, object>();
-            EllipseDictionary = new Dictionary<string, object>();
-            TileDictionary = new Dictionary<string, object>();
-            ProgressDictionary = new Dictionary<string, object>();
-            ControlBoxDictionary = new Dictionary<string, object>();
-            TabControlDictionary = new Dictionary<string, object>();
-            ScrollBarDictionary = new Dictionary<string, object>();
-            PanelDictionary = new Dictionary<string, object>();
-            TrackBarDictionary = new Dictionary<string, object>();
-            ContextMenuDictionary = new Dictionary<string, object>();
-            ListBoxDictionary = new Dictionary<string, object>();
+            ButtonDictionary = [];
+            DefaultButtonDictionary = [];
+            LabelDictionary = [];
+            LinkLabelDictionary = [];
+            TextBoxDictionary = [];
+            RichTextBoxDictionary = [];
+            FormDictionary = [];
+            BadgeDictionary = [];
+            DividerDictionary = [];
+            CheckBoxDictionary = [];
+            RadioButtonDictionary = [];
+            SwitchBoxDictionary = [];
+            ToolTipDictionary = [];
+            ComboBoxDictionary = [];
+            NumericDictionary = [];
+            EllipseDictionary = [];
+            TileDictionary = [];
+            ProgressDictionary = [];
+            ControlBoxDictionary = [];
+            TabControlDictionary = [];
+            ScrollBarDictionary = [];
+            PanelDictionary = [];
+            TrackBarDictionary = [];
+            ContextMenuDictionary = [];
+            ListBoxDictionary = [];
         }
 
         #endregion
@@ -466,7 +466,7 @@ namespace ReaLTaiizor.Manager
         {
             try
             {
-                Dictionary<string, object> dict = new();
+                Dictionary<string, object> dict = [];
                 XmlDocument doc = new();
                 if (File.Exists(path))
                 {
@@ -489,7 +489,7 @@ namespace ReaLTaiizor.Manager
             }
             catch
             {
-                return new();
+                return [];
             }
         }
 

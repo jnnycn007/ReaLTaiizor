@@ -692,12 +692,12 @@ namespace ReaLTaiizor.Util
             }
         }
 
-        private readonly Dictionary<string, Color> Items = new();
+        private readonly Dictionary<string, Color> Items = [];
         public BloomSpace[] Colors
         {
             get
             {
-                List<BloomSpace> T = new();
+                List<BloomSpace> T = [];
                 Dictionary<string, Color>.Enumerator E = Items.GetEnumerator();
 
                 while (E.MoveNext())
@@ -1753,12 +1753,12 @@ namespace ReaLTaiizor.Util
             }
         }
 
-        private readonly Dictionary<string, Color> Items = new();
+        private readonly Dictionary<string, Color> Items = [];
         public BloomSpace[] Colors
         {
             get
             {
-                List<BloomSpace> T = new();
+                List<BloomSpace> T = [];
                 Dictionary<string, Color>.Enumerator E = Items.GetEnumerator();
 
                 while (E.MoveNext())
@@ -2432,7 +2432,7 @@ namespace ReaLTaiizor.Util
         private const int Rate = 10;
 
         public delegate void AnimationDelegate(bool invalidate);
-        private static readonly List<AnimationDelegate> Callbacks = new();
+        private static readonly List<AnimationDelegate> Callbacks = [];
 
         private static void HandleCallbacks(IntPtr state, bool reserve)
         {

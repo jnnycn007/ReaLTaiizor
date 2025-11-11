@@ -153,11 +153,17 @@ namespace ReaLTaiizor.Forms
             get;
             set
             {
-                if (field == value) return;
+                if (field == value)
+                {
+                    return;
+                }
 
                 field = value;
 
-                if (drawerControl == null) return;
+                if (drawerControl == null)
+                {
+                    return;
+                }
 
                 drawerControl.UsePreProcessIcons = value;
                 drawerControl.Refresh();

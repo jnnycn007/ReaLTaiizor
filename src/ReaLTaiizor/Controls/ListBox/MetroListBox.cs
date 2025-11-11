@@ -124,10 +124,10 @@ namespace ReaLTaiizor.Controls
             SelectedIndex = -1;
             _hoveredItem = -1;
             _showScrollBar = false;
-            Items = new MetroItemCollection();
+            Items = [];
             Items.ItemUpdated += InvalidateScroll;
-            SelectedItems = new List<object>();
-            _indicates = new List<object>();
+            SelectedItems = [];
+            _indicates = [];
             ItemHeight = 30;
             _multiKeyDown = false;
             _svs = new MetroScrollBar()

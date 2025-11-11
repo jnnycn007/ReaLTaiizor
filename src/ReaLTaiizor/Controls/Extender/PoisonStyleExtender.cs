@@ -76,7 +76,7 @@ namespace ReaLTaiizor.Controls
 
         #region Fields
 
-        private readonly List<Control> extendedControls = new();
+        private readonly List<Control> extendedControls = [];
 
         #endregion
 

@@ -76,8 +76,8 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            List<Point> list = new();
-            List<PointF> list2 = new();
+            List<Point> list = [];
+            List<PointF> list2 = [];
             list.Add(new Point(0, base.Height / 10 * 5));
             list.Add(new Point(base.Height / 10, base.Height / 10 * 4));
             list.Add(new Point(base.Height / 10 * 2, base.Height / 10 * 3));

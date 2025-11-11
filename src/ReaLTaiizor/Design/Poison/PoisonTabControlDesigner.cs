@@ -19,7 +19,7 @@ namespace ReaLTaiizor.Design.Poison
     {
         #region Fields
 
-        private readonly DesignerVerbCollection designerVerbs = new();
+        private readonly DesignerVerbCollection designerVerbs = [];
 
         public override SelectionRules SelectionRules => Control.Dock == DockStyle.Fill ? SelectionRules.Visible : base.SelectionRules;
         public override DesignerVerbCollection Verbs

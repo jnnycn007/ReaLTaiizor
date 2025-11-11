@@ -60,12 +60,12 @@ namespace ReaLTaiizor.Controls
 
         protected void DrawTriangle(Color Clr, Point FirstPoint, Point SecondPoint, Point ThirdPoint, Graphics G)
         {
-            List<Point> points = new()
-            {
+            List<Point> points =
+            [
                 FirstPoint,
                 SecondPoint,
                 ThirdPoint
-            };
+            ];
             G.FillPolygon(new SolidBrush(Clr), points.ToArray());
         }
 

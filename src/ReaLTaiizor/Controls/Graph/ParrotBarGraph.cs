@@ -203,7 +203,7 @@ namespace ReaLTaiizor.Controls
                 {
                     e.Graphics.FillRectangle(new SolidBrush(UnfilledColor), 0, 0, base.Width, base.Height);
 
-                    List<int> list = new();
+                    List<int> list = [];
 
                     if (Sorting == SortStyle.Normal)
                     {
@@ -338,7 +338,7 @@ namespace ReaLTaiizor.Controls
                 {
                     e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(40, 40, 40)), 0, 0, base.Width, base.Height);
 
-                    List<int> list2 = new();
+                    List<int> list2 = [];
 
                     if (Sorting == SortStyle.Normal)
                     {
@@ -361,8 +361,8 @@ namespace ReaLTaiizor.Controls
 
                     int num6 = 0;
 
-                    List<Color> list3 = new()
-                    {
+                    List<Color> list3 =
+                    [
                         Color.FromArgb(249, 55, 98),
                         Color.FromArgb(219, 55, 128),
                         Color.FromArgb(193, 58, 151),
@@ -377,7 +377,7 @@ namespace ReaLTaiizor.Controls
                         Color.FromArgb(0, 152, 250),
                         Color.FromArgb(0, 162, 250),
                         Color.FromArgb(0, 150, 212)
-                    };
+                    ];
 
                     int num7 = 0;
 
@@ -456,7 +456,7 @@ namespace ReaLTaiizor.Controls
                 {
                     e.Graphics.FillRectangle(new SolidBrush(Color.FromArgb(35, 40, 50)), 0, 0, base.Width, base.Height);
 
-                    List<int> list4 = new();
+                    List<int> list4 = [];
 
                     if (Sorting == SortStyle.Normal)
                     {
@@ -559,7 +559,7 @@ namespace ReaLTaiizor.Controls
             base.OnPaint(e);
         }
 
-        private List<int> items = new();
+        private List<int> items = [];
 
         public enum SortStyle
         {

@@ -445,7 +445,7 @@ namespace ReaLTaiizor.Controls
 
         private void UpdateTabRects()
         {
-            _tabRects = new List<Rectangle>();
+            _tabRects = [];
 
             //If there isn't a base tab control, the rects shouldn't be calculated
             //If there aren't tab pages in the base tab control, the list should just be empty which has been set already; exit the void

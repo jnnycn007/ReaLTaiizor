@@ -678,7 +678,7 @@ namespace ReaLTaiizor.Forms
         {
             if (windowButtonList == null)
             {
-                windowButtonList = new Dictionary<WindowButtons, PoisonFormButton>();
+                windowButtonList = [];
             }
 
             if (windowButtonList.ContainsKey(button))

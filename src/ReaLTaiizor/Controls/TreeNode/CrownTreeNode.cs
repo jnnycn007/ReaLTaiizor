@@ -180,7 +180,7 @@ namespace ReaLTaiizor.Controls
 
         public CrownTreeNode()
         {
-            Nodes = new ObservableList<CrownTreeNode>();
+            Nodes = [];
         }
 
         public CrownTreeNode(string text) : this()

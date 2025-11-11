@@ -902,8 +902,8 @@ namespace ReaLTaiizor.Controls
             //or if there aren't tab pages in the base tab control, the list should just be empty
             if (ShowTabControl == null || ShowTabControl.TabCount == 0 || SkinManager == null || _drawerItemRects == null)
             {
-                _drawerItemRects = new List<Rectangle>();
-                _drawerItemPaths = new List<GraphicsPath>();
+                _drawerItemRects = [];
+                _drawerItemPaths = [];
                 return;
             }
 

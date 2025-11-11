@@ -146,8 +146,8 @@ namespace ReaLTaiizor.Controls
 
         public CrownTreeView()
         {
-            Nodes = new ObservableList<CrownTreeNode>();
-            SelectedNodes = new ObservableCollection<CrownTreeNode>();
+            Nodes = [];
+            SelectedNodes = [];
             SelectedNodes.CollectionChanged += SelectedNodes_CollectionChanged;
 
             MaxDragChange = ItemHeight;
@@ -911,7 +911,7 @@ namespace ReaLTaiizor.Controls
 
         public void SelectNodes(CrownTreeNode startNode, CrownTreeNode endNode)
         {
-            List<CrownTreeNode> nodes = new();
+            List<CrownTreeNode> nodes = [];
 
             if (startNode == endNode)
             {
@@ -1159,11 +1159,7 @@ namespace ReaLTaiizor.Controls
             }
 
             // Create initial list of nodes to drag
-            _dragNodes = new List<CrownTreeNode>();
-            foreach (CrownTreeNode node in SelectedNodes)
-            {
-                _dragNodes.Add(node);
-            }
+            _dragNodes = [.. SelectedNodes];
 
             // Clear out any nodes with a parent that is being dragged
             foreach (CrownTreeNode node in _dragNodes.ToList())

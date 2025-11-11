@@ -233,10 +233,10 @@ namespace ReaLTaiizor.Controls
 
         private void CalculateRectangles()
         {
-            DateRectangles = new List<List<Util.HopeBase.DateRectHopeBase>>();
+            DateRectangles = [];
             for (int i = 0; i < 7; i++)
             {
-                DateRectangles.Add(new List<Util.HopeBase.DateRectHopeBase>());
+                DateRectangles.Add([]);
                 for (int j = 0; j < 7; j++)
                 {
                     DateRectangles[i].Add(new Util.HopeBase.DateRectHopeBase(new RectangleF(10 + (j * (Width - 20) / 7), WeekRect.Y + WeekRect.Height + (i * DateRectDefaultSize), DateRectDefaultSize, DateRectDefaultSize)));

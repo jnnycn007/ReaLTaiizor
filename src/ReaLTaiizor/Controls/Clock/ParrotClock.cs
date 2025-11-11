@@ -317,8 +317,8 @@ namespace ReaLTaiizor.Controls
 
             if (ShowHexagon)
             {
-                List<Point> list = new()
-                {
+                List<Point> list =
+                [
                     new Point(0, Height / 4),
                     new Point(Width / 2, 0),
                     new Point(Width, Height / 4),
@@ -326,7 +326,7 @@ namespace ReaLTaiizor.Controls
                     new Point(Width / 2, Height),
                     new Point(0, Height / 4 * 3),
                     new Point(0, Height / 4)
-                };
+                ];
                 bufferedGraphics.Graphics.FillPolygon(new SolidBrush(HexagonColor), list.ToArray());
             }
 
