@@ -63,7 +63,7 @@ Changes are detailed at https://github.com/Taiizor/ReaLTaiizor/releases</Package
     </PropertyGroup>
 
     <ItemGroup Condition="'$(Configuration)|$(Platform)' == 'GitHub|AnyCPU'">
-        <PackageReference Include="System.Resources.Extensions" Version="9.0.10" />
+        <PackageReference Include="System.Resources.Extensions" Version="9.0.11" />
     </ItemGroup>
 
     <ItemGroup>
