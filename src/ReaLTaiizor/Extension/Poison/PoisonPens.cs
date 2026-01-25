@@ -53,6 +53,8 @@ namespace ReaLTaiizor.Extension.Poison
         public static Pen Red => GetSavePen("Red", PoisonColors.Red);
 
         public static Pen Yellow => GetSavePen("Yellow", PoisonColors.Yellow);
+
+        public static Pen Custom => GetSavePen("Custom", PoisonColors.Custom);
     }
 
     #endregion

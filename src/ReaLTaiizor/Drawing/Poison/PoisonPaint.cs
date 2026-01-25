@@ -854,6 +854,7 @@ namespace ReaLTaiizor.Drawing.Poison
                 ColorStyle.Purple => PoisonColors.Purple,
                 ColorStyle.Red => PoisonColors.Red,
                 ColorStyle.Yellow => PoisonColors.Yellow,
+                ColorStyle.Custom => PoisonColors.Custom,
                 _ => PoisonColors.Blue,
             };
         }
@@ -876,6 +877,7 @@ namespace ReaLTaiizor.Drawing.Poison
                 ColorStyle.Purple => PoisonBrushes.Purple,
                 ColorStyle.Red => PoisonBrushes.Red,
                 ColorStyle.Yellow => PoisonBrushes.Yellow,
+                ColorStyle.Custom => PoisonBrushes.Custom,
                 _ => PoisonBrushes.Blue,
             };
         }
@@ -898,6 +900,7 @@ namespace ReaLTaiizor.Drawing.Poison
                 ColorStyle.Purple => PoisonPens.Purple,
                 ColorStyle.Red => PoisonPens.Red,
                 ColorStyle.Yellow => PoisonPens.Yellow,
+                ColorStyle.Custom => PoisonPens.Custom,
                 _ => PoisonPens.Blue,
             };
         }
