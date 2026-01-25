@@ -135,7 +135,6 @@ namespace ReaLTaiizor.Controls
         private readonly Timer timer;
         private int progress;
         private float angle = 270;
-        private int lineWidthRatio = 5;
 
         [DefaultValue(true)]
         [Category(PoisonDefaults.PropertyCategory.Behaviour)]
@@ -144,25 +143,6 @@ namespace ReaLTaiizor.Controls
             get => timer.Enabled;
             set => timer.Enabled = value;
         }
-
-        
-
-        [DefaultValue(5)]
-        public int LineWidthRatio
-        {
-            get => lineWidthRatio;
-            set
-            {
-                if (value < 0)
-                {
-                    throw new ArgumentOutOfRangeException("Progress value must be a number more than zero.", (Exception)null);
-                }
-
-                progress = value;
-                Refresh();
-            }
-        }
-
 
         [DefaultValue(0)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
@@ -386,7 +366,7 @@ namespace ReaLTaiizor.Controls
                 }
             }
 
-            using (Pen forePen = new(foreColor, (float)Width / lineWidthRatio))
+            using (Pen forePen = new(foreColor, (float)Width / 5))
             {
                 int padding = (int)Math.Ceiling((float)Width / 10);
 
