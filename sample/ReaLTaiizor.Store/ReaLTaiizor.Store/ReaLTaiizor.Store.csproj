@@ -27,7 +27,7 @@
         <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="10.0.2" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="ReaLTaiizor" Version="3.8.1.4" />
+        <PackageReference Include="ReaLTaiizor" Version="3.8.1.5" />
     </ItemGroup>
     <ItemGroup>
         <Compile Update="Properties\Resources.Designer.cs">
