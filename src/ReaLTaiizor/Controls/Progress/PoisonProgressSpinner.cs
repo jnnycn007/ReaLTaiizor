@@ -132,10 +132,9 @@ namespace ReaLTaiizor.Controls
 
         #region Fields
 
-        private readonly Timer timer;
         private int progress;
         private float angle = 270;
-        private int lineWidthRatio;
+        private readonly Timer timer;
 
         [DefaultValue(true)]
         [Category(PoisonDefaults.PropertyCategory.Behaviour)]
@@ -146,9 +145,10 @@ namespace ReaLTaiizor.Controls
         }
 
         [DefaultValue(5)]
+        [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public int LineWidthRatio
         {
-            get => lineWidthRatio;
+            get;
             set
             {
                 if (value < 0)
@@ -156,10 +156,10 @@ namespace ReaLTaiizor.Controls
                     throw new ArgumentOutOfRangeException("Progress value must be a number more than zero.", (Exception)null);
                 }
 
-                lineWidthRatio = value;
+                field = value;
                 Refresh();
             }
-        }
+        } = 5;
 
         [DefaultValue(0)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
@@ -383,7 +383,7 @@ namespace ReaLTaiizor.Controls
                 }
             }
 
-            using (Pen forePen = new(foreColor, (float)Width / lineWidthRatio))
+            using (Pen forePen = new(foreColor, (float)Width / LineWidthRatio))
             {
                 int padding = (int)Math.Ceiling((float)Width / 10);
 
