@@ -145,8 +145,6 @@ namespace ReaLTaiizor.Controls
             set => timer.Enabled = value;
         }
 
-
-
         [DefaultValue(5)]
         public int LineWidthRatio
         {
@@ -162,7 +160,6 @@ namespace ReaLTaiizor.Controls
                 Refresh();
             }
         }
-
 
         [DefaultValue(0)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
