@@ -169,8 +169,70 @@ namespace ReaLTaiizor.Controls
 
         private double ProgressBarWidth => (double)Value / Maximum * ClientRectangle.Width;
 
-        private int ProgressBarMarqueeWidth => ClientRectangle.Width / 3;
+        /// <summary>
+        /// Set to 0 if you want to apply default width.
+        /// </summary>
+        [DefaultValue(0)]
+        [Category(PoisonDefaults.PropertyCategory.Appearance)]
+        public int ProgressBarMarqueeWidth
+        {
+            get => field == 0 ? ClientRectangle.Width / 3 : field;
+            set
+            {
+                if (value < 0) throw new ArgumentOutOfRangeException("ProgressBarMarqueeWidth must be a number more than zero.", (Exception)null);
+                field = value;
+            }
+        } = 0;
 
+        [DefaultValue(100)]
+        public int MarqueeFPS 
+        { 
+            get; 
+            set
+            {
+                if (value <= 0) throw new ArgumentOutOfRangeException("MarqueeFPS must be a number more than zero.", (Exception)null);
+                field = value;
+                if (marqueeTimer != null)
+                {
+                    marqueeTimer.Interval = 1000 / value;
+                }
+            }
+        } = 100;
+
+        /// <summary>
+        /// Same usage as Winforms originally included.
+        /// </summary>
+        [DefaultValue(100)]
+        public new int MarqueeAnimationSpeed 
+        { 
+            get; 
+            set
+            {
+                if (value <= 0) throw new ArgumentOutOfRangeException("MarqueeAnimationSpeed value must be a number more than zero.", (Exception)null);
+                field = value;
+            }
+        } = 100;
+
+        /// <summary>
+        /// If enabled, the marquee will change its speed like a material design ProgressBar like.
+        /// </summary>
+        [DefaultValue(false)]
+        [Category(PoisonDefaults.PropertyCategory.Appearance)]
+        public bool EnableMaterialMarqueeStyleSpeed { get; set; } = false;
+
+        /// <summary>
+        /// Indicates the ratio material design ProgressBar will speed up.
+        /// </summary>
+        [DefaultValue(3)]
+        public int MaterialStyleMarqueeSpeedRatio
+        {
+            get;
+            set
+            {
+                if (value <= 0) throw new ArgumentOutOfRangeException("MaterialStyleSpeedRatio value must be a number more than zero.", (Exception)null);
+                field = value;
+            }
+        } = 3;
         #endregion
 
         #region Constructor
@@ -302,7 +364,7 @@ namespace ReaLTaiizor.Controls
             graphics.FillRectangle(PoisonPaint.GetStyleBrush(Style), 0, 0, (int)ProgressBarWidth, ClientRectangle.Height);
         }
 
-        private int marqueeX = 0;
+        private float marqueeX = 0;
 
         private void DrawProgressMarquee(Graphics graphics)
         {
@@ -364,7 +426,7 @@ namespace ReaLTaiizor.Controls
 
             if (marqueeTimer == null)
             {
-                marqueeTimer = new Timer { Interval = 10 };
+                marqueeTimer = new Timer { Interval = 1000 / MarqueeFPS };
                 marqueeTimer.Tick += marqueeTimer_Tick;
             }
 
@@ -390,13 +452,28 @@ namespace ReaLTaiizor.Controls
             Invalidate();
         }
 
+        private bool materialEffectFlag = true;
         private void marqueeTimer_Tick(object sender, EventArgs e)
         {
-            marqueeX++;
+
+            marqueeX += (ClientRectangle.Width + ProgressBarMarqueeWidth) / (MarqueeAnimationSpeed * MarqueeFPS / 100F); 
+            // Here 100F is 1000/10, 'cause we need to support original anime users we keep a *10 ratio here.
 
             if (marqueeX > ClientRectangle.Width)
             {
                 marqueeX = -ProgressBarMarqueeWidth;
+                if (EnableMaterialMarqueeStyleSpeed)// Once fast, once slow
+                {
+                    if (materialEffectFlag)
+                    {
+                        MarqueeAnimationSpeed *= MaterialStyleMarqueeSpeedRatio;
+                    }
+                    else
+                    {
+                        MarqueeAnimationSpeed /= MaterialStyleMarqueeSpeedRatio;
+                    }
+                    materialEffectFlag = !materialEffectFlag;
+                }
             }
 
             Invalidate();
