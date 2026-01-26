@@ -124,7 +124,8 @@ namespace ReaLTaiizor.Controls
             if (e.Y > pictureBox3.Height || e.Y < 0)
             {
                 return;
-            } ((ValueBox)pictureBox3.Tag).Value = (float)(pictureBox3.Height - e.Y) / pictureBox3.Height;
+            }
+            ((ValueBox)pictureBox3.Tag).Value = (float)(pictureBox3.Height - e.Y) / pictureBox3.Height;
             PickColor(((PointF)pictureBox1.Tag).X, ((PointF)pictureBox1.Tag).Y);
         }
 
@@ -135,7 +136,8 @@ namespace ReaLTaiizor.Controls
                 if (e.Y > pictureBox3.Height || e.Y < 0)
                 {
                     return;
-                } ((ValueBox)pictureBox3.Tag).Value = (float)(pictureBox3.Height - e.Y) / pictureBox3.Height;
+                }
+                ((ValueBox)pictureBox3.Tag).Value = (float)(pictureBox3.Height - e.Y) / pictureBox3.Height;
                 PickColor(((PointF)pictureBox1.Tag).X, ((PointF)pictureBox1.Tag).Y);
             }
         }
