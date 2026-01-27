@@ -13,6 +13,7 @@ using System.Drawing.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using static ReaLTaiizor.Util.MaterialNativeTextRenderer;
 
 #endregion
 
@@ -297,23 +298,28 @@ namespace ReaLTaiizor.Manager
 
         public Font GetFontByType(FontType type)
         {
+            return GetFontByType(type, 1);
+        }
+
+        public Font GetFontByType(FontType type, float scaleRatio)
+        {
             return type switch
             {
-                FontType.H1 => new Font(RobotoFontFamilies["Roboto_Light"], 96f, FontStyle.Regular, GraphicsUnit.Pixel),
-                FontType.H2 => new Font(RobotoFontFamilies["Roboto_Light"], 60f, FontStyle.Regular, GraphicsUnit.Pixel),
-                FontType.H3 => new Font(RobotoFontFamilies["Roboto"], 48f, FontStyle.Bold, GraphicsUnit.Pixel),
-                FontType.H4 => new Font(RobotoFontFamilies["Roboto"], 34f, FontStyle.Bold, GraphicsUnit.Pixel),
-                FontType.H5 => new Font(RobotoFontFamilies["Roboto"], 24f, FontStyle.Bold, GraphicsUnit.Pixel),
-                FontType.H6 => new Font(RobotoFontFamilies["Roboto_Medium"], 20f, FontStyle.Bold, GraphicsUnit.Pixel),
-                FontType.Subtitle1 => new Font(RobotoFontFamilies["Roboto"], 16f, FontStyle.Regular, GraphicsUnit.Pixel),
-                FontType.Subtitle2 => new Font(RobotoFontFamilies["Roboto_Medium"], 14f, FontStyle.Bold, GraphicsUnit.Pixel),
-                FontType.SubtleEmphasis => new Font(RobotoFontFamilies["Roboto"], 12f, FontStyle.Italic, GraphicsUnit.Pixel),
-                FontType.Body1 => new Font(RobotoFontFamilies["Roboto"], 14f, FontStyle.Regular, GraphicsUnit.Pixel),
-                FontType.Body2 => new Font(RobotoFontFamilies["Roboto"], 12f, FontStyle.Regular, GraphicsUnit.Pixel),
-                FontType.Button => new Font(RobotoFontFamilies["Roboto"], 14f, FontStyle.Bold, GraphicsUnit.Pixel),
-                FontType.Caption => new Font(RobotoFontFamilies["Roboto"], 12f, FontStyle.Regular, GraphicsUnit.Pixel),
-                FontType.Overline => new Font(RobotoFontFamilies["Roboto"], 10f, FontStyle.Regular, GraphicsUnit.Pixel),
-                _ => new Font(RobotoFontFamilies["Roboto"], 14f, FontStyle.Regular, GraphicsUnit.Pixel),
+                FontType.H1 => new Font(RobotoFontFamilies["Roboto_Light"], 96f * scaleRatio, FontStyle.Regular, GraphicsUnit.Pixel),
+                FontType.H2 => new Font(RobotoFontFamilies["Roboto_Light"], 60f * scaleRatio, FontStyle.Regular, GraphicsUnit.Pixel),
+                FontType.H3 => new Font(RobotoFontFamilies["Roboto"], 48f * scaleRatio, FontStyle.Bold, GraphicsUnit.Pixel),
+                FontType.H4 => new Font(RobotoFontFamilies["Roboto"], 34f * scaleRatio, FontStyle.Bold, GraphicsUnit.Pixel),
+                FontType.H5 => new Font(RobotoFontFamilies["Roboto"], 24f * scaleRatio, FontStyle.Bold, GraphicsUnit.Pixel),
+                FontType.H6 => new Font(RobotoFontFamilies["Roboto_Medium"], 20f * scaleRatio, FontStyle.Bold, GraphicsUnit.Pixel),
+                FontType.Subtitle1 => new Font(RobotoFontFamilies["Roboto"], 16f * scaleRatio, FontStyle.Regular, GraphicsUnit.Pixel),
+                FontType.Subtitle2 => new Font(RobotoFontFamilies["Roboto_Medium"], 14f * scaleRatio, FontStyle.Bold, GraphicsUnit.Pixel),
+                FontType.SubtleEmphasis => new Font(RobotoFontFamilies["Roboto"], 12f * scaleRatio, FontStyle.Italic, GraphicsUnit.Pixel),
+                FontType.Body1 => new Font(RobotoFontFamilies["Roboto"], 14f * scaleRatio, FontStyle.Regular, GraphicsUnit.Pixel),
+                FontType.Body2 => new Font(RobotoFontFamilies["Roboto"], 12f * scaleRatio, FontStyle.Regular, GraphicsUnit.Pixel),
+                FontType.Button => new Font(RobotoFontFamilies["Roboto"], 14f * scaleRatio, FontStyle.Bold, GraphicsUnit.Pixel),
+                FontType.Caption => new Font(RobotoFontFamilies["Roboto"], 12f * scaleRatio, FontStyle.Regular, GraphicsUnit.Pixel),
+                FontType.Overline => new Font(RobotoFontFamilies["Roboto"], 10f * scaleRatio, FontStyle.Regular, GraphicsUnit.Pixel),
+                _ => new Font(RobotoFontFamilies["Roboto"], 14f * scaleRatio, FontStyle.Regular, GraphicsUnit.Pixel),
             };
         }
 
@@ -328,12 +334,30 @@ namespace ReaLTaiizor.Manager
             return logicalFonts[System.Enum.GetName(typeof(FontType), type)];
         }
 
+        public IntPtr GetLogFontByType(FontType type, float scaleRatio)
+        {
+            var hOriginalFont = logicalFonts[System.Enum.GetName(typeof(FontType), type)];
+            if (scaleRatio == 1) return hOriginalFont;
+            LogFont lf = new LogFont();
+            if (GetObject(hOriginalFont, Marshal.SizeOf(lf), lf) == 0)
+            {
+                return IntPtr.Zero; // Failed fetching handle
+            }
+            return createLogicalFont(lf.lfFaceName, (int)(-lf.lfHeight * scaleRatio), (logFontWeight)System.Enum.ToObject(MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM.GetType(),lf.lfWeight), lfItalic:lf.lfItalic);
+            
+        }
+        
         // Font stuff
         private Dictionary<string, IntPtr> logicalFonts;
 
         private Dictionary<string, FontFamily> RobotoFontFamilies;
 
         private PrivateFontCollection privateFontCollection = new();
+
+        [DllImport("gdi32.dll", CharSet = CharSet.Auto)]
+        public static extern int GetObject(IntPtr hFont, int nSize, [In, Out] LogFont lf);
+
+        
 
         private void addFont(byte[] fontdata)
         {

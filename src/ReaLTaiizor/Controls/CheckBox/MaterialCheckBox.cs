@@ -71,12 +71,12 @@ namespace ReaLTaiizor.Controls
         private readonly AnimationManager _rippleAM;
         private readonly AnimationManager _hoverAM;
         private const int HEIGHT_RIPPLE = 37;
-        private const int HEIGHT_NO_RIPPLE = 20;
+        private const int HEIGHT_NO_RIPPLE = 40;
         private const int TEXT_OFFSET = 26;
         private const int CHECKBOX_SIZE = 18;
         private const int CHECKBOX_SIZE_HALF = CHECKBOX_SIZE / 2;
         private int _boxOffset;
-        private static readonly Point[] CheckmarkLine = { new(3, 8), new(7, 12), new(14, 5) };
+        private static Point[] CheckmarkLine;
         private bool hovered = false;
         private CheckState _oldCheckState;
         #endregion
@@ -112,17 +112,48 @@ namespace ReaLTaiizor.Controls
             _rippleAM.OnAnimationProgress += sender => Invalidate();
 
             Ripple = true;
-            Height = HEIGHT_RIPPLE;
+            Height = (int)(HEIGHT_RIPPLE * GetDeviceScaleFactor());
             MouseLocation = new Point(-1, -1);
         }
         #endregion
 
         #region Overridden events
+        private bool _resizing = false;
         protected override void OnSizeChanged(EventArgs e)
         {
-            base.OnSizeChanged(e);
+            if (_resizing)
+            {
+                base.OnSizeChanged(e);
+                return;
+            }
 
-            _boxOffset = (HEIGHT_RIPPLE / 2) - 9;
+            _resizing = true;
+            Width = (int)(Width * GetDeviceScaleFactor());
+            base.OnSizeChanged(e);
+            
+            _boxOffset = ((int)(HEIGHT_RIPPLE * GetDeviceScaleFactor()) / 2) - (int)(9 * GetDeviceScaleFactor());
+        }
+
+        protected override void OnTextChanged(EventArgs e)
+        {
+            base.OnTextChanged(e);
+            if (AutoSize)
+            {
+                Size = GetPreferredSize(Size.Empty);
+                PerformLayout();
+                Invalidate();
+            }
+        }
+
+        protected override void OnFontChanged(EventArgs e)
+        {
+            base.OnFontChanged(e);
+            if (AutoSize)
+            {
+                Size = GetPreferredSize(Size.Empty);
+                PerformLayout();
+                Invalidate();
+            }
         }
 
         public override Size GetPreferredSize(Size proposedSize)
@@ -134,8 +165,12 @@ namespace ReaLTaiizor.Controls
                 strSize = NativeText.MeasureLogString(Text, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1));
             }
 
-            int w = _boxOffset + TEXT_OFFSET + strSize.Width;
-            return Ripple ? new Size(w, HEIGHT_RIPPLE) : new Size(w, HEIGHT_NO_RIPPLE);
+            float scale = GetDeviceScaleFactor();
+            int boxOffsetLocal = ((int)(HEIGHT_RIPPLE * scale) / 2) - (int)(9 * scale);
+
+            int w = boxOffsetLocal + (int)(TEXT_OFFSET * scale) + strSize.Width;
+            int h = Ripple ? (int)(HEIGHT_RIPPLE * scale) : (int)(HEIGHT_NO_RIPPLE * scale);
+            return new Size(w, h);
         }
 
         protected override void OnPaint(PaintEventArgs pevent)
@@ -147,13 +182,13 @@ namespace ReaLTaiizor.Controls
             // clear the control
             g.Clear(Parent.BackColor == Color.Transparent ? ((Parent.Parent == null || (Parent.Parent != null && Parent.Parent.BackColor == Color.Transparent)) ? SkinManager.BackgroundColor : Parent.Parent.BackColor) : Parent.BackColor);
 
-            int CHECKBOX_CENTER = _boxOffset + CHECKBOX_SIZE_HALF - 1;
+            int CHECKBOX_CENTER = _boxOffset + (int)(CHECKBOX_SIZE_HALF * GetDeviceScaleFactor()) - 1;
             Point animationSource = new(CHECKBOX_CENTER, CHECKBOX_CENTER);
             double animationProgress = _checkAM.GetProgress();
 
             int colorAlpha = Enabled ? (int)(animationProgress * 255.0) : SkinManager.CheckBoxOffDisabledColor.A;
             int backgroundAlpha = Enabled ? (int)(SkinManager.CheckboxOffColor.A * (1.0 - animationProgress)) : SkinManager.CheckBoxOffDisabledColor.A;
-            int rippleHeight = (HEIGHT_RIPPLE % 2 == 0) ? HEIGHT_RIPPLE - 3 : HEIGHT_RIPPLE - 2;
+            int rippleHeight = ((int)(HEIGHT_RIPPLE * GetDeviceScaleFactor()) % 2 == 0) ? (int)(HEIGHT_RIPPLE * GetDeviceScaleFactor()) - 3 : (int)(HEIGHT_RIPPLE * GetDeviceScaleFactor()) - 2;
 
             SolidBrush brush = new(Color.FromArgb(colorAlpha, Enabled ? UseAccentColor ? SkinManager.ColorScheme.AccentColor : SkinManager.ColorScheme.PrimaryColor : SkinManager.CheckBoxOffDisabledColor));
             Pen pen = new(brush.Color, 2);
@@ -182,8 +217,8 @@ namespace ReaLTaiizor.Controls
                 }
             }
 
-            Rectangle checkMarkLineFill = new(_boxOffset, _boxOffset, (int)(CHECKBOX_SIZE * animationProgress), CHECKBOX_SIZE);
-            using (GraphicsPath checkmarkPath = CreateRoundRect(_boxOffset - 0.5f, _boxOffset - 0.5f, CHECKBOX_SIZE, CHECKBOX_SIZE, 1))
+            Rectangle checkMarkLineFill = new(_boxOffset, _boxOffset, (int)((int)(CHECKBOX_SIZE * GetDeviceScaleFactor()) * animationProgress), (int)(CHECKBOX_SIZE * GetDeviceScaleFactor()));
+            using (GraphicsPath checkmarkPath = CreateRoundRect(_boxOffset - 0.5f, _boxOffset - 0.5f, (int)(CHECKBOX_SIZE * GetDeviceScaleFactor()), (int)(CHECKBOX_SIZE * GetDeviceScaleFactor()), 1))
             {
                 if (Enabled)
                 {
@@ -213,8 +248,8 @@ namespace ReaLTaiizor.Controls
             // draw checkbox text
             using (MaterialNativeTextRenderer NativeText = new(g))
             {
-                Rectangle textLocation = new(_boxOffset + TEXT_OFFSET, 0, Width - (_boxOffset + TEXT_OFFSET), HEIGHT_RIPPLE);
-                NativeText.DrawTransparentText(Text, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1),
+                Rectangle textLocation = new(_boxOffset + (int)(TEXT_OFFSET * GetDeviceScaleFactor()), (int)(GetDeviceScaleFactor()), Width - (_boxOffset + (int)(TEXT_OFFSET * GetDeviceScaleFactor())), (int)(HEIGHT_RIPPLE * GetDeviceScaleFactor()));
+                NativeText.DrawTransparentText(Text, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1, GetDeviceScaleFactor()),
                     Enabled ? SkinManager.TextHighEmphasisColor : SkinManager.TextDisabledOrHintColor,
                     textLocation.Location,
                     textLocation.Size,
@@ -234,7 +269,7 @@ namespace ReaLTaiizor.Controls
                 base.AutoSize = value;
                 if (value)
                 {
-                    Size = new Size(10, 10);
+                    Size = GetPreferredSize(Size.Empty);
                 }
             }
         }
@@ -354,13 +389,32 @@ namespace ReaLTaiizor.Controls
         #endregion
 
         #region Private events and methods
+        private float GetDeviceScaleFactor()
+        {
+            // 96 is Windows default scaling DPI（100% scale）
+            float scalingFactor = (float)this.DeviceDpi / 96f;
+            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
+            // Buttons are not included in sqrt controls.
+            return scalingFactor;
+        }
+
+        private float GetDeviceScaleFactorSqrt()
+        {
+            // 96 is Windows default scaling DPI（100% scale）
+            float scalingFactor = (float)Math.Sqrt((float)this.DeviceDpi / 96f);
+            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
+            return scalingFactor;
+        }
+
         private Bitmap DrawCheckMarkBitmap()
         {
-            Bitmap checkMark = new(CHECKBOX_SIZE, CHECKBOX_SIZE);
+            Bitmap checkMark = new((int)(CHECKBOX_SIZE * GetDeviceScaleFactor()), (int)(CHECKBOX_SIZE * GetDeviceScaleFactor()));
             Graphics g = Graphics.FromImage(checkMark);
 
             // clear everything, transparent
             g.Clear(Color.Transparent);
+
+            CheckmarkLine = [new((int)(3 * GetDeviceScaleFactor()), (int)(8 * GetDeviceScaleFactor())), new((int)(7 * GetDeviceScaleFactor()), (int)(12 * GetDeviceScaleFactor())), new((int)(14 * GetDeviceScaleFactor()), (int)(5 * GetDeviceScaleFactor()))];
 
             // draw the checkmark lines
             using (Pen pen = new(Parent.BackColor, 2))
