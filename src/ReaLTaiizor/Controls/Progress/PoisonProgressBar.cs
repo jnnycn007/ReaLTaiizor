@@ -109,14 +109,17 @@ namespace ReaLTaiizor.Controls
         [Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public PoisonStyleManager StyleManager { get; set; } = null;
+
         [DefaultValue(false)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public bool UseCustomBackColor { get; set; } = false;
+
         [Browsable(false)]
         [DefaultValue(false)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool UseCustomForeColor { get; set; } = false;
+
         [Browsable(false)]
         [DefaultValue(true)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
@@ -139,15 +142,19 @@ namespace ReaLTaiizor.Controls
         [DefaultValue(PoisonProgressBarSize.Medium)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public PoisonProgressBarSize FontSize { get; set; } = PoisonProgressBarSize.Medium;
+
         [DefaultValue(PoisonProgressBarWeight.Light)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public PoisonProgressBarWeight FontWeight { get; set; } = PoisonProgressBarWeight.Light;
+
         [DefaultValue(ContentAlignment.MiddleRight)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public ContentAlignment TextAlign { get; set; } = ContentAlignment.MiddleRight;
+
         [DefaultValue(true)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public bool HideProgressText { get; set; } = true;
+
         [DefaultValue(ProgressBarStyle.Continuous)]
         [Category(PoisonDefaults.PropertyCategory.Appearance)]
         public ProgressBarStyle ProgressBarStyle { get; set; } = ProgressBarStyle.Continuous;
@@ -179,19 +186,28 @@ namespace ReaLTaiizor.Controls
             get => field == 0 ? ClientRectangle.Width / 3 : field;
             set
             {
-                if (value < 0) throw new ArgumentOutOfRangeException("ProgressBarMarqueeWidth must be a number more than zero.", (Exception)null);
+                if (value < 0)
+                {
+                    throw new ArgumentOutOfRangeException("ProgressBarMarqueeWidth must be a number more than zero.", (Exception)null);
+                }
+
                 field = value;
             }
         } = 0;
 
         [DefaultValue(100)]
-        public int MarqueeFPS 
-        { 
-            get; 
+        public int MarqueeFPS
+        {
+            get;
             set
             {
-                if (value <= 0) throw new ArgumentOutOfRangeException("MarqueeFPS must be a number more than zero.", (Exception)null);
+                if (value <= 0)
+                {
+                    throw new ArgumentOutOfRangeException("MarqueeFPS must be a number more than zero.", (Exception)null);
+                }
+
                 field = value;
+
                 if (marqueeTimer != null)
                 {
                     marqueeTimer.Interval = 1000 / value;
@@ -203,12 +219,16 @@ namespace ReaLTaiizor.Controls
         /// Same usage as Winforms originally included.
         /// </summary>
         [DefaultValue(100)]
-        public new int MarqueeAnimationSpeed 
-        { 
-            get; 
+        public new int MarqueeAnimationSpeed
+        {
+            get;
             set
             {
-                if (value <= 0) throw new ArgumentOutOfRangeException("MarqueeAnimationSpeed value must be a number more than zero.", (Exception)null);
+                if (value <= 0)
+                {
+                    throw new ArgumentOutOfRangeException("MarqueeAnimationSpeed value must be a number more than zero.", (Exception)null);
+                }
+
                 field = value;
             }
         } = 100;
@@ -229,10 +249,15 @@ namespace ReaLTaiizor.Controls
             get;
             set
             {
-                if (value <= 0) throw new ArgumentOutOfRangeException("MaterialStyleSpeedRatio value must be a number more than zero.", (Exception)null);
+                if (value <= 0)
+                {
+                    throw new ArgumentOutOfRangeException("MaterialStyleSpeedRatio value must be a number more than zero.", (Exception)null);
+                }
+
                 field = value;
             }
         } = 3;
+
         #endregion
 
         #region Constructor
@@ -455,8 +480,7 @@ namespace ReaLTaiizor.Controls
         private bool materialEffectFlag = true;
         private void marqueeTimer_Tick(object sender, EventArgs e)
         {
-
-            marqueeX += (ClientRectangle.Width + ProgressBarMarqueeWidth) / (MarqueeAnimationSpeed * MarqueeFPS / 100F); 
+            marqueeX += (ClientRectangle.Width + ProgressBarMarqueeWidth) / (MarqueeAnimationSpeed * MarqueeFPS / 100F);
             // Here 100F is 1000/10, 'cause we need to support original anime users we keep a *10 ratio here.
 
             if (marqueeX > ClientRectangle.Width)

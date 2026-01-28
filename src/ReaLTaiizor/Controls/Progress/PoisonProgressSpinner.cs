@@ -151,7 +151,7 @@ namespace ReaLTaiizor.Controls
             get;
             set
             {
-                if (value < 0)
+                if (value <= 0)
                 {
                     throw new ArgumentOutOfRangeException("Progress value must be a number more than zero.", (Exception)null);
                 }
