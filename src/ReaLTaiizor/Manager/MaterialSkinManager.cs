@@ -329,6 +329,18 @@ namespace ReaLTaiizor.Manager
             return logicalFonts[name];
         }
 
+        public IntPtr GetTextBoxFontBySize(int size, float scaleRatio)
+        {
+            var hOriginalFont = GetTextBoxFontBySize(size);
+            if (scaleRatio == 1) return hOriginalFont;
+            LogFont lf = new LogFont();
+            if (GetObject(hOriginalFont, Marshal.SizeOf(lf), lf) == 0)
+            {
+                return IntPtr.Zero; // Failed fetching handle
+            }
+            return createLogicalFont(lf.lfFaceName, (int)(-lf.lfHeight * scaleRatio), (logFontWeight)System.Enum.ToObject(MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM.GetType(), lf.lfWeight), lfItalic: lf.lfItalic);
+        }
+
         public IntPtr GetLogFontByType(FontType type)
         {
             return logicalFonts[System.Enum.GetName(typeof(FontType), type)];

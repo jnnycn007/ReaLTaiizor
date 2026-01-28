@@ -3,10 +3,12 @@
 using ReaLTaiizor.Manager;
 using ReaLTaiizor.Util;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using static ReaLTaiizor.Helper.MaterialDrawHelper;
 using static ReaLTaiizor.Util.MaterialAnimations;
@@ -79,6 +81,7 @@ namespace ReaLTaiizor.Controls
         private static Point[] CheckmarkLine;
         private bool hovered = false;
         private CheckState _oldCheckState;
+        private List<IntPtr> LFontToBeReleased = new List<IntPtr>();
         #endregion
 
         #region Constructor
@@ -132,6 +135,7 @@ namespace ReaLTaiizor.Controls
             base.OnSizeChanged(e);
             
             _boxOffset = ((int)(HEIGHT_RIPPLE * GetDeviceScaleFactor()) / 2) - (int)(9 * GetDeviceScaleFactor());
+            _resizing = false;
         }
 
         protected override void OnTextChanged(EventArgs e)
@@ -386,6 +390,23 @@ namespace ReaLTaiizor.Controls
                 Cursor = IsMouseInCheckArea() ? Cursors.Hand : Cursors.Default;
             };
         }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Release handle from CreateFont / LogFont
+                foreach (IntPtr handle in LFontToBeReleased)
+                {
+                    if (handle != IntPtr.Zero)
+                    {
+                        DeleteObject(handle);
+                    }
+                }
+                LFontToBeReleased.Clear();
+            }
+            base.Dispose(disposing);
+        }
         #endregion
 
         #region Private events and methods
@@ -393,8 +414,6 @@ namespace ReaLTaiizor.Controls
         {
             // 96 is Windows default scaling DPI（100% scale）
             float scalingFactor = (float)this.DeviceDpi / 96f;
-            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
-            // Buttons are not included in sqrt controls.
             return scalingFactor;
         }
 
@@ -429,6 +448,9 @@ namespace ReaLTaiizor.Controls
         {
             return ClientRectangle.Contains(MouseLocation);
         }
+
+        [DllImport("gdi32.dll", ExactSpelling = true)]
+        private static extern bool DeleteObject(IntPtr hObject);
         #endregion
     }
 

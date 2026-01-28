@@ -4,6 +4,7 @@ using ReaLTaiizor.Child.Material;
 using ReaLTaiizor.Helper;
 using ReaLTaiizor.Manager;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Runtime.InteropServices;
@@ -30,7 +31,7 @@ namespace ReaLTaiizor.Controls
         [Browsable(false)]
         public MaterialSkinManager SkinManager => MaterialSkinManager.Instance;
 
-        public bool Focus()
+        public new bool Focus()
         {
             return baseTextBox.Focus();
         }
@@ -110,6 +111,23 @@ namespace ReaLTaiizor.Controls
         public override Color BackColor => Parent == null ? SkinManager.BackgroundColor : Parent.BackColor;
 
         public override string Text { get => baseTextBox.Text; set => baseTextBox.Text = value; }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Release handle from CreateFont / LogFont
+                foreach (IntPtr handle in LFontToBeReleased)
+                {
+                    if (handle != IntPtr.Zero)
+                    {
+                        DeleteObject(handle);
+                    }
+                }
+                LFontToBeReleased.Clear();
+            }
+            base.Dispose(disposing);
+        }
 
         [Category("Appearance")]
         public HorizontalAlignment TextAlign { get => baseTextBox.TextAlign; set => baseTextBox.TextAlign = value; }
@@ -670,7 +688,7 @@ namespace ReaLTaiizor.Controls
 
         //private readonly AnimationManager animationManager;
         private readonly AnimationManager _animationManager;
-
+        //
         public bool isFocused = false;
         private const int HINT_TEXT_SMALL_SIZE = 18;
         private const int HINT_TEXT_SMALL_Y = 4;
@@ -685,6 +703,7 @@ namespace ReaLTaiizor.Controls
         private readonly int SB_LINEDOWN = 1;
         private readonly uint WM_VSCROLL = 277;
         private readonly IntPtr ptrLparam = new(0);
+        private List<IntPtr> LFontToBeReleased = new List<IntPtr>();
 
         protected readonly MaterialBaseTextBox baseTextBox;
         public MaterialMultiLineTextBoxEdit()
@@ -708,7 +727,7 @@ namespace ReaLTaiizor.Controls
             baseTextBox = new MaterialBaseTextBox
             {
                 BorderStyle = BorderStyle.None,
-                Font = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1),
+                Font = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1, GetDeviceScaleFactor()),
                 ForeColor = SkinManager.TextHighEmphasisColor,
                 Multiline = true
             };
@@ -759,6 +778,21 @@ namespace ReaLTaiizor.Controls
             SuspendLayout();
             Invalidate();
             ResumeLayout(false);
+        }
+
+        private float GetDeviceScaleFactor()
+        {
+            // 96 is Windows default scaling DPI（100% scale）
+            float scalingFactor = (float)this.DeviceDpi / 96f;
+            return scalingFactor;
+        }
+
+        private float GetDeviceScaleFactorSqrt()
+        {
+            // 96 is Windows default scaling DPI（100% scale）
+            float scalingFactor = (float)Math.Sqrt((float)this.DeviceDpi / 96f);
+            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
+            return scalingFactor;
         }
 
         protected override void OnPaint(PaintEventArgs pevent)
@@ -896,11 +930,11 @@ namespace ReaLTaiizor.Controls
         {
             base.OnResize(e);
 
-            baseTextBox.Location = new Point(LEFT_PADDING, TOP_PADDING);
-            baseTextBox.Width = Width - (LEFT_PADDING + RIGHT_PADDING);
-            baseTextBox.Height = Height - (TOP_PADDING + BOTTOM_PADDING);
+            baseTextBox.Location = new Point((int)(LEFT_PADDING * GetDeviceScaleFactor()), (int)(TOP_PADDING * GetDeviceScaleFactor()));
+            baseTextBox.Width = Width - ((int)(LEFT_PADDING * GetDeviceScaleFactor()) + (int)(RIGHT_PADDING * GetDeviceScaleFactor()));
+            baseTextBox.Height = Height - ((int)(TOP_PADDING * GetDeviceScaleFactor()) + (int)(BOTTOM_PADDING * GetDeviceScaleFactor()));
 
-            LINE_Y = Height - LINE_BOTTOM_PADDING;
+            LINE_Y = Height - (int)(LINE_BOTTOM_PADDING * GetDeviceScaleFactor());
 
         }
 
@@ -959,6 +993,10 @@ namespace ReaLTaiizor.Controls
                 SendKeys.Send("{TAB}");
             }
         }
+
+        [DllImport("gdi32.dll", ExactSpelling = true)]
+        private static extern bool DeleteObject(IntPtr hObject);
+
     }
 
     #endregion

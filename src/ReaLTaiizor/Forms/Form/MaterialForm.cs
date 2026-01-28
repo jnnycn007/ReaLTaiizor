@@ -30,8 +30,8 @@ namespace ReaLTaiizor.Forms
         /// <summary>
         /// Indicate if the form should respond to System Dpi Scaling Ratio
         /// </summary>
-        [DefaultValue(true)]
-        public bool ScalingAware { get; set; } = true;
+        //[DefaultValue(true)]
+        //public bool ScalingAware { get; set; } = true;
 
         [Browsable(false)]
         public int Depth { get; set; }
@@ -428,6 +428,7 @@ namespace ReaLTaiizor.Forms
         private Rectangle _drawerButtonBounds => new(ClientRectangle.X + (SkinManager.FORM_PADDING / 2) + 3, (int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()) + ((int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt()) / 2) - ((int)(ACTION_BAR_HEIGHT_DEFAULT * GetDeviceScaleFactorSqrt()) / 2), ((int)(ACTION_BAR_HEIGHT_DEFAULT * GetDeviceScaleFactorSqrt())), (int)(ACTION_BAR_HEIGHT_DEFAULT * GetDeviceScaleFactorSqrt()));
         private Rectangle _statusBarBounds => new(ClientRectangle.X, ClientRectangle.Y, ClientSize.Width, (int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()));
         private Rectangle _drawerIconRect;
+        private List<IntPtr> LFontToBeReleased = new List<IntPtr>();
 
         private bool Maximized
         {
@@ -930,6 +931,24 @@ namespace ReaLTaiizor.Forms
         #endregion
 
         #region WinForms Methods
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Release handle from CreateFont / LogFont
+                foreach (IntPtr handle in LFontToBeReleased)
+                {
+                    if (handle != IntPtr.Zero)
+                    {
+                        DeleteObject(handle);
+                    }
+                }
+                LFontToBeReleased.Clear();
+            }
+            base.Dispose(disposing);
+        }
+
         protected override CreateParams CreateParams
         {
             get
@@ -1377,8 +1396,10 @@ namespace ReaLTaiizor.Forms
             {
                 //Form title
                 using MaterialNativeTextRenderer NativeText = new(g);
+                var font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.H6, GetDeviceScaleFactor());
+                LFontToBeReleased.Add(font);
                 Rectangle textLocation = new(DrawerTabControl != null ? (int)(TITLE_LEFT_PADDING * GetDeviceScaleFactorSqrt()) : (int)(TITLE_LEFT_PADDING * GetDeviceScaleFactorSqrt()) - ((int)(ICON_SIZE * GetDeviceScaleFactorSqrt()) + ((int)(ACTION_BAR_PADDING * GetDeviceScaleFactorSqrt()) * 2)), (int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()), ClientSize.Width, (int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt()));
-                NativeText.DrawTransparentText(Text, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.H6, GetDeviceScaleFactor()),
+                NativeText.DrawTransparentText(Text, font,
                     SkinManager.ColorScheme.TextColor,
                     textLocation.Location,
                     textLocation.Size,
@@ -1388,8 +1409,10 @@ namespace ReaLTaiizor.Forms
             {
                 //Form title
                 using MaterialNativeTextRenderer NativeText = new(g);
+                var font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle2, GetDeviceScaleFactor());
+                LFontToBeReleased.Add(font);
                 Rectangle textLocation = new(10, 4, ClientSize.Width, ClientSize.Height);
-                NativeText.DrawTransparentText(Text, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle2, GetDeviceScaleFactor()),
+                NativeText.DrawTransparentText(Text, font,
                     SkinManager.ColorScheme.TextColor,
                     textLocation.Location,
                     textLocation.Size,
@@ -1456,6 +1479,9 @@ namespace ReaLTaiizor.Forms
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+
+        [DllImport("gdi32.dll", ExactSpelling = true)]
+        private static extern bool DeleteObject(IntPtr hObject);
         #endregion
     }
 

@@ -5,12 +5,14 @@ using ReaLTaiizor.Helper;
 using ReaLTaiizor.Manager;
 using ReaLTaiizor.Util;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Globalization;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using static ReaLTaiizor.Helper.MaterialDrawHelper;
 using static ReaLTaiizor.Util.MaterialAnimations;
@@ -199,6 +201,23 @@ namespace ReaLTaiizor.Controls
             Invalidate();
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Release handle from CreateFont / LogFont
+                foreach (IntPtr handle in LFontToBeReleased)
+                {
+                    if (handle != IntPtr.Zero)
+                    {
+                        DeleteObject(handle);
+                    }
+                }
+                LFontToBeReleased.Clear();
+            }
+            base.Dispose(disposing);
+        }
+
         private bool _shadowDrawEventSubscribed = false;
 
         private void AddShadowPaintEvent(Control control, PaintEventHandler shadowPaintEvent)
@@ -228,6 +247,7 @@ namespace ReaLTaiizor.Controls
         private readonly AnimationManager _hoverAnimationManager = null;
         private readonly AnimationManager _focusAnimationManager = null;
         private readonly AnimationManager _animationManager = null;
+        private List<IntPtr> LFontToBeReleased = new List<IntPtr>();
 
         /// <summary>
         /// Defines the _textSize
@@ -359,12 +379,12 @@ namespace ReaLTaiizor.Controls
             MaterialDrawHelper.DrawSquareShadow(gp, rect);
         }
 
+
+        
         private float GetDeviceScaleFactor()
         {
             // 96 is Windows default scaling DPI（100% scale）
             float scalingFactor = (float)this.DeviceDpi / 96f;
-            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
-            // Buttons are not included in sqrt controls.
             return scalingFactor;
         }
 
@@ -740,6 +760,9 @@ namespace ReaLTaiizor.Controls
                 }
             };
         }
+
+        [DllImport("gdi32.dll", ExactSpelling = true)]
+        private static extern bool DeleteObject(IntPtr hObject);
     }
 
     #endregion

@@ -31,8 +31,8 @@ namespace ReaLTaiizor.Controls
             Paint += new PaintEventHandler(paintControl);
             BackColor = SkinManager.BackgroundColor;
             ForeColor = SkinManager.TextHighEmphasisColor;
-            Margin = new Padding(SkinManager.FORM_PADDING);
-            Padding = new Padding(SkinManager.FORM_PADDING);
+            Margin = new Padding((int)(SkinManager.FORM_PADDING * GetDeviceScaleFactor()));
+            Padding = new Padding((int)(SkinManager.FORM_PADDING * GetDeviceScaleFactor()));
         }
 
         private void drawShadowOnParent(object sender, PaintEventArgs e)
@@ -106,6 +106,21 @@ namespace ReaLTaiizor.Controls
             control.Paint += shadowPaintEvent;
             control.Invalidate();
             _shadowDrawEventSubscribed = true;
+        }
+
+        private float GetDeviceScaleFactor()
+        {
+            // 96 is Windows default scaling DPI（100% scale）
+            float scalingFactor = (float)this.DeviceDpi / 96f;
+            return scalingFactor;
+        }
+
+        private float GetDeviceScaleFactorSqrt()
+        {
+            // 96 is Windows default scaling DPI（100% scale）
+            float scalingFactor = (float)Math.Sqrt((float)this.DeviceDpi / 96f);
+            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
+            return scalingFactor;
         }
 
         private void RemoveShadowPaintEvent(Control control, PaintEventHandler shadowPaintEvent)

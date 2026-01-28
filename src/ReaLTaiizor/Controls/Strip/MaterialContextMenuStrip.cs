@@ -2,10 +2,13 @@
 
 using ReaLTaiizor.Manager;
 using ReaLTaiizor.Util;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using static ReaLTaiizor.Helper.MaterialDrawHelper;
 using static ReaLTaiizor.Util.MaterialAnimations;
@@ -39,8 +42,7 @@ namespace ReaLTaiizor.Controls
 
         public MaterialContextMenuStrip()
         {
-            Renderer = new MaterialToolStripRender();
-
+            Renderer = new MaterialToolStripRender(GetDeviceScaleFactor());
             AnimationManager = new AnimationManager(false)
             {
                 Increment = 0.07,
@@ -52,12 +54,52 @@ namespace ReaLTaiizor.Controls
             BackColor = SkinManager.BackdropColor;
         }
 
+
+
+        private float GetDeviceScaleFactor()
+        {
+            // 96 is Windows default scaling DPI（100% scale）
+            float scalingFactor = DeviceDpi / 96f;
+            return scalingFactor;
+        }
+
+        private float GetDeviceScaleFactorSqrt()
+        {
+            // 96 is Windows default scaling DPI（100% scale）
+            float scalingFactor = (float)Math.Sqrt((float)DeviceDpi / 96f);
+            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
+            return scalingFactor;
+        }
+
+        //public override Size GetPreferredSize(Size constrainingSize)
+        //{
+        //    var baseSize = base.GetPreferredSize(constrainingSize);
+
+        //    return new Size(
+        //        (int)(baseSize.Width * GetDeviceScaleFactor()),
+        //        (int)(baseSize.Height * GetDeviceScaleFactor()));
+
+        //}
+
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // Release handle from CreateFont / LogFont
+                ((MaterialToolStripRender)Renderer).Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
         protected override void OnMouseUp(MouseEventArgs mea)
         {
             base.OnMouseUp(mea);
 
             AnimationSource = mea.Location;
         }
+
+        public override ToolStripItemCollection Items => base.Items;
 
         private ToolStripItemClickedEventArgs _delayesArgs;
 
@@ -87,14 +129,47 @@ namespace ReaLTaiizor.Controls
 
     public class MaterialToolStripMenuItem : ToolStripMenuItem
     {
+
+        private float GetDeviceScaleFactor()
+        {
+            // 96 is Windows default scaling DPI（100% scale）
+            float scalingFactor = (float)Owner.DeviceDpi / 96f;
+            return scalingFactor;
+        }
+
+        private float GetDeviceScaleFactorSqrt()
+        {
+            // 96 is Windows default scaling DPI（100% scale）
+            float scalingFactor = (float)Math.Sqrt((float)GetCurrentParent().Parent.DeviceDpi / 96f);
+            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
+            return scalingFactor;
+        }
+
         public MaterialToolStripMenuItem()
         {
             AutoSize = false;
-            Size = new Size(128, 32);
+            
+        }
+
+        public override Size GetPreferredSize(Size constrainingSize)
+        {
+            var baseSize = base.GetPreferredSize(constrainingSize);
+
+            return new Size(
+                (int)(baseSize.Width * GetDeviceScaleFactor()),
+                (int)(baseSize.Height * GetDeviceScaleFactor()));
+
+        }
+
+        protected override void OnOwnerChanged(EventArgs e)
+        {
+            Size = new Size((int)(128 * GetDeviceScaleFactor()), (int)(32 * GetDeviceScaleFactor()));
+            // Do not calc this in MaterialToolStripMenuItem() or the owner or parent is null!!!
         }
 
         protected override ToolStripDropDown CreateDefaultDropDown()
         {
+            
             ToolStripDropDown baseDropDown = base.CreateDefaultDropDown();
             if (DesignMode)
             {
@@ -110,8 +185,26 @@ namespace ReaLTaiizor.Controls
 
     internal class MaterialToolStripRender : ToolStripProfessionalRenderer, MaterialControlI
     {
+        private float ScaleRatio;
+
+        private float GetDeviceScaleFactor()
+        {
+            return ScaleRatio;
+        }
+
+        private float GetDeviceScaleFactorSqrt()
+        {
+            return (float)(Math.Sqrt(ScaleRatio));
+        }
+
+        public MaterialToolStripRender(float scaleRatio)
+        {
+            ScaleRatio = scaleRatio;
+        }
+
         private const int LEFT_PADDING = 16;
         private const int RIGHT_PADDING = 8;
+        private List<IntPtr> LFontToBeReleased = new List<IntPtr>();
 
         //Properties for managing the material design properties
         public int Depth { get; set; }
@@ -126,10 +219,12 @@ namespace ReaLTaiizor.Controls
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 
             Rectangle itemRect = GetItemRect(e.Item);
-            Rectangle textRect = new(LEFT_PADDING, itemRect.Y, itemRect.Width - (LEFT_PADDING + RIGHT_PADDING), itemRect.Height);
+            Rectangle textRect = new((int)(LEFT_PADDING * GetDeviceScaleFactor()), itemRect.Y, itemRect.Width - ((int)(LEFT_PADDING * GetDeviceScaleFactor()) + (int)(RIGHT_PADDING * GetDeviceScaleFactor())), itemRect.Height);
 
+            IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body2, GetDeviceScaleFactor());
+            LFontToBeReleased.Add(font);
             using MaterialNativeTextRenderer NativeText = new(g);
-            NativeText.DrawTransparentText(e.Text, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body2),
+            NativeText.DrawTransparentText(e.Text, font,
                 e.Item.Enabled ? SkinManager.TextHighEmphasisColor : SkinManager.TextDisabledOrHintColor,
                 textRect.Location,
                 textRect.Size,
@@ -193,9 +288,9 @@ namespace ReaLTaiizor.Controls
             using GraphicsPath arrowPath = new();
             arrowPath.AddLines(
                 new[] {
-                        new Point(arrowMiddle.X - ARROW_SIZE, arrowMiddle.Y - ARROW_SIZE),
+                        new Point(arrowMiddle.X - (int)(ARROW_SIZE * GetDeviceScaleFactor()), arrowMiddle.Y - (int)(ARROW_SIZE * GetDeviceScaleFactor())),
                         new Point(arrowMiddle.X, arrowMiddle.Y),
-                        new Point(arrowMiddle.X - ARROW_SIZE, arrowMiddle.Y + ARROW_SIZE) });
+                        new Point(arrowMiddle.X - (int)(ARROW_SIZE * GetDeviceScaleFactor()), arrowMiddle.Y + (int)(ARROW_SIZE * GetDeviceScaleFactor())) });
             arrowPath.CloseFigure();
 
             g.FillPath(arrowBrush, arrowPath);
@@ -205,6 +300,22 @@ namespace ReaLTaiizor.Controls
         {
             return new Rectangle(0, item.ContentRectangle.Y, item.ContentRectangle.Width, item.ContentRectangle.Height);
         }
+
+        public void Dispose()
+        {
+            foreach (IntPtr handle in LFontToBeReleased)
+            {
+                if (handle != IntPtr.Zero)
+                {
+                    DeleteObject(handle);
+                }
+            }
+            LFontToBeReleased.Clear();
+        }
+
+        [DllImport("gdi32.dll", ExactSpelling = true)]
+        private static extern bool DeleteObject(IntPtr hObject);
+
     }
 
     #endregion
