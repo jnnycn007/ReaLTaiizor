@@ -693,6 +693,41 @@ namespace ReaLTaiizor.Controls
         private readonly IntPtr ptrLparam = new(0);
 
         protected readonly MaterialBaseTextBox baseTextBox;
+
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+            set
+            {
+                _scaleRatio = value;
+            }
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+            set
+            {
+                _scaleRatioSqrt = value;
+            }
+        }
+
         public MaterialMultiLineTextBoxEdit()
         {
             AllowScroll = true;
@@ -714,7 +749,7 @@ namespace ReaLTaiizor.Controls
             baseTextBox = new MaterialBaseTextBox
             {
                 BorderStyle = BorderStyle.None,
-                Font = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1, GetDeviceScaleFactor()),
+                Font = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor),
                 ForeColor = SkinManager.TextHighEmphasisColor,
                 Multiline = true
             };
@@ -762,28 +797,19 @@ namespace ReaLTaiizor.Controls
 
         private void Redraw(object sencer, EventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             SuspendLayout();
             Invalidate();
             ResumeLayout(false);
         }
 
-        private float GetDeviceScaleFactor()
-        {
-            // 96 is Windows default scaling DPI（100% scale）
-            float scalingFactor = (float)this.DeviceDpi / 96f;
-            return scalingFactor;
-        }
-
-        private float GetDeviceScaleFactorSqrt()
-        {
-            // 96 is Windows default scaling DPI（100% scale）
-            float scalingFactor = (float)Math.Sqrt((float)this.DeviceDpi / 96f);
-            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
-            return scalingFactor;
-        }
-
         protected override void OnPaint(PaintEventArgs pevent)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             Graphics g = pevent.Graphics;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
             g.Clear(Parent.BackColor == Color.Transparent ? ((Parent.Parent == null || (Parent.Parent != null && Parent.Parent.BackColor == Color.Transparent)) ? SkinManager.BackgroundColor : Parent.Parent.BackColor) : Parent.BackColor);
@@ -917,11 +943,11 @@ namespace ReaLTaiizor.Controls
         {
             base.OnResize(e);
 
-            baseTextBox.Location = new Point((int)(LEFT_PADDING * GetDeviceScaleFactor()), (int)(TOP_PADDING * GetDeviceScaleFactor()));
-            baseTextBox.Width = Width - ((int)(LEFT_PADDING * GetDeviceScaleFactor()) + (int)(RIGHT_PADDING * GetDeviceScaleFactor()));
-            baseTextBox.Height = Height - ((int)(TOP_PADDING * GetDeviceScaleFactor()) + (int)(BOTTOM_PADDING * GetDeviceScaleFactor()));
+            baseTextBox.Location = new Point((int)(LEFT_PADDING * ScaleFactor), (int)(TOP_PADDING * ScaleFactor));
+            baseTextBox.Width = Width - ((int)(LEFT_PADDING * ScaleFactor) + (int)(RIGHT_PADDING * ScaleFactor));
+            baseTextBox.Height = Height - ((int)(TOP_PADDING * ScaleFactor) + (int)(BOTTOM_PADDING * ScaleFactor));
 
-            LINE_Y = Height - (int)(LINE_BOTTOM_PADDING * GetDeviceScaleFactor());
+            LINE_Y = Height - (int)(LINE_BOTTOM_PADDING * ScaleFactor);
 
         }
 
@@ -980,9 +1006,6 @@ namespace ReaLTaiizor.Controls
                 SendKeys.Send("{TAB}");
             }
         }
-
-        [DllImport("gdi32.dll", ExactSpelling = true)]
-        private static extern bool DeleteObject(IntPtr hObject);
 
     }
 

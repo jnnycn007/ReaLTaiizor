@@ -40,9 +40,43 @@ namespace ReaLTaiizor.Controls
 
         public event ItemClickStart OnItemClickStart;
 
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+            set
+            {
+                _scaleRatio = value;
+            }
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+            set
+            {
+                _scaleRatioSqrt = value;
+            }
+        }
+
         public MaterialContextMenuStrip()
         {
-            Renderer = new MaterialToolStripRender(GetDeviceScaleFactor());
+            Renderer = new MaterialToolStripRender(ScaleFactor);
             AnimationManager = new AnimationManager(false)
             {
                 Increment = 0.07,
@@ -54,30 +88,13 @@ namespace ReaLTaiizor.Controls
             BackColor = SkinManager.BackdropColor;
         }
 
-
-
-        private float GetDeviceScaleFactor()
-        {
-            // 96 is Windows default scaling DPI（100% scale）
-            float scalingFactor = DeviceDpi / 96f;
-            return scalingFactor;
-        }
-
-        private float GetDeviceScaleFactorSqrt()
-        {
-            // 96 is Windows default scaling DPI（100% scale）
-            float scalingFactor = (float)Math.Sqrt((float)DeviceDpi / 96f);
-            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
-            return scalingFactor;
-        }
-
         //public override Size GetPreferredSize(Size constrainingSize)
         //{
         //    var baseSize = base.GetPreferredSize(constrainingSize);
 
         //    return new Size(
-        //        (int)(baseSize.Width * GetDeviceScaleFactor()),
-        //        (int)(baseSize.Height * GetDeviceScaleFactor()));
+        //        (int)(baseSize.Width * ScaleFactor),
+        //        (int)(baseSize.Height * ScaleFactor));
 
         //}
 
@@ -125,19 +142,37 @@ namespace ReaLTaiizor.Controls
     public class MaterialToolStripMenuItem : ToolStripMenuItem
     {
 
-        private float GetDeviceScaleFactor()
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
         {
-            // 96 is Windows default scaling DPI（100% scale）
-            float scalingFactor = (float)Owner.DeviceDpi / 96f;
-            return scalingFactor;
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = ((MaterialContextMenuStrip)Owner).SkinManager.GetDeviceScaleFactor(Owner);
+                }
+                return _scaleRatio.Value;
+            }
+            set
+            {
+                _scaleRatio = value;
+            }
         }
-
-        private float GetDeviceScaleFactorSqrt()
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
         {
-            // 96 is Windows default scaling DPI（100% scale）
-            float scalingFactor = (float)Math.Sqrt((float)GetCurrentParent().Parent.DeviceDpi / 96f);
-            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
-            return scalingFactor;
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = ((MaterialContextMenuStrip)Owner).SkinManager.GetDeviceScaleFactorSqrt(Owner);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+            set
+            {
+                _scaleRatioSqrt = value;
+            }
         }
 
         public MaterialToolStripMenuItem()
@@ -148,17 +183,22 @@ namespace ReaLTaiizor.Controls
 
         public override Size GetPreferredSize(Size constrainingSize)
         {
+            ScaleFactor = ((MaterialContextMenuStrip)Owner).SkinManager.GetDeviceScaleFactor(Owner);
+            ScaleFactorSqrt = ((MaterialContextMenuStrip)Owner).SkinManager.GetDeviceScaleFactorSqrt(Owner);
+
             var baseSize = base.GetPreferredSize(constrainingSize);
 
             return new Size(
-                (int)(baseSize.Width * GetDeviceScaleFactor()),
-                (int)(baseSize.Height * GetDeviceScaleFactor()));
+                (int)(baseSize.Width * ScaleFactor),
+                (int)(baseSize.Height * ScaleFactor));
 
         }
 
         protected override void OnOwnerChanged(EventArgs e)
         {
-            Size = new Size((int)(128 * GetDeviceScaleFactor()), (int)(32 * GetDeviceScaleFactor()));
+            ScaleFactor = ((MaterialContextMenuStrip)Owner).SkinManager.GetDeviceScaleFactor(Owner);
+            ScaleFactorSqrt = ((MaterialContextMenuStrip)Owner).SkinManager.GetDeviceScaleFactorSqrt(Owner);
+            Size = new Size((int)(128 * ScaleFactor), (int)(32 * ScaleFactor));
             // Do not calc this in MaterialToolStripMenuItem() or the owner or parent is null!!!
         }
 
@@ -182,14 +222,37 @@ namespace ReaLTaiizor.Controls
     {
         private float ScaleRatio;
 
-        private float GetDeviceScaleFactor()
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
         {
-            return ScaleRatio;
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = ScaleRatio;
+                }
+                return _scaleRatio.Value;
+            }
+            set
+            {
+                _scaleRatio = value;
+            }
         }
-
-        private float GetDeviceScaleFactorSqrt()
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
         {
-            return (float)(Math.Sqrt(ScaleRatio));
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = (float)(Math.Sqrt(ScaleRatio));
+                }
+                return _scaleRatioSqrt.Value;
+            }
+            set
+            {
+                _scaleRatioSqrt = value;
+            }
         }
 
         public MaterialToolStripRender(float scaleRatio)
@@ -213,9 +276,9 @@ namespace ReaLTaiizor.Controls
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 
             Rectangle itemRect = GetItemRect(e.Item);
-            Rectangle textRect = new((int)(LEFT_PADDING * GetDeviceScaleFactor()), itemRect.Y, itemRect.Width - ((int)(LEFT_PADDING * GetDeviceScaleFactor()) + (int)(RIGHT_PADDING * GetDeviceScaleFactor())), itemRect.Height);
+            Rectangle textRect = new((int)(LEFT_PADDING * ScaleFactor), itemRect.Y, itemRect.Width - ((int)(LEFT_PADDING * ScaleFactor) + (int)(RIGHT_PADDING * ScaleFactor)), itemRect.Height);
 
-            IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body2, GetDeviceScaleFactor());
+            IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body2, ScaleFactor);
             using MaterialNativeTextRenderer NativeText = new(g);
             NativeText.DrawTransparentText(e.Text, font,
                 e.Item.Enabled ? SkinManager.TextHighEmphasisColor : SkinManager.TextDisabledOrHintColor,
@@ -281,9 +344,9 @@ namespace ReaLTaiizor.Controls
             using GraphicsPath arrowPath = new();
             arrowPath.AddLines(
                 new[] {
-                        new Point(arrowMiddle.X - (int)(ARROW_SIZE * GetDeviceScaleFactor()), arrowMiddle.Y - (int)(ARROW_SIZE * GetDeviceScaleFactor())),
+                        new Point(arrowMiddle.X - (int)(ARROW_SIZE * ScaleFactor), arrowMiddle.Y - (int)(ARROW_SIZE * ScaleFactor)),
                         new Point(arrowMiddle.X, arrowMiddle.Y),
-                        new Point(arrowMiddle.X - (int)(ARROW_SIZE * GetDeviceScaleFactor()), arrowMiddle.Y + (int)(ARROW_SIZE * GetDeviceScaleFactor())) });
+                        new Point(arrowMiddle.X - (int)(ARROW_SIZE * ScaleFactor), arrowMiddle.Y + (int)(ARROW_SIZE * ScaleFactor)) });
             arrowPath.CloseFigure();
 
             g.FillPath(arrowBrush, arrowPath);
@@ -293,10 +356,6 @@ namespace ReaLTaiizor.Controls
         {
             return new Rectangle(0, item.ContentRectangle.Y, item.ContentRectangle.Width, item.ContentRectangle.Height);
         }
-
-
-        [DllImport("gdi32.dll", ExactSpelling = true)]
-        private static extern bool DeleteObject(IntPtr hObject);
 
     }
 

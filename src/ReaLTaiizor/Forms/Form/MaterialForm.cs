@@ -266,7 +266,7 @@ namespace ReaLTaiizor.Forms
             set => base.FormBorderStyle = value;
         }
 
-        public Rectangle UserArea => new(ClientRectangle.X, ClientRectangle.Y + (int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()) + (int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt()), ClientSize.Width, ClientSize.Height - ((int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()) + (int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt())));
+        public Rectangle UserArea => new(ClientRectangle.X, ClientRectangle.Y + (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt), ClientSize.Width, ClientSize.Height - ((int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt)));
         #endregion
 
         #region Enums
@@ -421,12 +421,12 @@ namespace ReaLTaiizor.Forms
         private ResizeDirection _resizeDir;
         private ButtonState _buttonState = ButtonState.None;
 
-        private Rectangle _minButtonBounds => new(ClientSize.Width - (3 * (int)(STATUS_BAR_BUTTON_WIDTH * GetDeviceScaleFactor())), ClientRectangle.Y, (int)(STATUS_BAR_BUTTON_WIDTH * GetDeviceScaleFactor()), (int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()));
-        private Rectangle _maxButtonBounds => new(ClientSize.Width - (2 * (int)(STATUS_BAR_BUTTON_WIDTH * GetDeviceScaleFactor())), ClientRectangle.Y, (int)(STATUS_BAR_BUTTON_WIDTH * GetDeviceScaleFactor()), (int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()));
-        private Rectangle _xButtonBounds => new(ClientSize.Width - (int)(STATUS_BAR_BUTTON_WIDTH * GetDeviceScaleFactor()), ClientRectangle.Y, (int)(STATUS_BAR_BUTTON_WIDTH * GetDeviceScaleFactor()), (int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()));
-        private Rectangle _actionBarBounds => new(ClientRectangle.X, ClientRectangle.Y + (int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()), ClientSize.Width, (int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt()));
-        private Rectangle _drawerButtonBounds => new(ClientRectangle.X + (SkinManager.FORM_PADDING / 2) + 3, (int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()) + ((int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt()) / 2) - ((int)(ACTION_BAR_HEIGHT_DEFAULT * GetDeviceScaleFactorSqrt()) / 2), ((int)(ACTION_BAR_HEIGHT_DEFAULT * GetDeviceScaleFactorSqrt())), (int)(ACTION_BAR_HEIGHT_DEFAULT * GetDeviceScaleFactorSqrt()));
-        private Rectangle _statusBarBounds => new(ClientRectangle.X, ClientRectangle.Y, ClientSize.Width, (int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()));
+        private Rectangle _minButtonBounds => new(ClientSize.Width - (3 * (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor)), ClientRectangle.Y, (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt));
+        private Rectangle _maxButtonBounds => new(ClientSize.Width - (2 * (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor)), ClientRectangle.Y, (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt));
+        private Rectangle _xButtonBounds => new(ClientSize.Width - (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor), ClientRectangle.Y, (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt));
+        private Rectangle _actionBarBounds => new(ClientRectangle.X, ClientRectangle.Y + (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt), ClientSize.Width, (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt));
+        private Rectangle _drawerButtonBounds => new(ClientRectangle.X + (SkinManager.FORM_PADDING / 2) + 3, (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + ((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2) - ((int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt) / 2), ((int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt)), (int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt));
+        private Rectangle _statusBarBounds => new(ClientRectangle.X, ClientRectangle.Y, ClientSize.Width, (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt));
         private Rectangle _drawerIconRect;
 
         private bool Maximized
@@ -462,6 +462,39 @@ namespace ReaLTaiizor.Forms
 
         private int STATUS_BAR_HEIGHT = 24;
         private int ACTION_BAR_HEIGHT = 40;
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio= SkinManager.GetDeviceScaleFactor(this);
+                }
+                return  _scaleRatio.Value;
+            }
+            set
+            {
+                _scaleRatio = value;
+            }
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+            set
+            {
+                _scaleRatioSqrt= value;
+            }
+        }
         #endregion
 
         public MaterialForm()
@@ -483,7 +516,7 @@ namespace ReaLTaiizor.Forms
             FormStyle = FormStyles.ActionBar_40;
 
             //Keep space for resize by mouse
-            Padding = new Padding((int)(PADDING_MINIMUM * GetDeviceScaleFactorSqrt()), (int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()) + (int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt()), (int)(PADDING_MINIMUM * GetDeviceScaleFactorSqrt()), (int)(PADDING_MINIMUM * GetDeviceScaleFactorSqrt()));
+            Padding = new Padding((int)(PADDING_MINIMUM * ScaleFactorSqrt), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt), (int)(PADDING_MINIMUM * ScaleFactorSqrt), (int)(PADDING_MINIMUM * ScaleFactorSqrt));
 
             _clickAnimManager = new AnimationManager()
             {
@@ -506,25 +539,6 @@ namespace ReaLTaiizor.Forms
 
         #region Private Methods
 
-
-
-
-        private float GetDeviceScaleFactor()
-        {
-            // 96 is Windows default scaling DPI（100% scale）
-            float scalingFactor = (float)this.DeviceDpi / 96f;
-            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
-            // Buttons are not included in sqrt controls.
-            return scalingFactor;
-        }
-
-        private float GetDeviceScaleFactorSqrt()
-        {
-            // 96 is Windows default scaling DPI（100% scale）
-            float scalingFactor = (float)Math.Sqrt((float)this.DeviceDpi / 96f);
-            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
-            return scalingFactor;
-        }
         protected void AddDrawerOverlayForm()
         {
             if (DrawerTabControl == null)
@@ -730,7 +744,7 @@ namespace ReaLTaiizor.Forms
             }
             else
             {
-                Padding = new Padding((int)(PADDING_MINIMUM * GetDeviceScaleFactorSqrt()), originalPadding.Top, originalPadding.Right, originalPadding.Bottom);
+                Padding = new Padding((int)(PADDING_MINIMUM * ScaleFactorSqrt), originalPadding.Top, originalPadding.Right, originalPadding.Bottom);
             }
         }
 
@@ -888,37 +902,37 @@ namespace ReaLTaiizor.Forms
                     break;
                 case FormStyles.ActionBar_None:
                     ACTION_BAR_HEIGHT = 0;
-                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * GetDeviceScaleFactorSqrt());
+                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt);
                     break;
                 case FormStyles.ActionBar_40:
-                    ACTION_BAR_HEIGHT = (int)(ACTION_BAR_HEIGHT_DEFAULT * GetDeviceScaleFactorSqrt());
-                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * GetDeviceScaleFactorSqrt());
+                    ACTION_BAR_HEIGHT = (int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt);
+                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt);
                     break;
                 case FormStyles.ActionBar_48:
-                    ACTION_BAR_HEIGHT = (int)(48 * GetDeviceScaleFactorSqrt());
-                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * GetDeviceScaleFactorSqrt());
+                    ACTION_BAR_HEIGHT = (int)(48 * ScaleFactorSqrt);
+                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt);
                     break;
                 case FormStyles.ActionBar_56:
-                    ACTION_BAR_HEIGHT = (int)(56 * GetDeviceScaleFactorSqrt());
-                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * GetDeviceScaleFactorSqrt());
+                    ACTION_BAR_HEIGHT = (int)(56 * ScaleFactorSqrt);
+                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt);
                     break;
                 case FormStyles.ActionBar_64:
-                    ACTION_BAR_HEIGHT = (int)(64 * GetDeviceScaleFactorSqrt());
-                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * GetDeviceScaleFactorSqrt());
+                    ACTION_BAR_HEIGHT = (int)(64 * ScaleFactorSqrt);
+                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt);
                     break;
                 default:
-                    ACTION_BAR_HEIGHT = (int)(ACTION_BAR_HEIGHT_DEFAULT * GetDeviceScaleFactorSqrt());
-                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * GetDeviceScaleFactorSqrt());
+                    ACTION_BAR_HEIGHT = (int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt);
+                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt);
                     break;
             }
 
-            Padding = new Padding(DrawerShowIconsWhenHidden ? drawerControl.MinWidth : (int)(PADDING_MINIMUM * GetDeviceScaleFactorSqrt()), (int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()) + (int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt()), Padding.Right, Padding.Bottom);
+            Padding = new Padding(DrawerShowIconsWhenHidden ? drawerControl.MinWidth : (int)(PADDING_MINIMUM * ScaleFactorSqrt), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt), Padding.Right, Padding.Bottom);
             originalPadding = Padding;
 
             if (DrawerTabControl != null)
             {
-                int height = ClientSize.Height - ((int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()) + (int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt()));
-                Point location = Point.Add(Location, new Size(0, (int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()) + (int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt())));
+                int height = ClientSize.Height - ((int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt));
+                Point location = Point.Add(Location, new Size(0, (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt)));
                 drawerOverlay.Size = new Size(ClientSize.Width, height);
                 drawerOverlay.Location = location;
                 drawerForm.Size = new Size(DrawerWidth, height);
@@ -930,6 +944,21 @@ namespace ReaLTaiizor.Forms
         #endregion
 
         #region WinForms Methods
+
+        protected override void OnLoad(EventArgs e)
+        {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            base.OnLoad(e);
+        }
+
+        protected override void OnDpiChanged(DpiChangedEventArgs e)
+        {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            Invalidate();
+            base.OnDpiChanged(e);
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -1113,42 +1142,42 @@ namespace ReaLTaiizor.Forms
             //True if the mouse is hovering over a child control
             bool isChildUnderMouse = GetChildAtPoint(coords) != null;
 
-            if (!isChildUnderMouse && !Maximized && coords.Y < (int)(BORDER_WIDTH * GetDeviceScaleFactorSqrt()) && coords.X > (int)(BORDER_WIDTH * GetDeviceScaleFactorSqrt()) && coords.X < ClientSize.Width - (int)(BORDER_WIDTH * GetDeviceScaleFactorSqrt()))
+            if (!isChildUnderMouse && !Maximized && coords.Y < (int)(BORDER_WIDTH * ScaleFactorSqrt) && coords.X > (int)(BORDER_WIDTH * ScaleFactorSqrt) && coords.X < ClientSize.Width - (int)(BORDER_WIDTH * ScaleFactorSqrt))
             {
                 _resizeDir = ResizeDirection.Top;
                 Cursor = Cursors.SizeNS;
             }
-            else if (!isChildUnderMouse && !Maximized && coords.X <= (int)(BORDER_WIDTH * GetDeviceScaleFactorSqrt()) && coords.Y < (int)(BORDER_WIDTH * GetDeviceScaleFactorSqrt()))
+            else if (!isChildUnderMouse && !Maximized && coords.X <= (int)(BORDER_WIDTH * ScaleFactorSqrt) && coords.Y < (int)(BORDER_WIDTH * ScaleFactorSqrt))
             {
                 _resizeDir = ResizeDirection.TopLeft;
                 Cursor = Cursors.SizeNWSE;
             }
-            else if (!isChildUnderMouse && !Maximized && coords.X >= ClientSize.Width - (int)(BORDER_WIDTH * GetDeviceScaleFactorSqrt()) && coords.Y < (int)(BORDER_WIDTH * GetDeviceScaleFactorSqrt()))
+            else if (!isChildUnderMouse && !Maximized && coords.X >= ClientSize.Width - (int)(BORDER_WIDTH * ScaleFactorSqrt) && coords.Y < (int)(BORDER_WIDTH * ScaleFactorSqrt))
             {
                 _resizeDir = ResizeDirection.TopRight;
                 Cursor = Cursors.SizeNESW;
             }
-            else if (!isChildUnderMouse && !Maximized && coords.X <= (int)(BORDER_WIDTH * GetDeviceScaleFactorSqrt()) && coords.Y >= ClientSize.Height - (int)(BORDER_WIDTH * GetDeviceScaleFactorSqrt()))
+            else if (!isChildUnderMouse && !Maximized && coords.X <= (int)(BORDER_WIDTH * ScaleFactorSqrt) && coords.Y >= ClientSize.Height - (int)(BORDER_WIDTH * ScaleFactorSqrt))
             {
                 _resizeDir = ResizeDirection.BottomLeft;
                 Cursor = Cursors.SizeNESW;
             }
-            else if ((!isChildUnderMouse || DrawerTabControl != null) && !Maximized && coords.X <= (int)(BORDER_WIDTH * GetDeviceScaleFactorSqrt()))
+            else if ((!isChildUnderMouse || DrawerTabControl != null) && !Maximized && coords.X <= (int)(BORDER_WIDTH * ScaleFactorSqrt))
             {
                 _resizeDir = ResizeDirection.Left;
                 Cursor = Cursors.SizeWE;
             }
-            else if (!isChildUnderMouse && !Maximized && coords.X >= ClientSize.Width - (int)(BORDER_WIDTH * GetDeviceScaleFactorSqrt()) && coords.Y >= ClientSize.Height - (int)(BORDER_WIDTH * GetDeviceScaleFactorSqrt()))
+            else if (!isChildUnderMouse && !Maximized && coords.X >= ClientSize.Width - (int)(BORDER_WIDTH * ScaleFactorSqrt) && coords.Y >= ClientSize.Height - (int)(BORDER_WIDTH * ScaleFactorSqrt))
             {
                 _resizeDir = ResizeDirection.BottomRight;
                 Cursor = Cursors.SizeNWSE;
             }
-            else if (!isChildUnderMouse && !Maximized && coords.X >= ClientSize.Width - (int)(BORDER_WIDTH * GetDeviceScaleFactorSqrt()))
+            else if (!isChildUnderMouse && !Maximized && coords.X >= ClientSize.Width - (int)(BORDER_WIDTH * ScaleFactorSqrt))
             {
                 _resizeDir = ResizeDirection.Right;
                 Cursor = Cursors.SizeWE;
             }
-            else if (!isChildUnderMouse && !Maximized && coords.Y >= ClientSize.Height - (int)(BORDER_WIDTH * GetDeviceScaleFactorSqrt()))
+            else if (!isChildUnderMouse && !Maximized && coords.Y >= ClientSize.Height - (int)(BORDER_WIDTH * ScaleFactorSqrt))
             {
                 _resizeDir = ResizeDirection.Bottom;
                 Cursor = Cursors.SizeNS;
@@ -1338,7 +1367,7 @@ namespace ReaLTaiizor.Forms
                     g.FillRectangle(downBrush, _drawerButtonBounds);
                 }
 
-                _drawerIconRect = new Rectangle(SkinManager.FORM_PADDING / 2, (int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()), (int)(ACTION_BAR_HEIGHT_DEFAULT * GetDeviceScaleFactorSqrt()), (int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt()));
+                _drawerIconRect = new Rectangle(SkinManager.FORM_PADDING / 2, (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt), (int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt), (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt));
                 // Ripple
                 if (_clickAnimManager.IsAnimating())
                 {
@@ -1358,33 +1387,33 @@ namespace ReaLTaiizor.Forms
                 g.DrawLine(
                    formButtonsPen,
                    _drawerIconRect.X + (int)SkinManager.FORM_PADDING,
-                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt()) / 2),
+                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2),
                    _drawerIconRect.X + (int)SkinManager.FORM_PADDING + 18,
-                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt()) / 2));
+                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2));
 
                 // Bottom line
                 g.DrawLine(
                    formButtonsPen,
                    _drawerIconRect.X + (int)SkinManager.FORM_PADDING,
-                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt()) / 2) - 6,
+                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2) - 6,
                    _drawerIconRect.X + (int)SkinManager.FORM_PADDING + 18,
-                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt()) / 2) - 6);
+                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2) - 6);
 
                 // Top line
                 g.DrawLine(
                    formButtonsPen,
                    _drawerIconRect.X + (int)SkinManager.FORM_PADDING,
-                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt()) / 2) + 6,
+                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2) + 6,
                    _drawerIconRect.X + (int)SkinManager.FORM_PADDING + 18,
-                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt()) / 2) + 6);
+                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2) + 6);
             }
 
             if (ControlBox == true && FormStyle != FormStyles.ActionBar_None && FormStyle != FormStyles.StatusAndActionBar_None)
             {
                 //Form title
                 using MaterialNativeTextRenderer NativeText = new(g);
-                var font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.H6, GetDeviceScaleFactor());
-                Rectangle textLocation = new(DrawerTabControl != null ? (int)(TITLE_LEFT_PADDING * GetDeviceScaleFactorSqrt()) : (int)(TITLE_LEFT_PADDING * GetDeviceScaleFactorSqrt()) - ((int)(ICON_SIZE * GetDeviceScaleFactorSqrt()) + ((int)(ACTION_BAR_PADDING * GetDeviceScaleFactorSqrt()) * 2)), (int)(STATUS_BAR_HEIGHT * GetDeviceScaleFactorSqrt()), ClientSize.Width, (int)(ACTION_BAR_HEIGHT * GetDeviceScaleFactorSqrt()));
+                var font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.H6, ScaleFactor);
+                Rectangle textLocation = new(DrawerTabControl != null ? (int)(TITLE_LEFT_PADDING * ScaleFactorSqrt) : (int)(TITLE_LEFT_PADDING * ScaleFactorSqrt) - ((int)(ICON_SIZE * ScaleFactorSqrt) + ((int)(ACTION_BAR_PADDING * ScaleFactorSqrt) * 2)), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt), ClientSize.Width, (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt));
                 NativeText.DrawTransparentText(Text, font,
                     SkinManager.ColorScheme.TextColor,
                     textLocation.Location,
@@ -1395,7 +1424,7 @@ namespace ReaLTaiizor.Forms
             {
                 //Form title
                 using MaterialNativeTextRenderer NativeText = new(g);
-                var font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle2, GetDeviceScaleFactor());
+                var font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle2, ScaleFactor);
                 Rectangle textLocation = new(10, 4, ClientSize.Width, ClientSize.Height);
                 NativeText.DrawTransparentText(Text, font,
                     SkinManager.ColorScheme.TextColor,
@@ -1465,8 +1494,6 @@ namespace ReaLTaiizor.Forms
         [DllImport("user32.dll")]
         private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
 
-        [DllImport("gdi32.dll", ExactSpelling = true)]
-        private static extern bool DeleteObject(IntPtr hObject);
         #endregion
     }
 

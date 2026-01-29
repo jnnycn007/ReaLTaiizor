@@ -46,7 +46,7 @@ namespace ReaLTaiizor.Controls
             {
                 field = value;
                 HEIGHT = UseTallSize ? 50 : 36;
-                Size = new Size(Size.Width, (int)(HEIGHT * GetDeviceScaleFactor()));
+                Size = new Size(Size.Width, (int)(HEIGHT * ScaleFactor));
                 UpdateRects(false);
                 Invalidate();
             }
@@ -160,6 +160,40 @@ namespace ReaLTaiizor.Controls
         private Dictionary<string, TextureBrush> iconsBrushes;
         private Dictionary<string, TextureBrush> iconsErrorBrushes;
 
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+            set
+            {
+                _scaleRatio = value;
+            }
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+            set
+            {
+                _scaleRatioSqrt = value;
+            }
+        }
+
         [Category("Material")]
         [Browsable(true)]
         public bool AnimateReadOnly
@@ -249,7 +283,7 @@ namespace ReaLTaiizor.Controls
         protected override void OnCreateControl()
         {
             base.OnCreateControl();
-            base.Font = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1, GetDeviceScaleFactor());
+            base.Font = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor);
             base.AutoSize = false;
 
             SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.DoubleBuffer | ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
@@ -261,8 +295,8 @@ namespace ReaLTaiizor.Controls
 
             // Size and padding
             HEIGHT = UseTallSize ? 50 : 36;
-            Size = new Size(Size.Width, (int)(HEIGHT * GetDeviceScaleFactor()));
-            LINE_Y = (int)(HEIGHT * GetDeviceScaleFactor()) - (int)(BOTTOM_PADDING * GetDeviceScaleFactor());
+            Size = new Size(Size.Width, (int)(HEIGHT * ScaleFactor));
+            LINE_Y = (int)(HEIGHT * ScaleFactor) - (int)(BOTTOM_PADDING * ScaleFactor);
             UpdateRects();
 
             // events
@@ -302,7 +336,7 @@ namespace ReaLTaiizor.Controls
 
         public override Size GetPreferredSize(Size proposedSize)
         {
-            return new Size(proposedSize.Width, (int)(HEIGHT * GetDeviceScaleFactor()));
+            return new Size(proposedSize.Width, (int)(HEIGHT * ScaleFactor));
         }
 
         protected override void Dispose(bool disposing)
@@ -313,28 +347,28 @@ namespace ReaLTaiizor.Controls
         private Size ResizeIcon(Image Icon)
         {
             int newWidth, newHeight;
-            //Resize icon if greater than (int)(ICON_SIZE * GetDeviceScaleFactor())
-            if (Icon.Width > (int)(ICON_SIZE * GetDeviceScaleFactor()) || Icon.Height > (int)(ICON_SIZE * GetDeviceScaleFactor()))
+            //Resize icon if greater than (int)(ICON_SIZE * ScaleFactor)
+            if (Icon.Width > (int)(ICON_SIZE * ScaleFactor) || Icon.Height > (int)(ICON_SIZE * ScaleFactor))
             {
                 //calculate aspect ratio
                 float aspect = Icon.Width / (float)Icon.Height;
 
                 //calculate new dimensions based on aspect ratio
-                newWidth = (int)((int)(ICON_SIZE * GetDeviceScaleFactor()) * aspect);
+                newWidth = (int)((int)(ICON_SIZE * ScaleFactor) * aspect);
                 newHeight = (int)(newWidth / aspect);
 
                 //if one of the two dimensions exceed the box dimensions
-                if (newWidth > (int)(ICON_SIZE * GetDeviceScaleFactor()) || newHeight > (int)(ICON_SIZE * GetDeviceScaleFactor()))
+                if (newWidth > (int)(ICON_SIZE * ScaleFactor) || newHeight > (int)(ICON_SIZE * ScaleFactor))
                 {
                     //depending on which of the two exceeds the box dimensions set it as the box dimension and calculate the other one based on the aspect ratio
                     if (newWidth > newHeight)
                     {
-                        newWidth = (int)(ICON_SIZE * GetDeviceScaleFactor());
+                        newWidth = (int)(ICON_SIZE * ScaleFactor);
                         newHeight = (int)(newWidth / aspect);
                     }
                     else
                     {
-                        newHeight = (int)(ICON_SIZE * GetDeviceScaleFactor());
+                        newHeight = (int)(ICON_SIZE * ScaleFactor);
                         newWidth = (int)(newHeight * aspect);
                     }
                 }
@@ -392,7 +426,7 @@ namespace ReaLTaiizor.Controls
             iconsErrorBrushes = new Dictionary<string, TextureBrush>(2);
 
             // Image Rect
-            Rectangle destRect = new(0, 0, (int)(ICON_SIZE * GetDeviceScaleFactor()), (int)(ICON_SIZE * GetDeviceScaleFactor()));
+            Rectangle destRect = new(0, 0, (int)(ICON_SIZE * ScaleFactor), (int)(ICON_SIZE * ScaleFactor));
 
             if (LeadingIcon != null)
             {
@@ -400,7 +434,7 @@ namespace ReaLTaiizor.Controls
                 // *** _leadingIcon ***
                 // ********************
 
-                //Resize icon if greater than (int)(ICON_SIZE * GetDeviceScaleFactor())
+                //Resize icon if greater than (int)(ICON_SIZE * ScaleFactor)
                 Size newSize_leadingIcon = ResizeIcon(LeadingIcon);
                 Bitmap _leadingIconIconResized = new(LeadingIcon, newSize_leadingIcon.Width, newSize_leadingIcon.Height);
 
@@ -438,7 +472,7 @@ namespace ReaLTaiizor.Controls
                 // *** _trailingIcon ***
                 // *********************
 
-                //Resize icon if greater than (int)(ICON_SIZE * GetDeviceScaleFactor())
+                //Resize icon if greater than (int)(ICON_SIZE * ScaleFactor)
                 Size newSize_trailingIcon = ResizeIcon(TrailingIcon);
                 Bitmap _trailingIconResized = new(TrailingIcon, newSize_trailingIcon.Width, newSize_trailingIcon.Height);
 
@@ -494,7 +528,7 @@ namespace ReaLTaiizor.Controls
         {
             if (LeadingIcon != null)
             {
-                _left_padding = SkinManager.FORM_PADDING + (int)(ICON_SIZE * GetDeviceScaleFactor());
+                _left_padding = SkinManager.FORM_PADDING + (int)(ICON_SIZE * ScaleFactor);
             }
             else
             {
@@ -503,21 +537,21 @@ namespace ReaLTaiizor.Controls
 
             if (TrailingIcon != null)
             {
-                _right_padding = SkinManager.FORM_PADDING + (int)(ICON_SIZE * GetDeviceScaleFactor());
+                _right_padding = SkinManager.FORM_PADDING + (int)(ICON_SIZE * ScaleFactor);
             }
             else
             {
                 _right_padding = SkinManager.FORM_PADDING;
             }
 
-            _leadingIconBounds = new Rectangle(8, ((int)(HEIGHT * GetDeviceScaleFactor()) / 2) - ((int)(ICON_SIZE * GetDeviceScaleFactor()) / 2), (int)(ICON_SIZE * GetDeviceScaleFactor()), (int)(ICON_SIZE * GetDeviceScaleFactor()));
-            _trailingIconBounds = new Rectangle(Width - ((int)(ICON_SIZE * GetDeviceScaleFactor()) + 8), ((int)(HEIGHT * GetDeviceScaleFactor()) / 2) - ((int)(ICON_SIZE * GetDeviceScaleFactor()) / 2), (int)(ICON_SIZE * GetDeviceScaleFactor()), (int)(ICON_SIZE * GetDeviceScaleFactor()));
+            _leadingIconBounds = new Rectangle(8, ((int)(HEIGHT * ScaleFactor) / 2) - ((int)(ICON_SIZE * ScaleFactor) / 2), (int)(ICON_SIZE * ScaleFactor), (int)(ICON_SIZE * ScaleFactor));
+            _trailingIconBounds = new Rectangle(Width - ((int)(ICON_SIZE * ScaleFactor) + 8), ((int)(HEIGHT * ScaleFactor) / 2) - ((int)(ICON_SIZE * ScaleFactor) / 2), (int)(ICON_SIZE * ScaleFactor), (int)(ICON_SIZE * ScaleFactor));
             _textfieldBounds = new Rectangle(_left_padding, ClientRectangle.Y, Width - _left_padding - _right_padding, LINE_Y);
 
             if (RedefineTextField)
             {
                 Rectangle rect = new(_left_padding, UseTallSize ? hasHint ?
-        ((int)(HINT_TEXT_SMALL_Y * GetDeviceScaleFactor()) + (int)(HINT_TEXT_SMALL_SIZE * GetDeviceScaleFactor())) : // Has hint and it's tall
+        ((int)(HINT_TEXT_SMALL_Y * ScaleFactor) + (int)(HINT_TEXT_SMALL_SIZE * ScaleFactor)) : // Has hint and it's tall
         (int)(LINE_Y / 3.5) : // No hint and tall
         Height / 5, // not tall
         ClientSize.Width - _left_padding - _right_padding, LINE_Y);
@@ -526,22 +560,6 @@ namespace ReaLTaiizor.Controls
             }
 
         }
-
-        private float GetDeviceScaleFactor()
-        {
-            // 96 is Windows default scaling DPI（100% scale）
-            float scalingFactor = (float)this.DeviceDpi / 96f;
-            return scalingFactor;
-        }
-
-        private float GetDeviceScaleFactorSqrt()
-        {
-            // 96 is Windows default scaling DPI（100% scale）
-            float scalingFactor = (float)Math.Sqrt((float)this.DeviceDpi / 96f);
-            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
-            return scalingFactor;
-        }
-
 
         public void SetErrorState(bool ErrorState)
         {
@@ -556,6 +574,9 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnPaint(PaintEventArgs pevent)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             base.OnPaint(pevent);
 
             Graphics g = pevent.Graphics;
@@ -610,7 +631,7 @@ namespace ReaLTaiizor.Controls
                     if (hasHint && UseTallSize && (Focused || userTextPresent))
                     {
                         // hint text
-                        hintRect = new Rectangle(_left_padding, (int)(HINT_TEXT_SMALL_Y * GetDeviceScaleFactor()), Width - _left_padding - _right_padding, (int)(HINT_TEXT_SMALL_SIZE * GetDeviceScaleFactor()));
+                        hintRect = new Rectangle(_left_padding, (int)(HINT_TEXT_SMALL_Y * ScaleFactor), Width - _left_padding - _right_padding, (int)(HINT_TEXT_SMALL_SIZE * ScaleFactor));
                         hintTextSize = 12;
                     }
 
@@ -630,9 +651,9 @@ namespace ReaLTaiizor.Controls
                     {
                         hintRect = new Rectangle(
                             _left_padding,
-                            userTextPresent ? (int)(HINT_TEXT_SMALL_Y * GetDeviceScaleFactor()) : ClientRectangle.Y + (int)(((int)(HINT_TEXT_SMALL_Y * GetDeviceScaleFactor()) - ClientRectangle.Y) * animationProgress),
+                            userTextPresent ? (int)(HINT_TEXT_SMALL_Y * ScaleFactor) : ClientRectangle.Y + (int)(((int)(HINT_TEXT_SMALL_Y * ScaleFactor) - ClientRectangle.Y) * animationProgress),
                             Width - _left_padding - _right_padding,
-                            userTextPresent ? (int)(HINT_TEXT_SMALL_SIZE * GetDeviceScaleFactor()) : (int)(LINE_Y + (((int)(HINT_TEXT_SMALL_SIZE * GetDeviceScaleFactor()) - LINE_Y) * animationProgress)));
+                            userTextPresent ? (int)(HINT_TEXT_SMALL_SIZE * ScaleFactor) : (int)(LINE_Y + (((int)(HINT_TEXT_SMALL_SIZE * ScaleFactor) - LINE_Y) * animationProgress)));
                         hintTextSize = userTextPresent ? 12 : (int)(16 + ((12 - 16) * animationProgress));
                     }
 
@@ -664,26 +685,26 @@ namespace ReaLTaiizor.Controls
                 string textBeforeSelection = textToDisplay.Substring(0, SelectionStart);
                 textSelected = textToDisplay.Substring(SelectionStart, SelectionLength);
 
-                IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1, GetDeviceScaleFactor());
+                IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor);
 
                 int selectX = NativeText.MeasureLogString(textBeforeSelection, font).Width;
                 int selectWidth = NativeText.MeasureLogString(textSelected, font).Width;
 
                 textSelectRect = new Rectangle(
                     textRect.X + selectX, UseTallSize ? hasHint ?
-                     textRect.Y + (int)(BOTTOM_PADDING * GetDeviceScaleFactor()) : // tall and hint
-                     (LINE_Y / 3) - (int)(BOTTOM_PADDING * GetDeviceScaleFactor()) : // tall and no hint
-                     (int)(BOTTOM_PADDING * GetDeviceScaleFactor()), // not tall
+                     textRect.Y + (int)(BOTTOM_PADDING * ScaleFactor) : // tall and hint
+                     (LINE_Y / 3) - (int)(BOTTOM_PADDING * ScaleFactor) : // tall and no hint
+                     (int)(BOTTOM_PADDING * ScaleFactor), // not tall
                     selectWidth,
                     UseTallSize ? hasHint ?
-                    textRect.Height - ((int)(BOTTOM_PADDING * GetDeviceScaleFactor()) * 2) : // tall and hint
+                    textRect.Height - ((int)(BOTTOM_PADDING * ScaleFactor) * 2) : // tall and hint
                     (int)(LINE_Y / 2) : // tall and no hint
-                    LINE_Y - ((int)(BOTTOM_PADDING * GetDeviceScaleFactor()) * 2)); // not tall
+                    LINE_Y - ((int)(BOTTOM_PADDING * ScaleFactor) * 2)); // not tall
 
                 // Draw user text
                 NativeText.DrawTransparentText(
                     textToDisplay,
-                    SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1,GetDeviceScaleFactor()),
+                    SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1,ScaleFactor),
                     Enabled ? SkinManager.TextHighEmphasisColor : SkinManager.TextDisabledOrHintColor,
                     textRect.Location,
                     textRect.Size,
@@ -696,7 +717,7 @@ namespace ReaLTaiizor.Controls
                 g.FillRectangle(UseAccent ? SkinManager.ColorScheme.AccentBrush : SkinManager.ColorScheme.DarkPrimaryBrush, textSelectRect);
 
                 // Draw Selected Text
-                IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1, GetDeviceScaleFactor());
+                IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor);
                 using MaterialNativeTextRenderer NativeText = new(g);
                 NativeText.DrawTransparentText(
                     textSelected,
@@ -712,7 +733,7 @@ namespace ReaLTaiizor.Controls
             // Draw hint text
             if (hasHint && (UseTallSize || string.IsNullOrEmpty(Text)))
             {
-                IntPtr font = SkinManager.GetTextBoxFontBySize(hintTextSize, GetDeviceScaleFactor());
+                IntPtr font = SkinManager.GetTextBoxFontBySize(hintTextSize, ScaleFactor);
                 using MaterialNativeTextRenderer NativeText = new(g);
                 NativeText.DrawTransparentText(
                 Hint,
@@ -792,8 +813,8 @@ namespace ReaLTaiizor.Controls
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-            Size = new Size(Width, (int)(HEIGHT * GetDeviceScaleFactor()));
-            LINE_Y = (int)(HEIGHT * GetDeviceScaleFactor()) - (int)(BOTTOM_PADDING * GetDeviceScaleFactor());
+            Size = new Size(Width, (int)(HEIGHT * ScaleFactor));
+            LINE_Y = (int)(HEIGHT * ScaleFactor) - (int)(BOTTOM_PADDING * ScaleFactor);
             UpdateRects(false);
             preProcessIcons();
 
@@ -878,9 +899,6 @@ namespace ReaLTaiizor.Controls
 
         [DllImport(@"User32.dll", EntryPoint = @"SendMessage", CharSet = CharSet.Auto)]
         private static extern int SendMessageRefRect(IntPtr hWnd, uint msg, int wParam, ref RECT rect);
-
-        [DllImport("gdi32.dll", ExactSpelling = true)]
-        private static extern bool DeleteObject(IntPtr hObject);
 
         [StructLayout(LayoutKind.Sequential)]
         private struct RECT

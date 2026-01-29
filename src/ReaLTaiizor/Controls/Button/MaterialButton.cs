@@ -31,6 +31,40 @@ namespace ReaLTaiizor.Controls
         private const int HEIGHTDEFAULT = 36;
         private const int HEIGHTDENSE = 32;
 
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+            set
+            {
+                _scaleRatio = value;
+            }
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+            set
+            {
+                _scaleRatioSqrt = value;
+            }
+        }
+
         // icons
         private TextureBrush iconsBrushes;
 
@@ -122,11 +156,11 @@ namespace ReaLTaiizor.Controls
                 field = value;
                 if (field == MaterialButtonDensity.Dense)
                 {
-                    Size = new Size(Size.Width, (int)(HEIGHTDENSE * GetDeviceScaleFactor()));
+                    Size = new Size(Size.Width, (int)(HEIGHTDENSE * ScaleFactor));
                 }
                 else
                 {
-                    Size = new Size(Size.Width, (int)(HEIGHTDEFAULT * GetDeviceScaleFactor()));
+                    Size = new Size(Size.Width, (int)(HEIGHTDEFAULT * ScaleFactor));
                 }
 
                 Invalidate();
@@ -331,7 +365,7 @@ namespace ReaLTaiizor.Controls
 
                 if (!string.IsNullOrEmpty(value))
                 {
-                    _textSize = CreateGraphics().MeasureString(value.ToUpper(), SkinManager.GetFontByType(MaterialSkinManager.FontType.Button, GetDeviceScaleFactor()));
+                    _textSize = CreateGraphics().MeasureString(value.ToUpper(), SkinManager.GetFontByType(MaterialSkinManager.FontType.Button, ScaleFactor));
                 }
                 else
                 {
@@ -368,23 +402,6 @@ namespace ReaLTaiizor.Controls
             MaterialDrawHelper.DrawSquareShadow(gp, rect);
         }
 
-
-        
-        private float GetDeviceScaleFactor()
-        {
-            // 96 is Windows default scaling DPI（100% scale）
-            float scalingFactor = (float)this.DeviceDpi / 96f;
-            return scalingFactor;
-        }
-
-        private float GetDeviceScaleFactorSqrt()
-        {
-            // 96 is Windows default scaling DPI（100% scale）
-            float scalingFactor = (float)Math.Sqrt((float)this.DeviceDpi / 96f);
-            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
-            return scalingFactor;
-        }
-
         private void preProcessIcons()
         {
             if (Icon == null)
@@ -393,28 +410,28 @@ namespace ReaLTaiizor.Controls
             }
 
             int newWidth, newHeight;
-            //Resize icon if greater than (int)(ICON_SIZE * GetDeviceScaleFactor())
-            if (Icon.Width > (int)(ICON_SIZE * GetDeviceScaleFactor()) || Icon.Height > (int)(ICON_SIZE * GetDeviceScaleFactor()))
+            //Resize icon if greater than (int)(ICON_SIZE * ScaleFactor)
+            if (Icon.Width > (int)(ICON_SIZE * ScaleFactor) || Icon.Height > (int)(ICON_SIZE * ScaleFactor))
             {
                 //calculate aspect ratio
                 float aspect = Icon.Width / (float)Icon.Height;
 
                 //calculate new dimensions based on aspect ratio
-                newWidth = (int)((int)(ICON_SIZE * GetDeviceScaleFactor()) * aspect);
+                newWidth = (int)((int)(ICON_SIZE * ScaleFactor) * aspect);
                 newHeight = (int)(newWidth / aspect);
 
                 //if one of the two dimensions exceed the box dimensions
-                if (newWidth > (int)(ICON_SIZE * GetDeviceScaleFactor()) || newHeight > (int)(ICON_SIZE * GetDeviceScaleFactor()))
+                if (newWidth > (int)(ICON_SIZE * ScaleFactor) || newHeight > (int)(ICON_SIZE * ScaleFactor))
                 {
                     //depending on which of the two exceeds the box dimensions set it as the box dimension and calculate the other one based on the aspect ratio
                     if (newWidth > newHeight)
                     {
-                        newWidth = (int)(ICON_SIZE * GetDeviceScaleFactor());
+                        newWidth = (int)(ICON_SIZE * ScaleFactor);
                         newHeight = (int)(newWidth / aspect);
                     }
                     else
                     {
-                        newHeight = (int)(ICON_SIZE * GetDeviceScaleFactor());
+                        newHeight = (int)(ICON_SIZE * ScaleFactor);
                         newWidth = (int)(newHeight * aspect);
                     }
                 }
@@ -447,7 +464,7 @@ namespace ReaLTaiizor.Controls
             grayImageAttributes.SetColorMatrix(colorMatrixGray, ColorMatrixFlag.Default, ColorAdjustType.Bitmap);
 
             // Image Rect
-            Rectangle destRect = new(0, 0, (int)(ICON_SIZE * GetDeviceScaleFactor()), (int)(ICON_SIZE * GetDeviceScaleFactor()));
+            Rectangle destRect = new(0, 0, (int)(ICON_SIZE * ScaleFactor), (int)(ICON_SIZE * ScaleFactor));
 
             // Create a pre-processed copy of the image (GRAY)
             Bitmap bgray = new(destRect.Width, destRect.Height);
@@ -469,7 +486,7 @@ namespace ReaLTaiizor.Controls
             };
 
             // Translate the brushes to the correct positions
-            Rectangle iconRect = new(8, (Height / 2) - ((int)(ICON_SIZE * GetDeviceScaleFactor()) / 2), (int)(ICON_SIZE * GetDeviceScaleFactor()), (int)(ICON_SIZE * GetDeviceScaleFactor()));
+            Rectangle iconRect = new(8, (Height / 2) - ((int)(ICON_SIZE * ScaleFactor) / 2), (int)(ICON_SIZE * ScaleFactor), (int)(ICON_SIZE * ScaleFactor));
 
             textureBrushGray.TranslateTransform(iconRect.X + (iconRect.Width / 2) - (IconResized.Width / 2),
                                                 iconRect.Y + (iconRect.Height / 2) - (IconResized.Height / 2));
@@ -483,6 +500,9 @@ namespace ReaLTaiizor.Controls
         /// <param name="pevent">The pevent<see cref="PaintEventArgs"/></param>
         protected override void OnPaint(PaintEventArgs pevent)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            
             Graphics g = pevent.Graphics;
 
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
@@ -586,8 +606,8 @@ namespace ReaLTaiizor.Controls
             Rectangle textRect = ClientRectangle;
             if (Icon != null)
             {
-                textRect.Width -= 8 + (int)(ICON_SIZE * GetDeviceScaleFactor()) + 4 + 8; // left padding + icon width + space between Icon and Text + right padding
-                textRect.X += 8 + (int)(ICON_SIZE * GetDeviceScaleFactor()) + 4; // left padding + icon width + space between Icon and Text
+                textRect.Width -= 8 + (int)(ICON_SIZE * ScaleFactor) + 4 + 8; // left padding + icon width + space between Icon and Text + right padding
+                textRect.X += 8 + (int)(ICON_SIZE * ScaleFactor) + 4; // left padding + icon width + space between Icon and Text
             }
 
             Color textColor = Enabled ? (HighEmphasis ? (Type is MaterialButtonType.Text or MaterialButtonType.Outlined) ?
@@ -601,7 +621,7 @@ namespace ReaLTaiizor.Controls
 
             using (MaterialNativeTextRenderer NativeText = new(g))
             {
-                IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Button, GetDeviceScaleFactor());
+                IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Button, ScaleFactor);
                 NativeText.DrawMultilineTransparentText(
                     CharacterCasing == CharacterCasingEnum.Upper ? base.Text.ToUpper() : CharacterCasing == CharacterCasingEnum.Lower ? base.Text.ToLower() :
                         CharacterCasing == CharacterCasingEnum.Title ? CultureInfo.CurrentCulture.TextInfo.ToTitleCase(base.Text.ToLower()) : base.Text,
@@ -613,7 +633,7 @@ namespace ReaLTaiizor.Controls
             }
 
             //Icon
-            Rectangle iconRect = new(8, (Height / 2) - ((int)(ICON_SIZE * GetDeviceScaleFactor()) / 2), (int)(ICON_SIZE * GetDeviceScaleFactor()), (int)(ICON_SIZE * GetDeviceScaleFactor()));
+            Rectangle iconRect = new(8, (Height / 2) - ((int)(ICON_SIZE * ScaleFactor) / 2), (int)(ICON_SIZE * ScaleFactor), (int)(ICON_SIZE * ScaleFactor));
 
             if (string.IsNullOrEmpty(Text))
             {
@@ -659,27 +679,27 @@ namespace ReaLTaiizor.Controls
             {
                 // 24 is for icon size
                 // 4 is for the space between icon & text
-                extra += (int)(ICON_SIZE * GetDeviceScaleFactor()) + 4;
+                extra += (int)(ICON_SIZE * ScaleFactor) + 4;
             }
 
             if (AutoSize)
             {
                 s.Width = (int)Math.Ceiling(_textSize.Width);
                 s.Width += extra;
-                s.Height = (int)(HEIGHTDEFAULT * GetDeviceScaleFactor());
+                s.Height = (int)(HEIGHTDEFAULT * ScaleFactor);
             }
             else
             {
                 s.Width += extra;
-                s.Height = (int)(HEIGHTDEFAULT * GetDeviceScaleFactor());
+                s.Height = (int)(HEIGHTDEFAULT * ScaleFactor);
             }
-            if (Icon != null && Text.Length == 0 && s.Width < (int)(MINIMUMWIDTHICONONLY * GetDeviceScaleFactor()))
+            if (Icon != null && Text.Length == 0 && s.Width < (int)(MINIMUMWIDTHICONONLY * ScaleFactor))
             {
-                s.Width = (int)(MINIMUMWIDTHICONONLY * GetDeviceScaleFactor());
+                s.Width = (int)(MINIMUMWIDTHICONONLY * ScaleFactor);
             }
-            else if (s.Width < (int)(MINIMUMWIDTH * GetDeviceScaleFactor()))
+            else if (s.Width < (int)(MINIMUMWIDTH * ScaleFactor))
             {
-                s.Width = (int)(MINIMUMWIDTH * GetDeviceScaleFactor());
+                s.Width = (int)(MINIMUMWIDTH * ScaleFactor);
             }
 
             return s;
@@ -751,8 +771,6 @@ namespace ReaLTaiizor.Controls
             };
         }
 
-        [DllImport("gdi32.dll", ExactSpelling = true)]
-        private static extern bool DeleteObject(IntPtr hObject);
     }
 
     #endregion
