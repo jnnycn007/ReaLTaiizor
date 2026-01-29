@@ -841,7 +841,6 @@ namespace ReaLTaiizor.Controls
 
         private Dictionary<string, TextureBrush> iconsBrushes;
         private Dictionary<string, TextureBrush> iconsErrorBrushes;
-        private List<IntPtr> LFontToBeReleased = new List<IntPtr>();
 
         protected readonly MaterialBaseTextBox baseTextBox;
 
@@ -1030,7 +1029,6 @@ namespace ReaLTaiizor.Controls
                     hasHint && UseTallSize ? LINE_Y - (hintRect.Y + hintRect.Height) : LINE_Y);
 
                 IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1, GetDeviceScaleFactor());
-                LFontToBeReleased.Add(font);
                 // Draw Prefix text 
                 NativeText.DrawTransparentText(
                 PrefixSuffixText,
@@ -1054,7 +1052,6 @@ namespace ReaLTaiizor.Controls
 
                 // Draw Suffix text 
                 IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1, GetDeviceScaleFactor());
-                LFontToBeReleased.Add(font);
                 NativeText.DrawTransparentText(
                 PrefixSuffixText,
                 font,
@@ -1066,7 +1063,6 @@ namespace ReaLTaiizor.Controls
 
             // Draw hint text
             IntPtr font2 = SkinManager.GetTextBoxFontBySize(hintTextSize, GetDeviceScaleFactor());
-            LFontToBeReleased.Add(font2);
             if (hasHint && UseTallSize && (isFocused || userTextPresent))
             {
                 using MaterialNativeTextRenderer NativeText = new(g);
@@ -1086,7 +1082,6 @@ namespace ReaLTaiizor.Controls
 
             // Draw helper text
             IntPtr font3 = SkinManager.GetTextBoxFontBySize(hintTextSize, GetDeviceScaleFactor());
-            LFontToBeReleased.Add(font3);
             if (ShowAssistiveText && isFocused && !_errorState)
             {
                 using MaterialNativeTextRenderer NativeText = new(g);
@@ -1106,7 +1101,6 @@ namespace ReaLTaiizor.Controls
 
             // Draw error message
             IntPtr font4 = SkinManager.GetTextBoxFontBySize(hintTextSize, GetDeviceScaleFactor());
-            LFontToBeReleased.Add(font4);
             if (ShowAssistiveText && _errorState && ErrorMessage != null)
             {
                 using MaterialNativeTextRenderer NativeText = new(g);
@@ -1223,18 +1217,6 @@ namespace ReaLTaiizor.Controls
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                // Release handle from CreateFont / LogFont
-                foreach (IntPtr handle in LFontToBeReleased)
-                {
-                    if (handle != IntPtr.Zero)
-                    {
-                        DeleteObject(handle);
-                    }
-                }
-                LFontToBeReleased.Clear();
-            }
             base.Dispose(disposing);
         }
 
@@ -1471,7 +1453,6 @@ namespace ReaLTaiizor.Controls
             if (PrefixSuffix == PrefixSuffixTypes.Prefix && PrefixSuffixText != null && PrefixSuffixText.Length > 0)
             {
                 IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1, GetDeviceScaleFactor());
-                LFontToBeReleased.Add(font);
                 using MaterialNativeTextRenderer NativeText = new(CreateGraphics());
                 _prefix_padding = NativeText.MeasureLogString(PrefixSuffixText, font).Width + (int)(PREFIX_SUFFIX_PADDING * GetDeviceScaleFactor());
                 _left_padding += _prefix_padding;
@@ -1484,7 +1465,6 @@ namespace ReaLTaiizor.Controls
             if (PrefixSuffix == PrefixSuffixTypes.Suffix && PrefixSuffixText != null && PrefixSuffixText.Length > 0)
             {
                 IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1, GetDeviceScaleFactor());
-                LFontToBeReleased.Add(font);
                 using MaterialNativeTextRenderer NativeText = new(CreateGraphics());
                 _suffix_padding = NativeText.MeasureLogString(PrefixSuffixText, font).Width + (int)(PREFIX_SUFFIX_PADDING * GetDeviceScaleFactor());
                 _right_padding += _suffix_padding;

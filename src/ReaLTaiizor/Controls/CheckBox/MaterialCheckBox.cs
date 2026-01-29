@@ -81,7 +81,6 @@ namespace ReaLTaiizor.Controls
         private static Point[] CheckmarkLine;
         private bool hovered = false;
         private CheckState _oldCheckState;
-        private List<IntPtr> LFontToBeReleased = new List<IntPtr>();
         #endregion
 
         #region Constructor
@@ -393,18 +392,6 @@ namespace ReaLTaiizor.Controls
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                // Release handle from CreateFont / LogFont
-                foreach (IntPtr handle in LFontToBeReleased)
-                {
-                    if (handle != IntPtr.Zero)
-                    {
-                        DeleteObject(handle);
-                    }
-                }
-                LFontToBeReleased.Clear();
-            }
             base.Dispose(disposing);
         }
         #endregion

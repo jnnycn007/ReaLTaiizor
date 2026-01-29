@@ -114,18 +114,6 @@ namespace ReaLTaiizor.Controls
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                // Release handle from CreateFont / LogFont
-                foreach (IntPtr handle in LFontToBeReleased)
-                {
-                    if (handle != IntPtr.Zero)
-                    {
-                        DeleteObject(handle);
-                    }
-                }
-                LFontToBeReleased.Clear();
-            }
             base.Dispose(disposing);
         }
 
@@ -703,7 +691,6 @@ namespace ReaLTaiizor.Controls
         private readonly int SB_LINEDOWN = 1;
         private readonly uint WM_VSCROLL = 277;
         private readonly IntPtr ptrLparam = new(0);
-        private List<IntPtr> LFontToBeReleased = new List<IntPtr>();
 
         protected readonly MaterialBaseTextBox baseTextBox;
         public MaterialMultiLineTextBoxEdit()

@@ -84,11 +84,6 @@ namespace ReaLTaiizor.Controls
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                // Release handle from CreateFont / LogFont
-                ((MaterialToolStripRender)Renderer).Dispose();
-            }
             base.Dispose(disposing);
         }
 
@@ -204,7 +199,6 @@ namespace ReaLTaiizor.Controls
 
         private const int LEFT_PADDING = 16;
         private const int RIGHT_PADDING = 8;
-        private List<IntPtr> LFontToBeReleased = new List<IntPtr>();
 
         //Properties for managing the material design properties
         public int Depth { get; set; }
@@ -222,7 +216,6 @@ namespace ReaLTaiizor.Controls
             Rectangle textRect = new((int)(LEFT_PADDING * GetDeviceScaleFactor()), itemRect.Y, itemRect.Width - ((int)(LEFT_PADDING * GetDeviceScaleFactor()) + (int)(RIGHT_PADDING * GetDeviceScaleFactor())), itemRect.Height);
 
             IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body2, GetDeviceScaleFactor());
-            LFontToBeReleased.Add(font);
             using MaterialNativeTextRenderer NativeText = new(g);
             NativeText.DrawTransparentText(e.Text, font,
                 e.Item.Enabled ? SkinManager.TextHighEmphasisColor : SkinManager.TextDisabledOrHintColor,
@@ -301,17 +294,6 @@ namespace ReaLTaiizor.Controls
             return new Rectangle(0, item.ContentRectangle.Y, item.ContentRectangle.Width, item.ContentRectangle.Height);
         }
 
-        public void Dispose()
-        {
-            foreach (IntPtr handle in LFontToBeReleased)
-            {
-                if (handle != IntPtr.Zero)
-                {
-                    DeleteObject(handle);
-                }
-            }
-            LFontToBeReleased.Clear();
-        }
 
         [DllImport("gdi32.dll", ExactSpelling = true)]
         private static extern bool DeleteObject(IntPtr hObject);

@@ -37,6 +37,8 @@ namespace ReaLTaiizor.Manager
 
         public int FORM_PADDING = 14;
 
+        private readonly object _fontLock = new(); // To avoid cross-thread unexpected behaviour.
+
         // Constructor
         private MaterialSkinManager()
         {
@@ -62,7 +64,7 @@ namespace ReaLTaiizor.Manager
             }
 
             // create and save font handles for GDI
-            logicalFonts = new Dictionary<string, IntPtr>(18)
+            logicalFonts = new Dictionary<string, IntPtr>()
             {
                 { "H1", createLogicalFont("Roboto Light", 96, MaterialNativeTextRenderer.logFontWeight.FW_LIGHT) },
                 { "H2", createLogicalFont("Roboto Light", 60, MaterialNativeTextRenderer.logFontWeight.FW_LIGHT) },
@@ -331,14 +333,27 @@ namespace ReaLTaiizor.Manager
 
         public IntPtr GetTextBoxFontBySize(int size, float scaleRatio)
         {
-            var hOriginalFont = GetTextBoxFontBySize(size);
-            if (scaleRatio == 1) return hOriginalFont;
-            LogFont lf = new LogFont();
-            if (GetObject(hOriginalFont, Marshal.SizeOf(lf), lf) == 0)
+            int scaleKey = (int)Math.Round(scaleRatio * 100);
+            string key = "textBox" + Math.Min(16, Math.Max(12, size)).ToString() + "-scale" + scaleKey;
+            if (logicalFonts.ContainsKey(key))
             {
-                return IntPtr.Zero; // Failed fetching handle
+                return logicalFonts[key];
             }
-            return createLogicalFont(lf.lfFaceName, (int)(-lf.lfHeight * scaleRatio), (logFontWeight)System.Enum.ToObject(MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM.GetType(), lf.lfWeight), lfItalic: lf.lfItalic);
+            lock (_fontLock)
+            {
+                if (logicalFonts.TryGetValue(key, out var h))
+                    return h;
+                var hOriginalFont = GetTextBoxFontBySize(size);
+                if (scaleRatio == 1) return hOriginalFont;
+                LogFont lf = new LogFont();
+                if (GetObject(hOriginalFont, Marshal.SizeOf(lf), lf) == 0)
+                {
+                    return IntPtr.Zero; // Failed fetching handle
+                }
+                IntPtr createdFont = createLogicalFont(lf.lfFaceName, (int)(-lf.lfHeight * scaleRatio), (logFontWeight)System.Enum.ToObject(MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM.GetType(), lf.lfWeight), lfItalic: lf.lfItalic);
+                logicalFonts.Add(key, createdFont);
+                return createdFont;
+            }
         }
 
         public IntPtr GetLogFontByType(FontType type)
@@ -348,15 +363,25 @@ namespace ReaLTaiizor.Manager
 
         public IntPtr GetLogFontByType(FontType type, float scaleRatio)
         {
-            var hOriginalFont = logicalFonts[System.Enum.GetName(typeof(FontType), type)];
-            if (scaleRatio == 1) return hOriginalFont;
-            LogFont lf = new LogFont();
-            if (GetObject(hOriginalFont, Marshal.SizeOf(lf), lf) == 0)
+            int scaleKey = (int)Math.Round(scaleRatio * 100);
+            string key = System.Enum.GetName(typeof(FontType), type) + "-scale" + scaleKey;
+            if (logicalFonts.ContainsKey(key))
             {
-                return IntPtr.Zero; // Failed fetching handle
+                return logicalFonts[key];
             }
-            return createLogicalFont(lf.lfFaceName, (int)(-lf.lfHeight * scaleRatio), (logFontWeight)System.Enum.ToObject(MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM.GetType(),lf.lfWeight), lfItalic:lf.lfItalic);
-            
+            lock (_fontLock)
+            {
+                var hOriginalFont = logicalFonts[System.Enum.GetName(typeof(FontType), type)];
+                if (scaleRatio == 1) return hOriginalFont;
+                LogFont lf = new LogFont();
+                if (GetObject(hOriginalFont, Marshal.SizeOf(lf), lf) == 0)
+                {
+                    return IntPtr.Zero; // Failed fetching handle
+                }
+                IntPtr createdFont = createLogicalFont(lf.lfFaceName, (int)(-lf.lfHeight * scaleRatio), (logFontWeight)System.Enum.ToObject(MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM.GetType(), lf.lfWeight), lfItalic: lf.lfItalic);
+                logicalFonts.Add(key, createdFont);
+                return createdFont;
+            }
         }
         
         // Font stuff

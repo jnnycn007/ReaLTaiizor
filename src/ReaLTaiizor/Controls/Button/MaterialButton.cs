@@ -203,22 +203,11 @@ namespace ReaLTaiizor.Controls
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                // Release handle from CreateFont / LogFont
-                foreach (IntPtr handle in LFontToBeReleased)
-                {
-                    if (handle != IntPtr.Zero)
-                    {
-                        DeleteObject(handle);
-                    }
-                }
-                LFontToBeReleased.Clear();
-            }
             base.Dispose(disposing);
         }
 
         private bool _shadowDrawEventSubscribed = false;
+
 
         private void AddShadowPaintEvent(Control control, PaintEventHandler shadowPaintEvent)
         {
@@ -247,7 +236,7 @@ namespace ReaLTaiizor.Controls
         private readonly AnimationManager _hoverAnimationManager = null;
         private readonly AnimationManager _focusAnimationManager = null;
         private readonly AnimationManager _animationManager = null;
-        private List<IntPtr> LFontToBeReleased = new List<IntPtr>();
+        
 
         /// <summary>
         /// Defines the _textSize
@@ -612,10 +601,11 @@ namespace ReaLTaiizor.Controls
 
             using (MaterialNativeTextRenderer NativeText = new(g))
             {
+                IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Button, GetDeviceScaleFactor());
                 NativeText.DrawMultilineTransparentText(
                     CharacterCasing == CharacterCasingEnum.Upper ? base.Text.ToUpper() : CharacterCasing == CharacterCasingEnum.Lower ? base.Text.ToLower() :
                         CharacterCasing == CharacterCasingEnum.Title ? CultureInfo.CurrentCulture.TextInfo.ToTitleCase(base.Text.ToLower()) : base.Text,
-                    SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Button, GetDeviceScaleFactor()),
+                    font,
                     textColor,
                     textRect.Location,
                     textRect.Size,

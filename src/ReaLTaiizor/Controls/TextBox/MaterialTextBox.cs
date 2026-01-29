@@ -159,7 +159,6 @@ namespace ReaLTaiizor.Controls
         private readonly AnimationManager _animationManager;
         private Dictionary<string, TextureBrush> iconsBrushes;
         private Dictionary<string, TextureBrush> iconsErrorBrushes;
-        private List<IntPtr> LFontToBeReleased = new List<IntPtr>();
 
         [Category("Material")]
         [Browsable(true)]
@@ -308,18 +307,6 @@ namespace ReaLTaiizor.Controls
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                // Release handle from CreateFont / LogFont
-                foreach (IntPtr handle in LFontToBeReleased)
-                {
-                    if (handle != IntPtr.Zero)
-                    {
-                        DeleteObject(handle);
-                    }
-                }
-                LFontToBeReleased.Clear();
-            }
             base.Dispose(disposing);
         }
 
@@ -678,7 +665,6 @@ namespace ReaLTaiizor.Controls
                 textSelected = textToDisplay.Substring(SelectionStart, SelectionLength);
 
                 IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1, GetDeviceScaleFactor());
-                LFontToBeReleased.Add(font);
 
                 int selectX = NativeText.MeasureLogString(textBeforeSelection, font).Width;
                 int selectWidth = NativeText.MeasureLogString(textSelected, font).Width;
@@ -711,7 +697,6 @@ namespace ReaLTaiizor.Controls
 
                 // Draw Selected Text
                 IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1, GetDeviceScaleFactor());
-                LFontToBeReleased.Add(font);
                 using MaterialNativeTextRenderer NativeText = new(g);
                 NativeText.DrawTransparentText(
                     textSelected,
@@ -728,7 +713,6 @@ namespace ReaLTaiizor.Controls
             if (hasHint && (UseTallSize || string.IsNullOrEmpty(Text)))
             {
                 IntPtr font = SkinManager.GetTextBoxFontBySize(hintTextSize, GetDeviceScaleFactor());
-                LFontToBeReleased.Add(font);
                 using MaterialNativeTextRenderer NativeText = new(g);
                 NativeText.DrawTransparentText(
                 Hint,
