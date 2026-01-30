@@ -336,30 +336,49 @@ namespace ReaLTaiizor.Controls
                 // Image Rect
                 Rectangle destRect = new(0, 0, ShowTabControl.ImageList.Images[tabPage.ImageKey].Width, ShowTabControl.ImageList.Images[tabPage.ImageKey].Height);
 
-                // Create a pre-processed copy of the image (GRAY)
-                Bitmap bgray = new(destRect.Width, destRect.Height);
+                // 1.Obtain the original icon dimensions and calculate the scaled physical dimensions.
+                Image originalImg = ShowTabControl.ImageList.Images[tabPage.ImageKey];
+                int sW = (int)(originalImg.Width * ScaleFactor);
+                int sH = (int)(originalImg.Height * ScaleFactor);
+
+                Bitmap bgray = new(sW, sH); // Create a sufficiently large bitmap
                 using (Graphics gGray = Graphics.FromImage(bgray))
                 {
-                    gGray.DrawImage(ShowTabControl.ImageList.Images[tabPage.ImageKey],
-                        new Point[] {
-                                new(0, 0),
-                                new(destRect.Width, 0),
-                                new(0, destRect.Height),
-                        },
-                        destRect, GraphicsUnit.Pixel, grayImageAttributes);
+                    gGray.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    gGray.Clear(Color.Transparent); // Clear Bg
+
+                    // Here 'destRect' is target region on bitmap
+                    Rectangle destRectScaled = new(0, 0, sW, sH);
+
+                    gGray.DrawImage(
+                        originalImg,
+                        destRectScaled,
+                        0, 0,
+                        originalImg.Width,
+                        originalImg.Height,
+                        GraphicsUnit.Pixel,
+                        grayImageAttributes
+                        );  
                 }
 
                 // Create a pre-processed copy of the image (PRIMARY COLOR)
-                Bitmap bcolor = new(destRect.Width, destRect.Height);
+                Bitmap bcolor = new(sW, sH);
                 using (Graphics gColor = Graphics.FromImage(bcolor))
                 {
-                    gColor.DrawImage(ShowTabControl.ImageList.Images[tabPage.ImageKey],
-                        new Point[] {
-                                new(0, 0),
-                                new(destRect.Width, 0),
-                                new(0, destRect.Height),
-                        },
-                        destRect, GraphicsUnit.Pixel, colorImageAttributes);
+                    gColor.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                    gColor.Clear(Color.Transparent); 
+
+                    Rectangle destRectScaled = new(0, 0, sW, sH);
+
+                    gColor.DrawImage(
+                        originalImg,
+                        destRectScaled,
+                        0, 0,
+                        originalImg.Width,
+                        originalImg.Height,
+                        GraphicsUnit.Pixel,
+                        colorImageAttributes
+                        ); 
                 }
 
                 // added processed image to brush for drawing
@@ -384,9 +403,22 @@ namespace ReaLTaiizor.Controls
 
                 // add to dictionary
                 string ik = string.Concat(tabPage.ImageKey, "_", tabPage.Name);
-                iconsBrushes.Add(ik, textureBrushGray);
-                iconsSelectedBrushes.Add(ik, textureBrushColor);
-                iconsSize.Add(ik, new Rectangle(0, 0, iconRect.Width, iconRect.Height));
+                TextureBrush tBrush = new TextureBrush(bgray);
+                tBrush.WrapMode = WrapMode.Clamp;
+                TextureBrush tBrushColor = new TextureBrush(bcolor);
+                tBrushColor.WrapMode = WrapMode.Clamp;
+                // calc center positions.
+                float x = _drawerItemRects[currentTabIndex].X + (drawerItemHeight / 2.0f) - (sW / 2.0f);
+                float y = _drawerItemRects[currentTabIndex].Y + (drawerItemHeight / 2.0f) - (sH / 2.0f);
+
+                tBrush.TranslateTransform(x, y);
+                iconsBrushes.Add(ik, tBrush);
+                tBrushColor.TranslateTransform(x, y);
+                iconsSelectedBrushes.Add(ik, tBrushColor);
+
+                //iconsBrushes.Add(ik, textureBrushGray);
+                //iconsSelectedBrushes.Add(ik, textureBrushColor);
+                iconsSize.Add(ik, new Rectangle(0, 0, (int)(iconRect.Width * ScaleFactor), (int)(iconRect.Height * ScaleFactor)));
             }
         }
 
@@ -409,6 +441,40 @@ namespace ReaLTaiizor.Controls
         public int MinWidth;
         private int _lastMouseY;
         private int _lastLocationY;
+
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+            set
+            {
+                _scaleRatio = value;
+            }
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+            set
+            {
+                _scaleRatioSqrt = value;
+            }
+        }
 
         public MaterialDrawer()
         {
@@ -494,7 +560,7 @@ namespace ReaLTaiizor.Controls
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected override void InitLayout()
         {
-            drawerItemHeight = (TAB_HEADER_PADDING * 2) - (SkinManager.FORM_PADDING / 2);
+            drawerItemHeight = ((int)(TAB_HEADER_PADDING * ScaleFactor) * 2) - (SkinManager.FORM_PADDING / 2);
             MinWidth = (int)((SkinManager.FORM_PADDING * 1.5) + drawerItemHeight);
             _showHideAnimManager.SetProgress(_isOpen ? 0 : 1);
             showHideAnimation();
@@ -538,8 +604,17 @@ namespace ReaLTaiizor.Controls
             UpdateTabRects();
         }
 
+        protected override void OnDpiChangedAfterParent(EventArgs e)
+        {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            base.OnDpiChangedAfterParent(e);
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
             Paint(e);
         }
 
@@ -597,7 +672,7 @@ namespace ReaLTaiizor.Controls
                 // Background
                 Brush bgBrush = new SolidBrush(Color.FromArgb(CalculateAlpha(60, 0, currentTabIndex, clickAnimProgress, 1 - showHideAnimProgress),
                     UseColors ? BackgroundWithAccent ? SkinManager.ColorScheme.AccentColor : SkinManager.ColorScheme.LightPrimaryColor : // using colors
-                    BackgroundWithAccent ? SkinManager.ColorScheme.AccentColor : // defaul accent
+                    BackgroundWithAccent ? SkinManager.ColorScheme.AccentColor : // default accent
                     SkinManager.Theme == MaterialSkinManager.Themes.LIGHT ? SkinManager.ColorScheme.PrimaryColor : // default light
                     SkinManager.ColorScheme.LightPrimaryColor)); // default dark
                 g.FillPath(bgBrush, _drawerItemPaths[currentTabIndex]);
@@ -610,7 +685,7 @@ namespace ReaLTaiizor.Controls
                     (currentTabIndex == ShowTabControl.SelectedIndex ? (HighlightWithAccent ? SkinManager.ColorScheme.AccentColor : SkinManager.ColorScheme.PrimaryColor) : // selected
                     SkinManager.TextHighEmphasisColor));
 
-                IntPtr textFont = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle2);
+                IntPtr textFont = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle2, ScaleFactor);
 
                 Rectangle textRect = _drawerItemRects[currentTabIndex];
                 textRect.X += ShowTabControl.ImageList != null ? drawerItemHeight : (int)(SkinManager.FORM_PADDING * 0.75);
@@ -838,9 +913,9 @@ namespace ReaLTaiizor.Controls
 
             Cursor = previousCursor;
 
-            if (e.Location.X + this.Location.X < BORDER_WIDTH)
+            if (e.Location.X + this.Location.X < (int)(BORDER_WIDTH * ScaleFactor))
             {
-                if (e.Location.Y > this.Height - BORDER_WIDTH)
+                if (e.Location.Y > this.Height - (int)(BORDER_WIDTH * ScaleFactor))
                 {
                     Cursor = Cursors.SizeNESW;                  //Bottom Left
                 }
@@ -849,13 +924,13 @@ namespace ReaLTaiizor.Controls
                     Cursor = Cursors.SizeWE;                    //Left
                 }
             }
-            else if (e.Location.Y > this.Height - BORDER_WIDTH)
+            else if (e.Location.Y > this.Height - (int)(BORDER_WIDTH * ScaleFactor))
             {
                 Cursor = Cursors.SizeNS;                        //Bottom
             }
             else
             {
-                if (e.Location.Y < _drawerItemRects[_drawerItemRects.Count - 1].Bottom && (e.Location.X + this.Location.X) >= BORDER_WIDTH)
+                if (e.Location.Y < _drawerItemRects[_drawerItemRects.Count - 1].Bottom && (e.Location.X + this.Location.X) >= (int)(BORDER_WIDTH * ScaleFactor))
                 {
                     Cursor = Cursors.Hand;
                 }
@@ -924,7 +999,7 @@ namespace ReaLTaiizor.Controls
             {
                 _drawerItemRects[i] = new Rectangle(
                     (int)(SkinManager.FORM_PADDING * 0.75) - (ShowIconsWhenHidden ? Location.X : 0),
-                    (TAB_HEADER_PADDING * 2 * i) + (int)(SkinManager.FORM_PADDING >> 1),
+                    ((int)(TAB_HEADER_PADDING * ScaleFactor) * 2 * i) + (int)(SkinManager.FORM_PADDING >> 1),
                     Width + (ShowIconsWhenHidden ? Location.X : 0) - (int)(SkinManager.FORM_PADDING * 1.5) - 1,
                     drawerItemHeight);
 

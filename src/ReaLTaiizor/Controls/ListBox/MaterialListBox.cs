@@ -41,9 +41,51 @@ namespace ReaLTaiizor.Controls
         private Font _secondaryFont;
 
         private const int _leftrightPadding = 16;
-        private int _primaryTextBottomPadding = 0;
-        private int _secondaryTextTopPadding = 0;
-        private int _secondaryTextBottomPadding = 0;
+        private int _primaryTextBottomPadding = 0; // No need to modify as DPI changes
+        private int _secondaryTextTopPadding = 0; // No need to modify as DPI changes
+        private int _secondaryTextBottomPadding = 0; // No need to modify as DPI changes
+
+        private const int SCROLL_BAR_WIDTH = 12;
+        // Vertical paddings (logical pixels)
+        private const int ITEM_PADDING_TOP = 8;
+        private const int ITEM_PADDING_BOTTOM = 8;
+
+        private const int TEXT_LINE_SPACING = 4;
+        private const int DENSE_REDUCTION = 4;
+        // DO NOT USE MAGIC NUMBERS OR THE SCALING WILL MISFUNCTION - by HYrecv
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+            set
+            {
+                _scaleRatio = value;
+            }
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+            set
+            {
+                _scaleRatioSqrt = value;
+            }
+        }
 
         public enum ListBoxStyle
         {
@@ -260,8 +302,8 @@ namespace ReaLTaiizor.Controls
             );
             UpdateStyles();
             base.BackColor = Color.Transparent;
-            base.Font = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1);
-            _secondaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1);
+            base.Font = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor);
+            _secondaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor);
             SetDefaults();
             ShowBorder = true;
             ShowScrollBar = false;
@@ -284,7 +326,7 @@ namespace ReaLTaiizor.Controls
             _scrollBar = new MaterialScrollBar()
             {
                 Orientation = MateScrollOrientation.Vertical,
-                Size = new Size(12, Height),
+                Size = new Size((int)(SCROLL_BAR_WIDTH * ScaleFactor), Height),
                 Maximum = Items.Count * _itemHeight,
                 SmallChange = _itemHeight,
                 LargeChange = _itemHeight
@@ -310,7 +352,93 @@ namespace ReaLTaiizor.Controls
             Invalidate();
         }
 
-        private void UpdateItemSpecs()
+        private static int GetFontHeight(Font font)
+        {
+            return font.Height;
+        }
+
+
+        private void UpdateItemSpecs() 
+            // Due to abuse to magic nums, original code here is replaced by GPT-5.2 generated ones.
+            // If it isn't working as expected, then I also have no idea 'bout who caused this ;D
+        {
+            bool isDense = Density == MaterialItemDensity.Dense;
+
+            // 1️⃣ Select font（Content，not layout）
+            switch (Style)
+            {
+                case ListBoxStyle.TwoLine:
+                    _primaryFont = isDense
+                        ? SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor)
+                        : SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor);
+
+                    _secondaryFont = isDense
+                        ? SkinManager.GetFontByType(MaterialSkinManager.FontType.Body2, ScaleFactor)
+                        : SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor);
+                    break;
+
+                case ListBoxStyle.ThreeLine:
+                    _primaryFont = isDense
+                        ? SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor)
+                        : SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor);
+
+                    _secondaryFont = isDense
+                        ? SkinManager.GetFontByType(MaterialSkinManager.FontType.Body2, ScaleFactor)
+                        : SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor);
+                    break;
+
+                default: // SingleLine
+                    _primaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor);
+                    _secondaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor);
+                    break;
+            }
+
+            // 2️⃣ Calc text height
+            int primaryTextHeight = GetFontHeight(_primaryFont);
+            int secondaryTextHeight = GetFontHeight(_secondaryFont);
+
+            // 3️⃣ Set padding（instead of magic）
+            _primaryTextBottomPadding = (int)(TEXT_LINE_SPACING * ScaleFactor);
+            _secondaryTextTopPadding = (int)(TEXT_LINE_SPACING * ScaleFactor);
+            _secondaryTextBottomPadding = (int)(TEXT_LINE_SPACING * ScaleFactor);
+
+            int verticalPadding =
+                (int)(ITEM_PADDING_TOP * ScaleFactor) +
+                (int)(ITEM_PADDING_BOTTOM * ScaleFactor) -
+                (isDense ? (int)(DENSE_REDUCTION * ScaleFactor) : 0);
+
+            // 4️⃣ Set height from Style 
+            switch (Style)
+            {
+                case ListBoxStyle.TwoLine:
+                    _itemHeight =
+                        primaryTextHeight +
+                        secondaryTextHeight +
+                        (int)(TEXT_LINE_SPACING * ScaleFactor) +
+                        verticalPadding;
+                    break;
+
+                case ListBoxStyle.ThreeLine:
+                    _itemHeight =
+                        primaryTextHeight +
+                        secondaryTextHeight * 2 +
+                        (int)(TEXT_LINE_SPACING * ScaleFactor) * 2 +
+                        verticalPadding;
+                    break;
+
+                default: // SingleLine
+                    _itemHeight =
+                        primaryTextHeight +
+                        verticalPadding;
+                    break;
+            }
+        }
+
+        [Obsolete(
+    "Aborted legacy layout logic based on magic numbers. " +
+    "Replaced by font-height–driven layout to support DPI and multi-language scenarios.",
+    error: false)]
+        private void UpdateItemSpecsAborted()
         {
             if (Style == ListBoxStyle.TwoLine)
             {
@@ -321,16 +449,16 @@ namespace ReaLTaiizor.Controls
                     _itemHeight = 60;
                     _primaryTextBottomPadding = 2;
                     _secondaryTextBottomPadding = 10;
-                    _primaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1);
-                    _secondaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body2);
+                    _primaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor);
+                    _secondaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body2, ScaleFactor);
                 }
                 else
                 {
                     _itemHeight = 72;
                     _primaryTextBottomPadding = 4;
                     _secondaryTextBottomPadding = 16;
-                    _primaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1);
-                    _secondaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1);
+                    _primaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor);
+                    _secondaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor);
                 }
             }
             else if (Style == ListBoxStyle.ThreeLine)
@@ -342,15 +470,15 @@ namespace ReaLTaiizor.Controls
                 {
                     _itemHeight = 76;
                     _secondaryTextBottomPadding = 16;
-                    _primaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1);
-                    _secondaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body2);
+                    _primaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor);
+                    _secondaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body2, ScaleFactor);
                 }
                 else
                 {
                     _itemHeight = 88;
                     _secondaryTextBottomPadding = 12;
-                    _primaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1);
-                    _secondaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1);
+                    _primaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor);
+                    _secondaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor);
                 }
             }
             else
@@ -365,8 +493,8 @@ namespace ReaLTaiizor.Controls
                     _itemHeight = 48;
                 }
 
-                _primaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1);
-                _secondaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1);
+                _primaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor);
+                _secondaryFont = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor);
             }
 
         }
@@ -381,6 +509,9 @@ namespace ReaLTaiizor.Controls
             {
                 return;
             }
+
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
 
             Graphics g = e.Graphics;
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
@@ -455,7 +586,7 @@ namespace ReaLTaiizor.Controls
                 }
 
                 //Define primary & secondary Text Rect
-                Rectangle primaryTextRect = new(itemRect.X + _leftrightPadding, itemRect.Y, itemRect.Width - (2 * _leftrightPadding), itemRect.Height);
+                Rectangle primaryTextRect = new(itemRect.X + (int)(_leftrightPadding * ScaleFactor), itemRect.Y, itemRect.Width - (2 * (int)(_leftrightPadding * ScaleFactor)), itemRect.Height);
                 Rectangle secondaryTextRect = new();
 
                 if (Style == ListBoxStyle.TwoLine)
@@ -696,8 +827,19 @@ namespace ReaLTaiizor.Controls
 
         #endregion Events
 
+        protected override void OnDpiChangedAfterParent(EventArgs e)
+        {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
+            base.OnDpiChangedAfterParent(e);
+        }
+
         protected override void OnSizeChanged(EventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             InvalidateScroll(this, e);
             InvalidateLayout();
 
@@ -786,7 +928,7 @@ namespace ReaLTaiizor.Controls
 
         private void InvalidateLayout()
         {
-            _scrollBar.Size = new Size(12, Height - (ShowBorder ? 2 : 0));
+            _scrollBar.Size = new Size((int)(SCROLL_BAR_WIDTH * ScaleFactor), Height - (ShowBorder ? 2 : 0));
             _scrollBar.Location = new Point(Width - (_scrollBar.Width + (ShowBorder ? 1 : 0)), ShowBorder ? 1 : 0);
 
             Invalidate();
@@ -897,7 +1039,7 @@ namespace ReaLTaiizor.Controls
         {
             base.OnHandleCreated(e);
 
-            _scrollBar.Size = new Size(12, Height - (ShowBorder ? 2 : 0));
+            _scrollBar.Size = new Size((int)(SCROLL_BAR_WIDTH * ScaleFactor), Height - (ShowBorder ? 2 : 0));
             _scrollBar.Location = new Point(Width - (_scrollBar.Width + (ShowBorder ? 1 : 0)), ShowBorder ? 1 : 0);
 
             InvalidateScroll(this, e);

@@ -24,6 +24,11 @@ namespace ReaLTaiizor.Controls
         private const int LEFT_RIGHT_PADDING = 16;
         private const int BUTTON_PADDING = 8;
         private const int BUTTON_HEIGHT = 36;
+        private const int CLIENT_HEIGHT = 48;
+        private const int CLIENT_WIDTH = 344;
+        private const int MAX_WIDTH = 568;
+        private const int FONT_HEIGHT = 32;
+        private const int DOWN_PADDING = 12;
 
         private MaterialButton _actionButton = new();
         private Timer _duration = new(); // Timer that checks when the drop down is fully visible
@@ -31,6 +36,40 @@ namespace ReaLTaiizor.Controls
         private AnimationManager _AnimationManager;
         private bool _closingAnimationDone = false;
         private bool CloseAnimation = false;
+
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+            set
+            {
+                _scaleRatio = value;
+            }
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+            set
+            {
+                _scaleRatioSqrt = value;
+            }
+        }
 
         #region "Events"
 
@@ -110,9 +149,9 @@ namespace ReaLTaiizor.Controls
 
             this.ActionButtonText = ActionButtonText;
             this.UseAccentColor = UseAccentColor;
-            Height = 48;
-            MinimumSize = new Size(344, 48);
-            MaximumSize = new Size(568, 48);
+            Height = (int)(CLIENT_HEIGHT * ScaleFactor);
+            MinimumSize = new Size((int)(CLIENT_WIDTH * ScaleFactor), (int)(CLIENT_HEIGHT * ScaleFactor));
+            MaximumSize = new Size((int)(MAX_WIDTH * ScaleFactor), (int)(CLIENT_HEIGHT * ScaleFactor));
 
             this.ShowActionButton = ShowActionButton;
 
@@ -183,10 +222,13 @@ namespace ReaLTaiizor.Controls
 
         private void UpdateRects()
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             if (ShowActionButton == true)
             {
-                int _buttonWidth = TextRenderer.MeasureText(ActionButtonText, SkinManager.GetFontByType(MaterialSkinManager.FontType.Button)).Width + 32;
-                Rectangle _actionbuttonBounds = new(Width - BUTTON_PADDING - _buttonWidth, TOP_PADDING_SINGLE_LINE, _buttonWidth, BUTTON_HEIGHT);
+                int _buttonWidth = TextRenderer.MeasureText(ActionButtonText, SkinManager.GetFontByType(MaterialSkinManager.FontType.Button, ScaleFactor)).Width + (int)(FONT_HEIGHT * ScaleFactor);
+                Rectangle _actionbuttonBounds = new(Width - (int)(BUTTON_PADDING * ScaleFactor) - _buttonWidth, (int)(TOP_PADDING_SINGLE_LINE * ScaleFactor), _buttonWidth, (int)(BUTTON_HEIGHT * ScaleFactor));
                 _actionButton.Width = _actionbuttonBounds.Width;
                 _actionButton.Height = _actionbuttonBounds.Height;
                 _actionButton.Text = ActionButtonText;
@@ -197,10 +239,10 @@ namespace ReaLTaiizor.Controls
             {
                 _actionButton.Width = 0;
             }
-            _actionButton.Left = Width - BUTTON_PADDING - _actionButton.Width;  //Button minimum width management
+            _actionButton.Left = Width - (int)(BUTTON_PADDING * ScaleFactor) - _actionButton.Width;  //Button minimum width management
             _actionButton.Visible = ShowActionButton;
 
-            Width = TextRenderer.MeasureText(Text, SkinManager.GetFontByType(MaterialSkinManager.FontType.Body2)).Width + (2 * LEFT_RIGHT_PADDING) + _actionButton.Width + 48;
+            Width = TextRenderer.MeasureText(Text, SkinManager.GetFontByType(MaterialSkinManager.FontType.Body2, ScaleFactor)).Width + (2 * (int)(LEFT_RIGHT_PADDING * ScaleFactor)) + _actionButton.Width + (int)(CLIENT_HEIGHT * ScaleFactor);
             Region = System.Drawing.Region.FromHrgn(CreateRoundRectRgn(0, 0, Width, Height, 6, 6));
 
         }
@@ -213,6 +255,9 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnResize(EventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             base.OnResize(e);
             UpdateRects();
         }
@@ -220,7 +265,7 @@ namespace ReaLTaiizor.Controls
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            Location = new Point(Convert.ToInt32(Owner.Location.X + (Owner.Width / 2) - (Width / 2)), Convert.ToInt32(Owner.Location.Y + Owner.Height - 60));
+            Location = new Point(Convert.ToInt32(Owner.Location.X + (Owner.Width / 2) - (Width / 2)), Convert.ToInt32(Owner.Location.Y + Owner.Height - Height - DOWN_PADDING * ScaleFactor));
             _AnimationManager.StartNewAnimation(AnimationDirection.In);
             _duration.Start();
         }
@@ -235,6 +280,9 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
 
@@ -242,9 +290,9 @@ namespace ReaLTaiizor.Controls
 
             // Calc text Rect
             Rectangle textRect = new(
-                LEFT_RIGHT_PADDING,
+                (int)(LEFT_RIGHT_PADDING * ScaleFactor),
                 0,
-                Width - (2 * LEFT_RIGHT_PADDING) - _actionButton.Width,
+                Width - (2 * (int)(LEFT_RIGHT_PADDING * ScaleFactor)) - _actionButton.Width,
                 Height);
 
             //Draw  Text
@@ -252,14 +300,14 @@ namespace ReaLTaiizor.Controls
             // Draw header text
             NativeText.DrawTransparentText(
                 Text,
-                SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body2),
+                SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body2, ScaleFactor),
                 SkinManager.SnackBarTextHighEmphasisColor,
                 textRect.Location,
                 textRect.Size,
                 MaterialNativeTextRenderer.TextAlignFlags.Left | MaterialNativeTextRenderer.TextAlignFlags.Middle);
         }
 
-        protected override void OnClosing(CancelEventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
             e.Cancel = !_closingAnimationDone;
             if (!_closingAnimationDone)
@@ -269,7 +317,7 @@ namespace ReaLTaiizor.Controls
                 _AnimationManager.OnAnimationFinished += _AnimationManager_OnAnimationFinished;
                 _AnimationManager.StartNewAnimation(AnimationDirection.Out);
             }
-            base.OnClosing(e);
+            base.OnFormClosing(e);
         }
 
         void _AnimationManager_OnAnimationFinished(object sender)
@@ -288,7 +336,7 @@ namespace ReaLTaiizor.Controls
         private void InitializeComponent()
         {
             this.SuspendLayout();
-            this.ClientSize = new Size(344, 48);
+            this.ClientSize = new Size((int)(CLIENT_WIDTH * ScaleFactor), (int)(CLIENT_HEIGHT * ScaleFactor));
             this.Name = "SnackBar";
             this.ResumeLayout(false);
         }

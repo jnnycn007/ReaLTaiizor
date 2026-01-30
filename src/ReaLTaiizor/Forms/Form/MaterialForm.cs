@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -87,6 +88,9 @@ namespace ReaLTaiizor.Forms
             }
         }
 
+        /// <summary>
+        /// This num is DPI-aware
+        /// </summary>
         [Category("Drawer")]
         public int DrawerWidth { get; set; }
 
@@ -413,6 +417,14 @@ namespace ReaLTaiizor.Forms
         private const int TITLE_LEFT_PADDING = 72;
         private const int ACTION_BAR_PADDING = 16;
         private const int ACTION_BAR_HEIGHT_DEFAULT = 40;
+
+        // Drawer (hamburger) icon specs – logical units
+        // DO NOT USE MAGIC NUMS
+        private const float DRAWER_LINE_THICKNESS = 2f;
+        private const int DRAWER_LINE_COUNT = 3;
+        private const int DRAWER_LINE_SPACING = 6;     // vertical distance between lines
+        private const int DRAWER_LINE_LENGTH = 18;     // line width
+
         #endregion
 
         #region Private Fields
@@ -425,7 +437,7 @@ namespace ReaLTaiizor.Forms
         private Rectangle _maxButtonBounds => new(ClientSize.Width - (2 * (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor)), ClientRectangle.Y, (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt));
         private Rectangle _xButtonBounds => new(ClientSize.Width - (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor), ClientRectangle.Y, (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt));
         private Rectangle _actionBarBounds => new(ClientRectangle.X, ClientRectangle.Y + (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt), ClientSize.Width, (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt));
-        private Rectangle _drawerButtonBounds => new(ClientRectangle.X + (SkinManager.FORM_PADDING / 2) + 3, (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + ((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2) - ((int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt) / 2), ((int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt)), (int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt));
+        private Rectangle _drawerButtonBounds => new(ClientRectangle.X + (int)(SkinManager.FORM_PADDING * ScaleFactor / 2) + 3, (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + ((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2) - ((int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt) / 2), ((int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactor)), (int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt));
         private Rectangle _statusBarBounds => new(ClientRectangle.X, ClientRectangle.Y, ClientSize.Width, (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt));
         private Rectangle _drawerIconRect;
 
@@ -605,7 +617,7 @@ namespace ReaLTaiizor.Forms
             drawerForm.ControlBox = false;
             drawerForm.FormBorderStyle = FormBorderStyle.None;
             drawerForm.Visible = true;
-            drawerForm.Size = new Size(DrawerWidth, H);
+            drawerForm.Size = new Size((int)(DrawerWidth * ScaleFactor), H);
             drawerForm.Location = new Point(PointToScreen(Point.Empty).X, Y);
             drawerForm.ShowInTaskbar = false;
             drawerForm.Owner = this; //drawerOverlay
@@ -615,7 +627,7 @@ namespace ReaLTaiizor.Forms
             // Add drawer to overlay form
             drawerForm.Controls.Add(drawerControl);
             drawerControl.Location = new Point(0, 0);
-            drawerControl.Size = new Size(DrawerWidth, H);
+            drawerControl.Size = new Size((int)(DrawerWidth * ScaleFactor), H);
             drawerControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom;
             drawerControl.BaseTabControl = DrawerTabControl;
             drawerControl.DrawerHideTabName = DrawerHideTabName;
@@ -651,7 +663,7 @@ namespace ReaLTaiizor.Forms
             Resize += (sender, e) =>
             {
                 H = ClientSize.Height - _statusBarBounds.Height - _actionBarBounds.Height;
-                drawerForm.Size = new Size(DrawerWidth, H);
+                drawerForm.Size = new Size((int)(DrawerWidth * ScaleFactor), H);
                 drawerOverlay.Size = new Size(ClientSize.Width, H);
             };
 
@@ -665,6 +677,10 @@ namespace ReaLTaiizor.Forms
             // Close when click outside menu
             drawerOverlay.Click += (sender, e) =>
             {
+                drawerOverlay.TopMost = false;
+                drawerForm.TopMost = true;
+                drawerForm.TopMost = TopMost;
+                // 3 lines above is to make sure overlay not cover drawerForm after focused once.
                 drawerControl.Hide();
             };
 
@@ -935,7 +951,7 @@ namespace ReaLTaiizor.Forms
                 Point location = Point.Add(Location, new Size(0, (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt)));
                 drawerOverlay.Size = new Size(ClientSize.Width, height);
                 drawerOverlay.Location = location;
-                drawerForm.Size = new Size(DrawerWidth, height);
+                drawerForm.Size = new Size((int)(DrawerWidth * ScaleFactor), height);
                 drawerForm.Location = location;
             }
 
@@ -1207,6 +1223,12 @@ namespace ReaLTaiizor.Forms
             ReleaseCapture();
         }
 
+        protected override void OnResize(EventArgs e)
+        {
+            RecalculateFormBoundaries();
+            base.OnResize(e);
+        }
+
         protected override void OnPaint(PaintEventArgs e)
         {
             Brush hoverBrush = SkinManager.BackgroundHoverBrush;
@@ -1367,7 +1389,7 @@ namespace ReaLTaiizor.Forms
                     g.FillRectangle(downBrush, _drawerButtonBounds);
                 }
 
-                _drawerIconRect = new Rectangle(SkinManager.FORM_PADDING / 2, (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt), (int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt), (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt));
+                _drawerIconRect = new Rectangle((int)(SkinManager.FORM_PADDING * ScaleFactor / 2), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt), (int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactor), (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt));
                 // Ripple
                 if (_clickAnimManager.IsAnimating())
                 {
@@ -1382,30 +1404,38 @@ namespace ReaLTaiizor.Forms
                     rippleBrush.Dispose();
                 }
 
-                using Pen formButtonsPen = new(SkinManager.ColorScheme.TextColor, 2);
-                // Middle line
-                g.DrawLine(
-                   formButtonsPen,
-                   _drawerIconRect.X + (int)SkinManager.FORM_PADDING,
-                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2),
-                   _drawerIconRect.X + (int)SkinManager.FORM_PADDING + 18,
-                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2));
+                using Pen drawerPen = new(
+                    SkinManager.ColorScheme.TextColor,
+                    DRAWER_LINE_THICKNESS * ScaleFactorSqrt);
 
-                // Bottom line
-                g.DrawLine(
-                   formButtonsPen,
-                   _drawerIconRect.X + (int)SkinManager.FORM_PADDING,
-                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2) - 6,
-                   _drawerIconRect.X + (int)SkinManager.FORM_PADDING + 18,
-                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2) - 6);
+                drawerPen.StartCap = LineCap.Round;
+                drawerPen.EndCap = LineCap.Round;
 
-                // Top line
-                g.DrawLine(
-                   formButtonsPen,
-                   _drawerIconRect.X + (int)SkinManager.FORM_PADDING,
-                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2) + 6,
-                   _drawerIconRect.X + (int)SkinManager.FORM_PADDING + 18,
-                   _drawerIconRect.Y + (int)((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2) + 6);
+                // X basic
+                int startX = _drawerIconRect.X + (int)(SkinManager.FORM_PADDING * ScaleFactor);
+                int endX = startX + (int)(DRAWER_LINE_LENGTH * ScaleFactorSqrt);
+
+                // Y center
+                int centerY = _drawerIconRect.Y
+                    + (int)((ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2);
+
+                // Total Height = (nums - 1) * space
+                int totalHeight =
+                    (DRAWER_LINE_COUNT - 1)
+                    * (int)(DRAWER_LINE_SPACING * ScaleFactorSqrt);
+
+                // First Y
+                int firstLineY = centerY - totalHeight / 2;
+
+                // Draw lines
+                for (int i = 0; i < DRAWER_LINE_COUNT; i++)
+                {
+                    int y = firstLineY
+                        + i * (int)(DRAWER_LINE_SPACING * ScaleFactorSqrt);
+
+                    g.DrawLine(drawerPen, startX, y, endX, y);
+                }
+
             }
 
             if (ControlBox == true && FormStyle != FormStyles.ActionBar_None && FormStyle != FormStyles.StatusAndActionBar_None)
@@ -1413,7 +1443,7 @@ namespace ReaLTaiizor.Forms
                 //Form title
                 using MaterialNativeTextRenderer NativeText = new(g);
                 var font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.H6, ScaleFactor);
-                Rectangle textLocation = new(DrawerTabControl != null ? (int)(TITLE_LEFT_PADDING * ScaleFactorSqrt) : (int)(TITLE_LEFT_PADDING * ScaleFactorSqrt) - ((int)(ICON_SIZE * ScaleFactorSqrt) + ((int)(ACTION_BAR_PADDING * ScaleFactorSqrt) * 2)), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt), ClientSize.Width, (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt));
+                Rectangle textLocation = new(DrawerTabControl != null ? (int)(TITLE_LEFT_PADDING * ScaleFactor) : (int)(TITLE_LEFT_PADDING * ScaleFactor) - ((int)(ICON_SIZE * ScaleFactor) + ((int)(ACTION_BAR_PADDING * ScaleFactor) * 2)), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt), ClientSize.Width, (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt));
                 NativeText.DrawTransparentText(Text, font,
                     SkinManager.ColorScheme.TextColor,
                     textLocation.Location,

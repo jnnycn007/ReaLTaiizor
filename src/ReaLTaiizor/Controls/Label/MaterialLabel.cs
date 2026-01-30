@@ -55,7 +55,7 @@ namespace ReaLTaiizor.Controls
             set
             {
                 field = value;
-                Font = SkinManager.GetFontByType(field);
+                Font = SkinManager.GetFontByType(field, ScaleFactor);
                 Refresh();
             }
         } = MaterialSkinManager.FontType.Body1;
@@ -68,12 +68,14 @@ namespace ReaLTaiizor.Controls
 
         public override Size GetPreferredSize(Size proposedSize)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
             if (AutoSize)
             {
                 Size strSize;
                 using (MaterialNativeTextRenderer NativeText = new(CreateGraphics()))
                 {
-                    strSize = NativeText.MeasureLogString(Text, SkinManager.GetLogFontByType(FontType));
+                    strSize = NativeText.MeasureLogString(Text, SkinManager.GetLogFontByType(FontType, ScaleFactor));
                     strSize.Width += 1; // necessary to avoid a bug when autosize = true
                 }
                 return strSize;
@@ -85,6 +87,40 @@ namespace ReaLTaiizor.Controls
         }
 
         private MaterialNativeTextRenderer.TextAlignFlags Alignment;
+
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+            set
+            {
+                _scaleRatio = value;
+            }
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+            set
+            {
+                _scaleRatioSqrt = value;
+            }
+        }
 
         private void updateAligment()
         {
@@ -105,6 +141,9 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             Graphics g = e.Graphics;
             g.Clear(Parent.BackColor == Color.Transparent ? ((Parent.Parent == null || (Parent.Parent != null && Parent.Parent.BackColor == Color.Transparent)) ? SkinManager.BackgroundColor : Parent.Parent.BackColor) : Parent.BackColor);
 
@@ -112,7 +151,7 @@ namespace ReaLTaiizor.Controls
             using MaterialNativeTextRenderer NativeText = new(g);
             NativeText.DrawMultilineTransparentText(
                 Text,
-                SkinManager.GetLogFontByType(FontType),
+                SkinManager.GetLogFontByType(FontType, ScaleFactor),
                 Enabled ? HighEmphasis ? UseAccent ?
                 SkinManager.ColorScheme.AccentColor : // High emphasis, accent
                 (SkinManager.Theme == MaterialSkinManager.Themes.LIGHT) ?
@@ -127,7 +166,9 @@ namespace ReaLTaiizor.Controls
 
         protected override void InitLayout()
         {
-            Font = SkinManager.GetFontByType(FontType);
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            Font = SkinManager.GetFontByType(FontType, ScaleFactor);
         }
     }
 
