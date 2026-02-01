@@ -344,7 +344,7 @@ namespace ReaLTaiizor.Manager
                 if (logicalFonts.TryGetValue(key, out var h))
                     return h;
                 var hOriginalFont = GetTextBoxFontBySize(size);
-                if (scaleRatio == 1) return hOriginalFont;
+                if (scaleKey == 100) return hOriginalFont;
                 LogFont lf = new LogFont();
                 if (GetObject(hOriginalFont, Marshal.SizeOf(lf), lf) == 0)
                 {
@@ -456,8 +456,6 @@ namespace ReaLTaiizor.Manager
         {
             // 96 is Windows default scaling DPI（100% scale）
             float scalingFactor = (float)control.DeviceDpi / 96f;
-            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
-            // Buttons are not included in sqrt controls.
             return scalingFactor;
         }
 
@@ -465,7 +463,7 @@ namespace ReaLTaiizor.Manager
         {
             // 96 is Windows default scaling DPI（100% scale）
             float scalingFactor = (float)Math.Sqrt((float)control.DeviceDpi / 96f);
-            // Since a 'replace' to code will lead to operate scaling twice, this method provide the sqrt value of a factor.
+            // Since a 'replace' to code will lead to operate scaling twice in some scenes, this method provide the sqrt value of a factor.
             return scalingFactor;
         }
 

@@ -49,6 +49,8 @@ namespace ReaLTaiizor.Controls
         // Vertical paddings (logical pixels)
         private const int ITEM_PADDING_TOP = 8;
         private const int ITEM_PADDING_BOTTOM = 8;
+        private const int THREE_LINE_PRIMARY_DEFAULT_HEIGHT = 36;
+        private const int THREE_LINE_PRIMARY_HEIGHT = 30;
 
         private const int TEXT_LINE_SPACING = 4;
         private const int DENSE_REDUCTION = 4;
@@ -597,11 +599,11 @@ namespace ReaLTaiizor.Controls
                 {
                     if (Density == MaterialItemDensity.Default)
                     {
-                        primaryTextRect.Height = 36 - _primaryTextBottomPadding;
+                        primaryTextRect.Height = (int)(THREE_LINE_PRIMARY_DEFAULT_HEIGHT * ScaleFactor) - _primaryTextBottomPadding;
                     }
                     else
                     {
-                        primaryTextRect.Height = 30 - _primaryTextBottomPadding;
+                        primaryTextRect.Height = (int)(THREE_LINE_PRIMARY_HEIGHT * ScaleFactor) - _primaryTextBottomPadding;
                     }
                 }
                 secondaryTextRect = new Rectangle(primaryTextRect.X, primaryTextRect.Y + primaryTextRect.Height + _primaryTextBottomPadding + _secondaryTextTopPadding, primaryTextRect.Width, _itemHeight - _secondaryTextBottomPadding - primaryTextRect.Height - (_primaryTextBottomPadding + _secondaryTextTopPadding));

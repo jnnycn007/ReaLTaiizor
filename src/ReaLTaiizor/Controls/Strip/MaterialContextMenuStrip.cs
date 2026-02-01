@@ -189,7 +189,7 @@ namespace ReaLTaiizor.Controls
             var baseSize = base.GetPreferredSize(constrainingSize);
 
             return new Size(
-                (int)(baseSize.Width * ScaleFactor),
+                (int)(baseSize.Width),
                 (int)(baseSize.Height * ScaleFactor));
 
         }

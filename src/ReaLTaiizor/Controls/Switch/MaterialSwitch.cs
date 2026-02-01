@@ -171,7 +171,7 @@ namespace ReaLTaiizor.Controls
             ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
             _trackOffsetY = (Height / 2) - (int)(THUMB_SIZE_HALF * ScaleFactor);
 
-            TRACK_CENTER_Y = (int)(Height / 2 / ScaleFactor);
+            TRACK_CENTER_Y = (int)(Height / 2f / ScaleFactor);
             // To avoid additional ScaleFactor applying.
             TRACK_CENTER_X_BEGIN = TRACK_CENTER_Y;
             TRACK_CENTER_X_END = TRACK_CENTER_X_BEGIN + TRACK_SIZE_WIDTH - (TRACK_RADIUS * 2);

@@ -2018,8 +2018,6 @@ namespace ReaLTaiizor.UI
             materialTextBox5.Cursor = Cursors.IBeam;
             materialTextBox5.Depth = 0;
             materialTextBox5.Enabled = false;
-            materialTextBox5.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            materialTextBox5.HideSelection = true;
             materialTextBox5.Hint = "This is Disabled";
             materialTextBox5.LeadingIcon = null;
             materialTextBox5.Location = new System.Drawing.Point(222, 170);
@@ -2039,8 +2037,8 @@ namespace ReaLTaiizor.UI
             materialTextBox5.TabStop = false;
             materialTextBox5.Text = "But with value";
             materialTextBox5.TextAlign = HorizontalAlignment.Left;
-            materialTextBox5.TrailingIcon = null;
-            materialTextBox5.UseSystemPasswordChar = false;
+            //materialTextBox5.TrailingIcon = null;
+            //materialTextBox5.UseSystemPasswordChar = false;
             // 
             // materialTextBox4
             // 
@@ -3361,63 +3359,64 @@ namespace ReaLTaiizor.UI
             // materialContextMenuStrip1
             // 
             materialContextMenuStrip1.BackColor = System.Drawing.Color.White;
-            materialContextMenuStrip1.Depth = 0;
-            materialContextMenuStrip1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
-            materialContextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            // materialContextMenuStrip1.Depth = 0;
+            materialContextMenuStrip1.AutoSize = true;
+            // materialContextMenuStrip1.Font = new System.Drawing.Font("Microsoft Sans Serif", 11F);
+            // materialContextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             materialContextMenuStrip1.Items.AddRange(new ToolStripItem[] { item1ToolStripMenuItem, disabledItemToolStripMenuItem, item2ToolStripMenuItem, toolStripSeparator1, item3ToolStripMenuItem });
-            materialContextMenuStrip1.Margin = new Padding(16, 8, 16, 8);
-            materialContextMenuStrip1.MouseState = Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
+            // materialContextMenuStrip1.Margin = new Padding(16, 8, 16, 8);
+            // materialContextMenuStrip1.MouseState = Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             materialContextMenuStrip1.Name = "materialContextMenuStrip1";
-            materialContextMenuStrip1.Size = new System.Drawing.Size(170, 130);
+            // materialContextMenuStrip1.Size = new System.Drawing.Size(170, 130);
             // 
             // item1ToolStripMenuItem
             // 
-            item1ToolStripMenuItem.AutoSize = false;
+            item1ToolStripMenuItem.AutoSize = true;
             item1ToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { subItem1ToolStripMenuItem, subItem2ToolStripMenuItem });
             item1ToolStripMenuItem.Image = Properties.Resources.minus;
             item1ToolStripMenuItem.Name = "item1ToolStripMenuItem";
-            item1ToolStripMenuItem.Size = new System.Drawing.Size(170, 30);
+            // item1ToolStripMenuItem.Size = new System.Drawing.Size(170, 30);
             item1ToolStripMenuItem.Text = "Item 1";
             // 
             // subItem1ToolStripMenuItem
             // 
-            subItem1ToolStripMenuItem.AutoSize = false;
+            subItem1ToolStripMenuItem.AutoSize = true;
             subItem1ToolStripMenuItem.Name = "subItem1ToolStripMenuItem";
-            subItem1ToolStripMenuItem.Size = new System.Drawing.Size(152, 30);
+            // subItem1ToolStripMenuItem.Size = new System.Drawing.Size(152, 30);
             subItem1ToolStripMenuItem.Text = "SubItem 1";
             // 
             // subItem2ToolStripMenuItem
             // 
-            subItem2ToolStripMenuItem.AutoSize = false;
+            subItem2ToolStripMenuItem.AutoSize = true;
             subItem2ToolStripMenuItem.Name = "subItem2ToolStripMenuItem";
-            subItem2ToolStripMenuItem.Size = new System.Drawing.Size(152, 30);
+            // subItem2ToolStripMenuItem.Size = new System.Drawing.Size(152, 30);
             subItem2ToolStripMenuItem.Text = "SubItem 2";
             // 
             // disabledItemToolStripMenuItem
             // 
-            disabledItemToolStripMenuItem.AutoSize = false;
+            disabledItemToolStripMenuItem.AutoSize = true;
             disabledItemToolStripMenuItem.Enabled = false;
             disabledItemToolStripMenuItem.Name = "disabledItemToolStripMenuItem";
-            disabledItemToolStripMenuItem.Size = new System.Drawing.Size(170, 30);
+            // disabledItemToolStripMenuItem.Size = new System.Drawing.Size(170, 30);
             disabledItemToolStripMenuItem.Text = "Disabled item";
             // 
             // item2ToolStripMenuItem
             // 
-            item2ToolStripMenuItem.AutoSize = false;
+            item2ToolStripMenuItem.AutoSize = true;
             item2ToolStripMenuItem.Name = "item2ToolStripMenuItem";
-            item2ToolStripMenuItem.Size = new System.Drawing.Size(170, 30);
+            // item2ToolStripMenuItem.Size = new System.Drawing.Size(170, 30);
             item2ToolStripMenuItem.Text = "Item 2";
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new System.Drawing.Size(166, 6);
+            // toolStripSeparator1.Size = new System.Drawing.Size(166, 6);
             // 
             // item3ToolStripMenuItem
             // 
-            item3ToolStripMenuItem.AutoSize = false;
+            item3ToolStripMenuItem.AutoSize = true;
             item3ToolStripMenuItem.Name = "item3ToolStripMenuItem";
-            item3ToolStripMenuItem.Size = new System.Drawing.Size(170, 30);
+            // item3ToolStripMenuItem.Size = new System.Drawing.Size(170, 30);
             item3ToolStripMenuItem.Text = "Item 3";
             // 
             // Form17
