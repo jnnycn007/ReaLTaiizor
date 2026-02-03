@@ -335,9 +335,9 @@ namespace ReaLTaiizor.Manager
         {
             int scaleKey = (int)Math.Round(scaleRatio * 100);
             string key = "textBox" + Math.Min(16, Math.Max(12, size)).ToString() + "-scale" + scaleKey;
-            if (logicalFonts.ContainsKey(key))
+            if (logicalFonts.TryGetValue(key, out var existingFont))
             {
-                return logicalFonts[key];
+                return existingFont;
             }
             lock (_fontLock)
             {
