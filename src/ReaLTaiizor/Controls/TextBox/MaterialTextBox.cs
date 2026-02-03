@@ -239,6 +239,9 @@ namespace ReaLTaiizor.Controls
 
         public MaterialTextBox()
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             // Material Properties
             Hint = "";
             Password = false;
@@ -572,8 +575,16 @@ namespace ReaLTaiizor.Controls
             return _errorState;
         }
 
+
+        private bool _hasRefreshed = false;
         protected override void OnPaint(PaintEventArgs pevent)
         {
+            if (!_hasRefreshed)
+            {
+                UpdateRects();
+                Invalidate();
+                _hasRefreshed = true;
+            }
             ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
             ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
 
@@ -810,8 +821,12 @@ namespace ReaLTaiizor.Controls
             Invalidate();
         }
 
+
         protected override void OnResize(EventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             base.OnResize(e);
             Size = new Size(Width, (int)(HEIGHT * ScaleFactor));
             LINE_Y = (int)(HEIGHT * ScaleFactor) - (int)(BOTTOM_PADDING * ScaleFactor);

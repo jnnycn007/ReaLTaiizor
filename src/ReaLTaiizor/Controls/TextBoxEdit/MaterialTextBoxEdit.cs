@@ -839,6 +839,8 @@ namespace ReaLTaiizor.Controls
         private Rectangle _leadingIconBounds;
         private Rectangle _trailingIconBounds;
 
+        private bool _needsLayoutRefresh = false;
+
         private Dictionary<string, TextureBrush> iconsBrushes;
         private Dictionary<string, TextureBrush> iconsErrorBrushes;
 
@@ -975,10 +977,21 @@ namespace ReaLTaiizor.Controls
             ResumeLayout(false);
         }
 
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            _needsLayoutRefresh = true;
+        }
+
         protected override void OnPaint(PaintEventArgs pevent)
         {
             ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
             ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            if (_needsLayoutRefresh)
+            {
+                UpdateRects();
+                _needsLayoutRefresh = false;
+            }
 
             Graphics g = pevent.Graphics;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;

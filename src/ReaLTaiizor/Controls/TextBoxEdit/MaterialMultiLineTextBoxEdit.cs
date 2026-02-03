@@ -690,7 +690,14 @@ namespace ReaLTaiizor.Controls
         private readonly int SB_LINEUP = 0;
         private readonly int SB_LINEDOWN = 1;
         private readonly uint WM_VSCROLL = 277;
+        private const int ACTIVATION_INDICATOR_HEIGHT = 2;
+        private const int FONT_HEIGHT = 20;
         private readonly IntPtr ptrLparam = new(0);
+
+        private bool _needsLayoutRefresh = false;
+
+        private int _left_padding;
+        private int _right_padding;
 
         protected readonly MaterialBaseTextBox baseTextBox;
 
@@ -726,6 +733,17 @@ namespace ReaLTaiizor.Controls
             {
                 _scaleRatioSqrt = value;
             }
+        }
+
+        public void UpdateRects()
+        {
+            _left_padding = (int)(LEFT_PADDING * ScaleFactor);
+            _right_padding = (int)(RIGHT_PADDING * ScaleFactor);
+
+            baseTextBox.Location = new Point(_left_padding, (int)(TOP_PADDING * ScaleFactor));
+            baseTextBox.Width = Width - (_left_padding + _right_padding);
+            baseTextBox.Height = ClientRectangle.Height - (int)(TOP_PADDING * ScaleFactor) - (int)(BOTTOM_PADDING * ScaleFactor);
+            // baseTextBox.Height = (int)(FONT_HEIGHT * ScaleFactor);
         }
 
         public MaterialMultiLineTextBoxEdit()
@@ -776,11 +794,13 @@ namespace ReaLTaiizor.Controls
                 {
                     base.Focus();
                 }
+                UpdateRects();
             };
             baseTextBox.LostFocus += (sender, args) =>
             {
                 isFocused = false;
                 _animationManager.StartNewAnimation(AnimationDirection.Out);
+                UpdateRects();
             };
 
             baseTextBox.TextChanged += new EventHandler(Redraw);
@@ -805,10 +825,22 @@ namespace ReaLTaiizor.Controls
             ResumeLayout(false);
         }
 
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            _needsLayoutRefresh = true;
+        }
+
+
         protected override void OnPaint(PaintEventArgs pevent)
         {
             ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
             ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            if (_needsLayoutRefresh)
+            {
+                UpdateRects();
+                _needsLayoutRefresh = false;
+            }
 
             Graphics g = pevent.Graphics;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
