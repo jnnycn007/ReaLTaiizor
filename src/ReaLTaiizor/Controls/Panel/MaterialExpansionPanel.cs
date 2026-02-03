@@ -654,7 +654,10 @@ namespace ReaLTaiizor.Controls
             if (!Collapse && ShowValidationButtons)
             {
                 //Draw divider
-                g.DrawLine(new Pen(SkinManager.DividersColor, 1), new Point(0, Height - (int)(_footerHeight * ScaleFactor)), new Point(Width, Height - (int)(_footerHeight * ScaleFactor)));
+                using (var dividerPen = new Pen(SkinManager.DividersColor, 1))
+                {
+                    g.DrawLine(dividerPen, new Point(0, Height - (int)(_footerHeight * ScaleFactor)), new Point(Width, Height - (int)(_footerHeight * ScaleFactor)));
+                }
             }
         }
 
