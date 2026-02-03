@@ -985,8 +985,8 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnPaint(PaintEventArgs pevent)
         {
-            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
-            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            // ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            // ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
             if (_needsLayoutRefresh)
             {
                 UpdateRects();

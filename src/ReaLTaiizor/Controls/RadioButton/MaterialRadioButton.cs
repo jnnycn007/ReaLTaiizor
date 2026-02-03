@@ -191,9 +191,6 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnPaint(PaintEventArgs pevent)
         {
-            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
-            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
-
             Graphics g = pevent.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;

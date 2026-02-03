@@ -41,6 +41,41 @@ namespace ReaLTaiizor.Controls
         private Rectangle _savebuttonBounds;
         private Rectangle _cancelbuttonBounds;
 
+        private bool _needsLayoutRefresh = false;
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+            set
+            {
+                _scaleRatio = value;
+            }
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+            set
+            {
+                _scaleRatioSqrt = value;
+            }
+        }
+
         private enum ButtonState
         {
             SaveOver,
@@ -127,7 +162,7 @@ namespace ReaLTaiizor.Controls
         public int ExpandHeight
         {
             get => _expandHeight;
-            set { if (value < _minHeight) { value = _minHeight; } _expandHeight = value; Invalidate(); }
+            set { if (value < (int)(_minHeight * ScaleFactor)) { value = (int)(_minHeight * ScaleFactor); } _expandHeight = value; Invalidate(); }
         }
 
         [DefaultValue(true)]
@@ -272,18 +307,27 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnCreateControl()
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             base.OnCreateControl();
-            Font = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1);
+            Font = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor);
         }
 
         protected override void InitLayout()
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             LocationChanged += (sender, e) => { Parent?.Invalidate(); };
             ForeColor = SkinManager.TextHighEmphasisColor;
         }
 
         protected override void OnParentChanged(EventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             base.OnParentChanged(e);
             if (Parent != null)
             {
@@ -369,28 +413,39 @@ namespace ReaLTaiizor.Controls
             BackColor = SkinManager.BackgroundColor;
         }
 
+        protected override void OnDpiChangedAfterParent(EventArgs e)
+        {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
+            base.OnDpiChangedAfterParent(e);
+        }
+
         protected override void OnResize(EventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             if (!Collapse)
             {
                 if (DesignMode)
                 {
-                    _expandHeight = Height;
+                    _expandHeight = (int)(Height / ScaleFactor);
                 }
-                if (Height < _minHeight)
+                if (Height < (int)(_minHeight * ScaleFactor))
                 {
-                    Height = _minHeight;
+                    Height = (int)(_minHeight * ScaleFactor);
                 }
             }
             else
             {
-                Height = _headerHeightCollapse;
+                Height = (int)(_headerHeightCollapse * ScaleFactor);
             }
 
             base.OnResize(e);
 
-            _headerBounds = new Rectangle(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, _headerHeight);
-            _expandcollapseBounds = new Rectangle(Width - _leftrightPadding - _expandcollapsbuttonsize, (int)((_headerHeight - _expandcollapsbuttonsize) / 2), _expandcollapsbuttonsize, _expandcollapsbuttonsize);
+            _headerBounds = new Rectangle(ClientRectangle.X, ClientRectangle.Y, ClientRectangle.Width, (int)(_headerHeight * ScaleFactor));
+            _expandcollapseBounds = new Rectangle(Width - (int)(_leftrightPadding * ScaleFactor) - (int)(_expandcollapsbuttonsize * ScaleFactor), (int)(((int)(_headerHeight * ScaleFactor) - (int)(_expandcollapsbuttonsize * ScaleFactor)) / 2), (int)(_expandcollapsbuttonsize * ScaleFactor), (int)(_expandcollapsbuttonsize * ScaleFactor));
 
             UpdateRects();
 
@@ -473,9 +528,20 @@ namespace ReaLTaiizor.Controls
             Invalidate();
         }
 
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            _needsLayoutRefresh = true;
+        }
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            if (_needsLayoutRefresh)
+            {
+                UpdateRects();
+                _needsLayoutRefresh = false;
+            }
+
             Graphics g = e.Graphics;
             g.TextRenderingHint = TextRenderingHint.AntiAlias;
 
@@ -518,10 +584,10 @@ namespace ReaLTaiizor.Controls
 
             // Calc text Rect
             Rectangle headerRect = new(
-                _leftrightPadding,
-                (_headerHeight - _textHeaderHeight) / 2,
-                TextRenderer.MeasureText(Title, Font).Width + _expansionPanelDefaultPadding,
-                _textHeaderHeight);
+                (int)(_leftrightPadding * ScaleFactor),
+                ((int)(_headerHeight * ScaleFactor) - (int)(_textHeaderHeight * ScaleFactor)) / 2,
+                TextRenderer.MeasureText(Title, SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor)).Width + (int)(_expansionPanelDefaultPadding * ScaleFactor),
+                (int)(_textHeaderHeight * ScaleFactor));
 
             //Draw  headers
             using (MaterialNativeTextRenderer NativeText = new(g))
@@ -529,7 +595,7 @@ namespace ReaLTaiizor.Controls
                 // Draw header text
                 NativeText.DrawTransparentText(
                     Title,
-                    SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1),
+                    SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor),
                     Enabled ? SkinManager.TextHighEmphasisColor : SkinManager.TextDisabledOrHintColor,
                     headerRect.Location,
                     headerRect.Size,
@@ -541,16 +607,16 @@ namespace ReaLTaiizor.Controls
                 //Draw description header text 
 
                 Rectangle headerDescriptionRect = new(
-                    headerRect.Right + _expansionPanelDefaultPadding,
-                    (_headerHeight - _textHeaderHeight) / 2,
-                    _expandcollapseBounds.Left - (headerRect.Right + _expansionPanelDefaultPadding) - _expansionPanelDefaultPadding,
-                    _textHeaderHeight);
+                    headerRect.Right + (int)(_expansionPanelDefaultPadding * ScaleFactor),
+                    ((int)(_headerHeight * ScaleFactor) - (int)(_textHeaderHeight * ScaleFactor)) / 2,
+                    _expandcollapseBounds.Left - (headerRect.Right + (int)(_expansionPanelDefaultPadding * ScaleFactor)) - (int)(_expansionPanelDefaultPadding * ScaleFactor),
+                    (int)(_textHeaderHeight * ScaleFactor));
 
                 using MaterialNativeTextRenderer NativeText = new(g);
                 // Draw description header text 
                 NativeText.DrawTransparentText(
                 Description,
-                SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1),
+                SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor),
                  SkinManager.TextDisabledOrHintColor,
                 headerDescriptionRect.Location,
                 headerDescriptionRect.Size,
@@ -564,20 +630,21 @@ namespace ReaLTaiizor.Controls
                 {
                     //Draw Expand button
                     System.Drawing.Drawing2D.GraphicsPath pth = new();
-                    PointF TopLeft = new(_expandcollapseBounds.X + 6, _expandcollapseBounds.Y + 9);
-                    PointF MidBottom = new(_expandcollapseBounds.X + 12, _expandcollapseBounds.Y + 15);
-                    PointF TopRight = new(_expandcollapseBounds.X + 18, _expandcollapseBounds.Y + 9);
+                    PointF TopLeft = new(_expandcollapseBounds.X + 6 * ScaleFactor, _expandcollapseBounds.Y + 9 * ScaleFactor);
+                    PointF MidBottom = new(_expandcollapseBounds.X + 12 * ScaleFactor, _expandcollapseBounds.Y + 15 * ScaleFactor);
+                    PointF TopRight = new(_expandcollapseBounds.X + 18 * ScaleFactor, _expandcollapseBounds.Y + 9 * ScaleFactor);
                     pth.AddLine(TopLeft, MidBottom);
                     pth.AddLine(TopRight, MidBottom);
                     g.DrawPath(formButtonsPen, pth);
+#warning Magic Numbers
                 }
                 else
                 {
                     // Draw Collapse button
                     System.Drawing.Drawing2D.GraphicsPath pth = new();
-                    PointF BottomLeft = new(_expandcollapseBounds.X + 6, _expandcollapseBounds.Y + 15);
-                    PointF MidTop = new(_expandcollapseBounds.X + 12, _expandcollapseBounds.Y + 9);
-                    PointF BottomRight = new(_expandcollapseBounds.X + 18, _expandcollapseBounds.Y + 15);
+                    PointF BottomLeft = new(_expandcollapseBounds.X + 6 * ScaleFactor, _expandcollapseBounds.Y + 15 * ScaleFactor);
+                    PointF MidTop = new(_expandcollapseBounds.X + 12 * ScaleFactor, _expandcollapseBounds.Y + 9 * ScaleFactor);
+                    PointF BottomRight = new(_expandcollapseBounds.X + 18 * ScaleFactor, _expandcollapseBounds.Y + 15 * ScaleFactor);
                     pth.AddLine(BottomLeft, MidTop);
                     pth.AddLine(BottomRight, MidTop);
                     g.DrawPath(formButtonsPen, pth);
@@ -587,7 +654,7 @@ namespace ReaLTaiizor.Controls
             if (!Collapse && ShowValidationButtons)
             {
                 //Draw divider
-                g.DrawLine(new Pen(SkinManager.DividersColor, 1), new Point(0, Height - _footerHeight), new Point(Width, Height - _footerHeight));
+                g.DrawLine(new Pen(SkinManager.DividersColor, 1), new Point(0, Height - (int)(_footerHeight * ScaleFactor)), new Point(Width, Height - (int)(_footerHeight * ScaleFactor)));
             }
         }
 
@@ -598,7 +665,7 @@ namespace ReaLTaiizor.Controls
             if (Collapse)
             {
                 _headerHeight = _headerHeightCollapse;
-                this.Height = _headerHeightCollapse;
+                this.Height = (int)(_headerHeightCollapse * ScaleFactor);
                 Margin = new Padding(16, 1, 16, 0);
 
                 // Is the event registered?
@@ -611,7 +678,7 @@ namespace ReaLTaiizor.Controls
             else
             {
                 _headerHeight = _headerHeightExpand;
-                this.Height = _expandHeight;
+                this.Height = (int)(_expandHeight * ScaleFactor);
                 Margin = new Padding(16, 16, 16, 16);
 
                 // Is the event registered?
@@ -629,15 +696,15 @@ namespace ReaLTaiizor.Controls
         {
             if (!Collapse && ShowValidationButtons)
             {
-                int _buttonWidth = TextRenderer.MeasureText(ValidationButtonText, SkinManager.GetFontByType(MaterialSkinManager.FontType.Button)).Width + 32;
-                _savebuttonBounds = new Rectangle(Width - _buttonPadding - _buttonWidth, Height - _expansionPanelDefaultPadding - _footerButtonHeight, _buttonWidth, _footerButtonHeight);
-                _buttonWidth = TextRenderer.MeasureText(CancelButtonText, SkinManager.GetFontByType(MaterialSkinManager.FontType.Button)).Width + 32;
-                _cancelbuttonBounds = new Rectangle(_savebuttonBounds.Left - _buttonPadding - _buttonWidth, Height - _expansionPanelDefaultPadding - _footerButtonHeight, _buttonWidth, _footerButtonHeight);
+                int _buttonWidth = TextRenderer.MeasureText(ValidationButtonText, SkinManager.GetFontByType(MaterialSkinManager.FontType.Button, ScaleFactor)).Width + 32;
+                _savebuttonBounds = new Rectangle(Width - (int)(_buttonPadding * ScaleFactor) - _buttonWidth, Height - (int)(_expansionPanelDefaultPadding * ScaleFactor) - (int)(_footerButtonHeight * ScaleFactor), _buttonWidth, (int)(_footerButtonHeight * ScaleFactor));
+                _buttonWidth = TextRenderer.MeasureText(CancelButtonText, SkinManager.GetFontByType(MaterialSkinManager.FontType.Button, ScaleFactor)).Width + 32;
+                _cancelbuttonBounds = new Rectangle(_savebuttonBounds.Left - (int)(_buttonPadding * ScaleFactor) - _buttonWidth, Height - (int)(_expansionPanelDefaultPadding * ScaleFactor) - (int)(_footerButtonHeight * ScaleFactor), _buttonWidth, (int)(_footerButtonHeight * ScaleFactor));
 
                 if (_validationButton != null)
                 {
                     _validationButton.Width = _savebuttonBounds.Width;
-                    _validationButton.Left = Width - _buttonPadding - _validationButton.Width;  //Button minimum width management
+                    _validationButton.Left = Width - (int)(_buttonPadding * ScaleFactor) - _validationButton.Width;  //Button minimum width management
                     _validationButton.Top = _savebuttonBounds.Top;
                     _validationButton.Height = _savebuttonBounds.Height;
                     _validationButton.Text = ValidationButtonText;
@@ -647,7 +714,7 @@ namespace ReaLTaiizor.Controls
                 if (_cancelButton != null)
                 {
                     _cancelButton.Width = _cancelbuttonBounds.Width;
-                    _cancelButton.Left = _validationButton.Left - _buttonPadding - _cancelbuttonBounds.Width;  //Button minimum width management
+                    _cancelButton.Left = _validationButton.Left - (int)(_buttonPadding * ScaleFactor) - _cancelbuttonBounds.Width;  //Button minimum width management
                     _cancelButton.Top = _cancelbuttonBounds.Top;
                     _cancelButton.Height = _cancelbuttonBounds.Height;
                     _cancelButton.Text = CancelButtonText;

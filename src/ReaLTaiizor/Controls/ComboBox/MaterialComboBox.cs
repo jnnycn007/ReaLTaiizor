@@ -92,10 +92,53 @@ namespace ReaLTaiizor.Controls
         private const int TEXT_SMALL_SIZE = 18;
         private const int TEXT_SMALL_Y = 4;
         private const int BOTTOM_PADDING = 3;
+        private const int DEFAULT_HEIGHT = 50; // DO NOT REPLACE WITH RATIO FORMULA
+        private const int HEIGHT_NOT_TALL = 36; // DO NOT REPLACE WITH RATIO FORMULA
+        private const int PADDING_CONST = 7;
+        private const int DROPDOWN_PADDING = 2;
+        private const int HINTRECT_PADDING = 2;
+        private const int INDICATOR_HEIGHT = 2;
+        private const int CLIENT_PADDING = 8;
         private int HEIGHT = 50;
         private int LINE_Y;
 
+        int hintTextSize = 16;
+
         private bool hasHint;
+
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+            set
+            {
+                _scaleRatio = value;
+            }
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+            set
+            {
+                _scaleRatioSqrt = value;
+            }
+        }
 
         private readonly AnimationManager _animationManager;
 
@@ -109,7 +152,7 @@ namespace ReaLTaiizor.Controls
             UseTallSize = true;
             MaxDropDownItems = 4;
 
-            Font = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle2);
+            Font = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle2, ScaleFactor);
             BackColor = SkinManager.BackgroundColor;
             ForeColor = SkinManager.TextHighEmphasisColor;
             DrawMode = DrawMode.OwnerDrawVariable;
@@ -173,6 +216,14 @@ namespace ReaLTaiizor.Controls
             };
         }
 
+        protected override void OnDpiChangedAfterParent(EventArgs e)
+        {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
+            base.OnDpiChangedAfterParent(e);
+        }
+
         protected override void OnPaint(PaintEventArgs pevent)
         {
             Graphics g = pevent.Graphics;
@@ -201,9 +252,11 @@ namespace ReaLTaiizor.Controls
 
             // Create and Draw the arrow
             GraphicsPath pth = new();
-            PointF TopRight = new(this.Width - 0.5f - SkinManager.FORM_PADDING, (this.Height >> 1) - 2.5f);
-            PointF MidBottom = new(this.Width - 4.5f - SkinManager.FORM_PADDING, (this.Height >> 1) + 2.5f);
-            PointF TopLeft = new(this.Width - 8.5f - SkinManager.FORM_PADDING, (this.Height >> 1) - 2.5f);
+            PointF TopRight = new(this.Width - 0.5f * ScaleFactor - SkinManager.FORM_PADDING, (this.Height >> 1) - 2.5f * ScaleFactor);
+            PointF MidBottom = new(this.Width - 4.5f * ScaleFactor - SkinManager.FORM_PADDING, (this.Height >> 1) + 2.5f * ScaleFactor);
+            PointF TopLeft = new(this.Width - 8.5f * ScaleFactor - SkinManager.FORM_PADDING, (this.Height >> 1) - 2.5f * ScaleFactor);
+            // Magic numbers warning
+#warning Magic Numbers
             pth.AddLine(TopLeft, TopRight);
             pth.AddLine(TopRight, MidBottom);
 
@@ -218,10 +271,9 @@ namespace ReaLTaiizor.Controls
             // HintText
             bool userTextPresent = SelectedIndex >= 0;
             Rectangle hintRect = new(SkinManager.FORM_PADDING, ClientRectangle.Y, Width, LINE_Y);
-            int hintTextSize = 16;
 
             // bottom line base
-            g.FillRectangle(SkinManager.DividersAlternativeBrush, 0, LINE_Y, Width, 1);
+            g.FillRectangle(SkinManager.DividersAlternativeBrush, 0, LINE_Y, Width, (int)(INDICATOR_HEIGHT) / 2);
 
             if (!_animationManager.IsAnimating())
             {
@@ -229,14 +281,14 @@ namespace ReaLTaiizor.Controls
                 if (hasHint && UseTallSize && (DroppedDown || Focused || SelectedIndex >= 0))
                 {
                     // hint text
-                    hintRect = new Rectangle(SkinManager.FORM_PADDING, TEXT_SMALL_Y, Width, TEXT_SMALL_SIZE);
+                    hintRect = new Rectangle(SkinManager.FORM_PADDING, (int)(TEXT_SMALL_Y * ScaleFactor), Width, (int)(TEXT_SMALL_SIZE * ScaleFactor));
                     hintTextSize = 12;
                 }
 
                 // bottom line
                 if (DroppedDown || Focused)
                 {
-                    g.FillRectangle(SelectedBrush, 0, LINE_Y, Width, 2);
+                    g.FillRectangle(SelectedBrush, 0, LINE_Y, Width, (int)(INDICATOR_HEIGHT * ScaleFactor));
                 }
             }
             else
@@ -249,23 +301,23 @@ namespace ReaLTaiizor.Controls
                 {
                     hintRect = new Rectangle(
                         SkinManager.FORM_PADDING,
-                        userTextPresent && !_animationManager.IsAnimating() ? TEXT_SMALL_Y : ClientRectangle.Y + (int)((TEXT_SMALL_Y - ClientRectangle.Y) * animationProgress),
+                        userTextPresent && !_animationManager.IsAnimating() ? (int)(TEXT_SMALL_Y * ScaleFactor) : ClientRectangle.Y + (int)(((int)(TEXT_SMALL_Y * ScaleFactor) - ClientRectangle.Y) * animationProgress),
                         Width,
-                        userTextPresent && !_animationManager.IsAnimating() ? TEXT_SMALL_SIZE : (int)(LINE_Y + ((TEXT_SMALL_SIZE - LINE_Y) * animationProgress)));
+                        userTextPresent && !_animationManager.IsAnimating() ? (int)(TEXT_SMALL_SIZE * ScaleFactor) : (int)(LINE_Y + (((int)(TEXT_SMALL_SIZE * ScaleFactor) - LINE_Y) * animationProgress)));
                     hintTextSize = userTextPresent && !_animationManager.IsAnimating() ? 12 : (int)(16 + ((12 - 16) * animationProgress));
                 }
 
                 // Line Animation
                 int LineAnimationWidth = (int)(Width * animationProgress);
                 int LineAnimationX = (Width / 2) - (LineAnimationWidth / 2);
-                g.FillRectangle(SelectedBrush, LineAnimationX, LINE_Y, LineAnimationWidth, 2);
+                g.FillRectangle(SelectedBrush, LineAnimationX, LINE_Y, LineAnimationWidth, (int)(INDICATOR_HEIGHT * ScaleFactor));
             }
 
             // Calc text Rect
             Rectangle textRect = new(
                 SkinManager.FORM_PADDING,
-                hasHint && UseTallSize ? hintRect.Y + hintRect.Height - 2 : ClientRectangle.Y,
-                ClientRectangle.Width - (SkinManager.FORM_PADDING * 3) - 8,
+                hasHint && UseTallSize ? hintRect.Y + hintRect.Height - (int)(HINTRECT_PADDING * ScaleFactor) : ClientRectangle.Y,
+                ClientRectangle.Width - (SkinManager.FORM_PADDING * 3) - (int)((int)(CLIENT_PADDING * ScaleFactor) * ScaleFactor),
                 hasHint && UseTallSize ? LINE_Y - (hintRect.Y + hintRect.Height) : LINE_Y);
 
             g.Clip = new Region(textRect);
@@ -275,7 +327,7 @@ namespace ReaLTaiizor.Controls
                 // Draw user text
                 NativeText.DrawTransparentText(
                     Text,
-                    SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1),
+                    SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor),
                     Enabled ? SkinManager.TextHighEmphasisColor : SkinManager.TextDisabledOrHintColor,
                     textRect.Location,
                     textRect.Size,
@@ -290,7 +342,7 @@ namespace ReaLTaiizor.Controls
                 using MaterialNativeTextRenderer NativeText = new(g);
                 NativeText.DrawTransparentText(
                 Hint,
-                SkinManager.GetTextBoxFontBySize(hintTextSize),
+                SkinManager.GetTextBoxFontBySize(hintTextSize, ScaleFactor),
                 Enabled ? DroppedDown || Focused ?
                 SelectedColor : // Focus 
                 SkinManager.TextMediumEmphasisColor : // not focused
@@ -303,7 +355,7 @@ namespace ReaLTaiizor.Controls
 
         private void CustomMeasureItem(object sender, MeasureItemEventArgs e)
         {
-            e.ItemHeight = HEIGHT - 7;
+            e.ItemHeight = (int)(HEIGHT * ScaleFactor) - (int)(PADDING_CONST * ScaleFactor);
         }
 
         private void CustomDrawItem(object sender, DrawItemEventArgs e)
@@ -346,7 +398,7 @@ namespace ReaLTaiizor.Controls
             using MaterialNativeTextRenderer NativeText = new(g);
             NativeText.DrawTransparentText(
             Text,
-            SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1),
+            SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor),
             SkinManager.TextHighEmphasisNoAlphaColor,
             new Point(e.Bounds.Location.X + SkinManager.FORM_PADDING, e.Bounds.Location.Y),
             new Size(e.Bounds.Size.Width - (SkinManager.FORM_PADDING * 2), e.Bounds.Size.Height),
@@ -367,6 +419,9 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnResize(EventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             base.OnResize(e);
             recalculateAutoSize();
             setHeightVars();
@@ -374,11 +429,11 @@ namespace ReaLTaiizor.Controls
 
         private void setHeightVars()
         {
-            HEIGHT = UseTallSize ? 50 : 36;
-            Size = new Size(Size.Width, HEIGHT);
-            LINE_Y = HEIGHT - BOTTOM_PADDING;
-            ItemHeight = HEIGHT - 7;
-            DropDownHeight = (ItemHeight * MaxDropDownItems) + 2;
+            HEIGHT = UseTallSize ? DEFAULT_HEIGHT : HEIGHT_NOT_TALL;
+            Size = new Size(Size.Width, (int)(HEIGHT * ScaleFactor));
+            LINE_Y = Height - INDICATOR_HEIGHT;
+            ItemHeight = (int)(HEIGHT * ScaleFactor) - (int)(PADDING_CONST * ScaleFactor);
+            DropDownHeight = (ItemHeight * MaxDropDownItems) + (int)(DROPDOWN_PADDING * ScaleFactor);
         }
 
         public void recalculateAutoSize()
@@ -398,7 +453,7 @@ namespace ReaLTaiizor.Controls
                 System.Collections.Generic.IEnumerable<string> itemsList = this.Items.Cast<object>().Select(item => item.ToString());
                 foreach (string s in itemsList)
                 {
-                    int newWidth = NativeText.MeasureLogString(s, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1)).Width + vertScrollBarWidth + padding;
+                    int newWidth = NativeText.MeasureLogString(s, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor)).Width + vertScrollBarWidth + padding;
                     if (w < newWidth)
                     {
                         w = newWidth;

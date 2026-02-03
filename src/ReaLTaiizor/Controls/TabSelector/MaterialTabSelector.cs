@@ -138,8 +138,43 @@ namespace ReaLTaiizor.Controls
         private const int TAB_HEADER_PADDING = 24;
         private const int TAB_WIDTH_MIN = 160;
         private const int TAB_WIDTH_MAX = 264;
+        private const int DEFAULT_INDICATOR_HEIGHT = 2;
 
         private int _tab_over_index = -1;
+
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+            set
+            {
+                _scaleRatio = value;
+            }
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+            set
+            {
+                _scaleRatioSqrt = value;
+            }
+        }
 
         [Category("Appearance")]
         public CustomCharacterCasing CharacterCasing
@@ -202,8 +237,11 @@ namespace ReaLTaiizor.Controls
 
         public MaterialTabSelector()
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             SetStyle(ControlStyles.DoubleBuffer | ControlStyles.OptimizedDoubleBuffer, true);
-            TabIndicatorHeight = 2;
+            TabIndicatorHeight = DEFAULT_INDICATOR_HEIGHT;
             TabLabel = TabLabelStyle.Text;
 
             Size = new Size(480, 48);
@@ -218,8 +256,11 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnCreateControl()
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             base.OnCreateControl();
-            Font = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1);
+            Font = SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -257,7 +298,7 @@ namespace ReaLTaiizor.Controls
             if (_tab_over_index >= 0)
             {
                 //Change mouse over tab background color
-                g.FillRectangle(SkinManager.BackgroundHoverBrush, _tabRects[_tab_over_index].X, _tabRects[_tab_over_index].Y, _tabRects[_tab_over_index].Width, _tabRects[_tab_over_index].Height - TabIndicatorHeight);
+                g.FillRectangle(SkinManager.BackgroundHoverBrush, _tabRects[_tab_over_index].X, _tabRects[_tab_over_index].Y, _tabRects[_tab_over_index].Width, _tabRects[_tab_over_index].Height - (int)(TabIndicatorHeight * ScaleFactor));
             }
 
             foreach (System.Windows.Forms.TabPage tabPage in BaseTabControl.TabPages)
@@ -269,7 +310,7 @@ namespace ReaLTaiizor.Controls
                     // Text
                     using MaterialNativeTextRenderer NativeText = new(g);
                     Size textSize = TextRenderer.MeasureText(BaseTabControl.TabPages[currentTabIndex].Text, Font);
-                    Rectangle textLocation = new(_tabRects[currentTabIndex].X + (TAB_HEADER_PADDING / 2), _tabRects[currentTabIndex].Y, _tabRects[currentTabIndex].Width - TAB_HEADER_PADDING, _tabRects[currentTabIndex].Height);
+                    Rectangle textLocation = new(_tabRects[currentTabIndex].X + ((int)(TAB_HEADER_PADDING * ScaleFactor) / 2), _tabRects[currentTabIndex].Y, _tabRects[currentTabIndex].Width - (int)(TAB_HEADER_PADDING * ScaleFactor), _tabRects[currentTabIndex].Height);
 
                     if (TabLabel == TabLabelStyle.IconAndText)
                     {
@@ -277,7 +318,7 @@ namespace ReaLTaiizor.Controls
                         textLocation.Height = 10;
                     }
 
-                    if ((TAB_HEADER_PADDING * 2) + textSize.Width < TAB_WIDTH_MAX)
+                    if (((int)(TAB_HEADER_PADDING * ScaleFactor) * 2) + textSize.Width < (int)(TAB_WIDTH_MAX * ScaleFactor))
                     {
                         NativeText.DrawTransparentText(
                         CharacterCasing == CustomCharacterCasing.Upper ? tabPage.Text.ToUpper() :
@@ -300,7 +341,7 @@ namespace ReaLTaiizor.Controls
                         CharacterCasing == CustomCharacterCasing.Upper ? tabPage.Text.ToUpper() :
                         CharacterCasing == CustomCharacterCasing.Lower ? tabPage.Text.ToLower() :
                         CharacterCasing == CustomCharacterCasing.Proper ? textInfo.ToTitleCase(tabPage.Text.ToLower()) : tabPage.Text,
-                        SkinManager.GetFontByType(MaterialSkinManager.FontType.Body2),
+                        SkinManager.GetFontByType(MaterialSkinManager.FontType.Body2, ScaleFactor),
                         Color.FromArgb(CalculateTextAlpha(currentTabIndex, animationProgress), SkinManager.ColorScheme.TextColor),
                         textLocation.Location,
                         textLocation.Size,
@@ -314,9 +355,9 @@ namespace ReaLTaiizor.Controls
                     if (BaseTabControl.ImageList != null && (!string.IsNullOrEmpty(tabPage.ImageKey) | tabPage.ImageIndex > -1))
                     {
                         Rectangle iconRect = new(
-                            _tabRects[currentTabIndex].X + (_tabRects[currentTabIndex].Width / 2) - (ICON_SIZE / 2),
-                            _tabRects[currentTabIndex].Y + (_tabRects[currentTabIndex].Height / 2) - (ICON_SIZE / 2),
-                            ICON_SIZE, ICON_SIZE);
+                            _tabRects[currentTabIndex].X + (_tabRects[currentTabIndex].Width / 2) - ((int)(ICON_SIZE * ScaleFactor) / 2),
+                            _tabRects[currentTabIndex].Y + (_tabRects[currentTabIndex].Height / 2) - ((int)(ICON_SIZE * ScaleFactor) / 2),
+                            (int)(ICON_SIZE * ScaleFactor), (int)(ICON_SIZE * ScaleFactor));
                         if (TabLabel == TabLabelStyle.IconAndText)
                         {
                             iconRect.Y = 12;
@@ -331,11 +372,11 @@ namespace ReaLTaiizor.Controls
             Rectangle previousActiveTabRect = _tabRects[previousSelectedTabIndexIfHasOne];
             Rectangle activeTabPageRect = _tabRects[BaseTabControl.SelectedIndex];
 
-            int y = activeTabPageRect.Bottom - TabIndicatorHeight;
+            int y = activeTabPageRect.Bottom - (int)(TabIndicatorHeight * ScaleFactor);
             int x = previousActiveTabRect.X + (int)((activeTabPageRect.X - previousActiveTabRect.X) * animationProgress);
             int width = previousActiveTabRect.Width + (int)((activeTabPageRect.Width - previousActiveTabRect.Width) * animationProgress);
 
-            g.FillRectangle(SkinManager.ColorScheme.AccentBrush, x, y, width, TabIndicatorHeight);
+            g.FillRectangle(SkinManager.ColorScheme.AccentBrush, x, y, width, (int)(TabIndicatorHeight * ScaleFactor));
         }
 
         private int CalculateTextAlpha(int tabIndex, double animationProgress)
@@ -379,6 +420,22 @@ namespace ReaLTaiizor.Controls
             }
 
             _animationSource = e.Location;
+        }
+
+        protected override void OnDpiChangedAfterParent(EventArgs e)
+        {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
+            base.OnDpiChangedAfterParent(e);
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
+            base.OnResize(e);
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -466,7 +523,7 @@ namespace ReaLTaiizor.Controls
             {
                 foreach (System.Windows.Forms.TabPage TP in BaseTabControl.TabPages)
                 {
-                    TitleLenght += (TAB_HEADER_PADDING * 2) + (int)gs.MeasureString(TP.Text, Font).Width;
+                    TitleLenght += ((int)(TAB_HEADER_PADDING * ScaleFactor) * 2) + (int)gs.MeasureString(TP.Text, Font).Width;
                 }
             }
 
@@ -474,18 +531,18 @@ namespace ReaLTaiizor.Controls
             {
                 case Alignment.Center:
                     int CenterLocation = (Width / 2) - (TitleLenght / 2);
-                    _tabRects.Add(new Rectangle(CenterLocation, 0, (TAB_HEADER_PADDING * 2) + (int)gs.MeasureString(BaseTabControl.TabPages[0].Text, Font).Width, Height));
+                    _tabRects.Add(new Rectangle(CenterLocation, 0, ((int)(TAB_HEADER_PADDING * ScaleFactor) * 2) + (int)gs.MeasureString(BaseTabControl.TabPages[0].Text, Font).Width, Height));
                     for (int i = 1; i < BaseTabControl.TabPages.Count; i++)
                     {
-                        _tabRects.Add(new Rectangle(_tabRects[i - 1].Right, 0, (TAB_HEADER_PADDING * 2) + (int)gs.MeasureString(BaseTabControl.TabPages[i].Text, Font).Width, Height));
+                        _tabRects.Add(new Rectangle(_tabRects[i - 1].Right, 0, ((int)(TAB_HEADER_PADDING * ScaleFactor) * 2) + (int)gs.MeasureString(BaseTabControl.TabPages[i].Text, Font).Width, Height));
                     }
 
                     break;
                 case Alignment.Right:
-                    _tabRects.Add(new Rectangle(Width - TitleLenght - SkinManager.FORM_PADDING, 0, (TAB_HEADER_PADDING * 2) + (int)gs.MeasureString(BaseTabControl.TabPages[0].Text, Font).Width, Height));
+                    _tabRects.Add(new Rectangle(Width - TitleLenght - SkinManager.FORM_PADDING, 0, ((int)(TAB_HEADER_PADDING * ScaleFactor) * 2) + (int)gs.MeasureString(BaseTabControl.TabPages[0].Text, Font).Width, Height));
                     for (int i = 1; i < BaseTabControl.TabPages.Count; i++)
                     {
-                        _tabRects.Add(new Rectangle(_tabRects[i - 1].Right, 0, (TAB_HEADER_PADDING * 2) + (int)gs.MeasureString(BaseTabControl.TabPages[i].Text, Font).Width, Height));
+                        _tabRects.Add(new Rectangle(_tabRects[i - 1].Right, 0, ((int)(TAB_HEADER_PADDING * ScaleFactor) * 2) + (int)gs.MeasureString(BaseTabControl.TabPages[i].Text, Font).Width, Height));
                     }
 
                     break;
@@ -495,22 +552,22 @@ namespace ReaLTaiizor.Controls
                         Size textSize = TextRenderer.MeasureText(BaseTabControl.TabPages[i].Text, Font);
                         if (TabLabel == TabLabelStyle.Icon)
                         {
-                            textSize.Width = ICON_SIZE;
+                            textSize.Width = (int)(ICON_SIZE * ScaleFactor);
                         }
 
-                        int TabWidth = (TAB_HEADER_PADDING * 2) + textSize.Width;
-                        if (TabWidth > TAB_WIDTH_MAX)
+                        int TabWidth = ((int)(TAB_HEADER_PADDING * ScaleFactor) * 2) + textSize.Width;
+                        if (TabWidth > (int)(TAB_WIDTH_MAX * ScaleFactor))
                         {
-                            TabWidth = TAB_WIDTH_MAX;
+                            TabWidth = (int)(TAB_WIDTH_MAX * ScaleFactor);
                         }
-                        else if (TabWidth < TAB_WIDTH_MIN)
+                        else if (TabWidth < (int)(TAB_WIDTH_MIN * ScaleFactor))
                         {
-                            TabWidth = TAB_WIDTH_MIN;
+                            TabWidth = (int)(TAB_WIDTH_MIN * ScaleFactor);
                         }
 
                         if (i == 0)
                         {
-                            _tabRects.Add(new Rectangle(FIRST_TAB_PADDING - TAB_HEADER_PADDING, 0, TabWidth, Height));
+                            _tabRects.Add(new Rectangle((int)(FIRST_TAB_PADDING * ScaleFactor) - (int)(TAB_HEADER_PADDING * ScaleFactor), 0, TabWidth, Height));
                         }
                         else
                         {

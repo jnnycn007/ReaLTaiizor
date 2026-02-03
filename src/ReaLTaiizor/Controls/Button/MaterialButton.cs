@@ -500,8 +500,8 @@ namespace ReaLTaiizor.Controls
         /// <param name="pevent">The pevent<see cref="PaintEventArgs"/></param>
         protected override void OnPaint(PaintEventArgs pevent)
         {
-            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
-            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            // ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            // ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
             
             Graphics g = pevent.Graphics;
 
@@ -638,7 +638,7 @@ namespace ReaLTaiizor.Controls
             if (string.IsNullOrEmpty(Text))
             {
                 // Center Icon
-                iconRect.X += 2;
+                iconRect.X += (int)(2 * ScaleFactor);
             }
 
             if (Icon != null)

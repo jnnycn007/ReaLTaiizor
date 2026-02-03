@@ -585,8 +585,8 @@ namespace ReaLTaiizor.Controls
                 Invalidate();
                 _hasRefreshed = true;
             }
-            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
-            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            // ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            // ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
 
             base.OnPaint(pevent);
 

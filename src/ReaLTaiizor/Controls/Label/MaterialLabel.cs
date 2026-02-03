@@ -141,8 +141,8 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
-            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            // ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            // ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
 
             Graphics g = e.Graphics;
             g.Clear(Parent.BackColor == Color.Transparent ? ((Parent.Parent == null || (Parent.Parent != null && Parent.Parent.BackColor == Color.Transparent)) ? SkinManager.BackgroundColor : Parent.Parent.BackColor) : Parent.BackColor);

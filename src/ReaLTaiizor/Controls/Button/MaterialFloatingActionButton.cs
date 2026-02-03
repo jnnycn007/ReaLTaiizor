@@ -32,8 +32,44 @@ namespace ReaLTaiizor.Controls
         private const int FAB_ICON_MARGIN = 16;
         private const int FAB_MINI_ICON_MARGIN = 8;
         private const int FAB_ICON_SIZE = 24;
+        private const int ICON_OFFSET = 11;
+        private const int ICON_SIZE = 24;
 
         private bool _mouseHover = false;
+
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+            set
+            {
+                _scaleRatio = value;
+            }
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+            set
+            {
+                _scaleRatioSqrt = value;
+            }
+        }
 
         [DefaultValue(true)]
         [Category("Material"), DisplayName("Draw Shadows")]
@@ -89,7 +125,7 @@ namespace ReaLTaiizor.Controls
             DrawShadows = true;
             SetStyle(ControlStyles.DoubleBuffer | ControlStyles.OptimizedDoubleBuffer | ControlStyles.AllPaintingInWmPaint, true);
 
-            Size = new Size(FAB_SIZE, FAB_SIZE);
+            Size = new Size((int)(FAB_SIZE * ScaleFactor), (int)(FAB_SIZE * ScaleFactor));
             _animationManager = new AnimationManager(false)
             {
                 Increment = 0.03,
@@ -108,11 +144,17 @@ namespace ReaLTaiizor.Controls
 
         protected override void InitLayout()
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             LocationChanged += (sender, e) => { if (DrawShadows) { Parent?.Invalidate(); } };
         }
 
         protected override void OnParentChanged(EventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             base.OnParentChanged(e);
             if (DrawShadows && Parent != null)
             {
@@ -128,6 +170,14 @@ namespace ReaLTaiizor.Controls
         }
 
         private Control _oldParent;
+
+        protected override void OnDpiChangedAfterParent(EventArgs e)
+        {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
+            base.OnDpiChangedAfterParent(e);
+        }
 
         protected override void OnVisibleChanged(EventArgs e)
         {
@@ -176,8 +226,8 @@ namespace ReaLTaiizor.Controls
         private void setSize(bool mini)
         {
             _mini = mini;
-            Size = _mini ? new Size(FAB_MINI_SIZE, FAB_MINI_SIZE) : new Size(FAB_SIZE, FAB_SIZE);
-            fabBounds = _mini ? new Rectangle(0, 0, FAB_MINI_SIZE, FAB_MINI_SIZE) : new Rectangle(0, 0, FAB_SIZE, FAB_SIZE);
+            Size = _mini ? new Size((int)(FAB_MINI_SIZE * ScaleFactor), (int)(FAB_MINI_SIZE * ScaleFactor)) : new Size((int)(FAB_SIZE * ScaleFactor), (int)(FAB_SIZE * ScaleFactor));
+            fabBounds = _mini ? new Rectangle(0, 0, (int)(FAB_MINI_SIZE * ScaleFactor), (int)(FAB_MINI_SIZE * ScaleFactor)) : new Rectangle(0, 0, (int)(FAB_SIZE * ScaleFactor), (int)(FAB_SIZE * ScaleFactor));
             fabBounds.Width -= 1;
             fabBounds.Height -= 1;
         }
@@ -248,16 +298,16 @@ namespace ReaLTaiizor.Controls
 
             if (Icon != null)
             {
-                g.DrawImage(Icon, new Rectangle((fabBounds.Width / 2) - 11, (fabBounds.Height / 2) - 11, 24, 24));
+                g.DrawImage(Icon, new Rectangle((fabBounds.Width / 2) - (int)(ICON_OFFSET * ScaleFactor), (fabBounds.Height / 2) - (int)(ICON_OFFSET * ScaleFactor), (int)(ICON_SIZE * ScaleFactor), (int)(ICON_SIZE * ScaleFactor)));
             }
 
             if (_showAnimationManager.IsAnimating())
             {
-                int target = Convert.ToInt32((_mini ? FAB_MINI_SIZE : FAB_SIZE) * _showAnimationManager.GetProgress());
+                int target = Convert.ToInt32((_mini ? (int)(FAB_MINI_SIZE * ScaleFactor) : (int)(FAB_SIZE * ScaleFactor)) * _showAnimationManager.GetProgress());
                 fabBounds.Width = target == 0 ? 1 : target;
                 fabBounds.Height = target == 0 ? 1 : target;
-                fabBounds.X = Convert.ToInt32(((_mini ? FAB_MINI_SIZE : FAB_SIZE) / 2) - ((_mini ? FAB_MINI_SIZE : FAB_SIZE) / 2 * _showAnimationManager.GetProgress()));
-                fabBounds.Y = Convert.ToInt32(((_mini ? FAB_MINI_SIZE : FAB_SIZE) / 2) - ((_mini ? FAB_MINI_SIZE : FAB_SIZE) / 2 * _showAnimationManager.GetProgress()));
+                fabBounds.X = Convert.ToInt32(((_mini ? (int)(FAB_MINI_SIZE * ScaleFactor) : (int)(FAB_SIZE * ScaleFactor)) / 2) - ((_mini ? (int)(FAB_MINI_SIZE * ScaleFactor) : (int)(FAB_SIZE * ScaleFactor)) / 2 * _showAnimationManager.GetProgress()));
+                fabBounds.Y = Convert.ToInt32(((_mini ? (int)(FAB_MINI_SIZE * ScaleFactor) : (int)(FAB_SIZE * ScaleFactor)) / 2) - ((_mini ? (int)(FAB_MINI_SIZE * ScaleFactor) : (int)(FAB_SIZE * ScaleFactor)) / 2 * _showAnimationManager.GetProgress()));
             }
 
             // Clip to a round shape with a 1px padding
@@ -299,6 +349,9 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnResize(EventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             base.OnResize(e);
 
             if (DrawShadows && Parent != null)

@@ -512,8 +512,8 @@ namespace ReaLTaiizor.Controls
                 return;
             }
 
-            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
-            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            // ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            // ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
 
             Graphics g = e.Graphics;
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
