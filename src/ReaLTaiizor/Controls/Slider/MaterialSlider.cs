@@ -432,7 +432,7 @@ namespace ReaLTaiizor.Controls
             using (MaterialNativeTextRenderer NativeText = new(CreateGraphics()))
             {
                 textSize = NativeText.MeasureLogString(ShowText ? Text : "", SkinManager.GetLogFontByType(FontType, ScaleFactor));
-                valueSize = NativeText.MeasureLogString(ShowValue ? ValuePrefix + RangeMax.ToString() + ValueSuffix : "", SkinManager.GetLogFontByType(FontType, ScaleFactor));
+                valueSize = NativeText.MeasureLogString(ShowValue ? ValuePrefix + RangeMax + ValueSuffix : "", SkinManager.GetLogFontByType(FontType, ScaleFactor));
             }
             _valueRectangle = new Rectangle(Width - valueSize.Width - ((int)(_thumbRadiusHoverPressed * ScaleFactor) / 4), 0, valueSize.Width + ((int)(_thumbRadiusHoverPressed * ScaleFactor) / 4), Height);
             _textRectangle = new Rectangle(0, 0, textSize.Width + ((int)(_thumbRadiusHoverPressed * ScaleFactor) / 4), Height);
