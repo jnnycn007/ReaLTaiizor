@@ -360,9 +360,9 @@ namespace ReaLTaiizor.Controls
         }
 
 
-        private void UpdateItemSpecs() 
-            // Due to abuse to magic nums, original code here is replaced by GPT-5.2 generated ones.
-            // If it isn't working as expected, then I also have no idea 'bout who caused this ;D
+        private void UpdateItemSpecs()
+        // Due to abuse to magic nums, original code here is replaced by GPT-5.2 generated ones.
+        // If it isn't working as expected, then I also have no idea 'bout who caused this ;D
         {
             bool isDense = Density == MaterialItemDensity.Dense;
 
@@ -410,30 +410,20 @@ namespace ReaLTaiizor.Controls
                 (isDense ? (int)(DENSE_REDUCTION * ScaleFactor) : 0);
 
             // 4️⃣ Set height from Style 
-            switch (Style)
+            _itemHeight = Style switch
             {
-                case ListBoxStyle.TwoLine:
-                    _itemHeight =
-                        primaryTextHeight +
-                        secondaryTextHeight +
-                        (int)(TEXT_LINE_SPACING * ScaleFactor) +
-                        verticalPadding;
-                    break;
-
-                case ListBoxStyle.ThreeLine:
-                    _itemHeight =
-                        primaryTextHeight +
-                        secondaryTextHeight * 2 +
-                        (int)(TEXT_LINE_SPACING * ScaleFactor) * 2 +
-                        verticalPadding;
-                    break;
-
-                default: // SingleLine
-                    _itemHeight =
-                        primaryTextHeight +
-                        verticalPadding;
-                    break;
-            }
+                ListBoxStyle.TwoLine => primaryTextHeight +
+                                        secondaryTextHeight +
+                                        (int)(TEXT_LINE_SPACING * ScaleFactor) +
+                                        verticalPadding,
+                ListBoxStyle.ThreeLine => primaryTextHeight +
+                                        (secondaryTextHeight * 2) +
+                                        ((int)(TEXT_LINE_SPACING * ScaleFactor) * 2) +
+                                        verticalPadding,
+                // SingleLine
+                _ => primaryTextHeight +
+                                        verticalPadding,
+            };
         }
 
         [Obsolete(

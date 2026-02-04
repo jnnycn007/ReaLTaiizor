@@ -3,12 +3,10 @@
 using ReaLTaiizor.Manager;
 using ReaLTaiizor.Util;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using static ReaLTaiizor.Helper.MaterialDrawHelper;
 using static ReaLTaiizor.Util.MaterialAnimations;
@@ -178,7 +176,7 @@ namespace ReaLTaiizor.Controls
         public MaterialToolStripMenuItem()
         {
             AutoSize = false;
-            
+
         }
 
         public override Size GetPreferredSize(Size constrainingSize)
@@ -186,10 +184,10 @@ namespace ReaLTaiizor.Controls
             ScaleFactor = ((MaterialContextMenuStrip)Owner).SkinManager.GetDeviceScaleFactor(Owner);
             ScaleFactorSqrt = ((MaterialContextMenuStrip)Owner).SkinManager.GetDeviceScaleFactorSqrt(Owner);
 
-            var baseSize = base.GetPreferredSize(constrainingSize);
+            Size baseSize = base.GetPreferredSize(constrainingSize);
 
             return new Size(
-                (int)(baseSize.Width),
+                (int)baseSize.Width,
                 (int)(baseSize.Height * ScaleFactor));
 
         }
@@ -204,7 +202,7 @@ namespace ReaLTaiizor.Controls
 
         protected override ToolStripDropDown CreateDefaultDropDown()
         {
-            
+
             ToolStripDropDown baseDropDown = base.CreateDefaultDropDown();
             if (DesignMode)
             {
@@ -245,7 +243,7 @@ namespace ReaLTaiizor.Controls
             {
                 if (!_scaleRatioSqrt.HasValue)
                 {
-                    _scaleRatioSqrt = (float)(Math.Sqrt(ScaleRatio));
+                    _scaleRatioSqrt = (float)Math.Sqrt(ScaleRatio);
                 }
                 return _scaleRatioSqrt.Value;
             }

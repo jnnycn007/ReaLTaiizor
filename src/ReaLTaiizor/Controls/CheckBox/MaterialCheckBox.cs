@@ -3,12 +3,10 @@
 using ReaLTaiizor.Manager;
 using ReaLTaiizor.Util;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using static ReaLTaiizor.Helper.MaterialDrawHelper;
 using static ReaLTaiizor.Util.MaterialAnimations;
@@ -153,7 +151,7 @@ namespace ReaLTaiizor.Controls
         #endregion
 
         #region Overridden events
-        
+
         private bool _resizing = false;
         private int originWidth = 0;
         protected override void OnSizeChanged(EventArgs e)
@@ -165,14 +163,14 @@ namespace ReaLTaiizor.Controls
             }
 
             _resizing = true;
-            if (originWidth != Width) 
+            if (originWidth != Width)
             {
                 Width = (int)(Width * ScaleFactor);
                 originWidth = Width;
             }
-            
+
             base.OnSizeChanged(e);
-            
+
             _boxOffset = ((int)(HEIGHT_RIPPLE * ScaleFactor) / 2) - (int)(9 * ScaleFactor);
             _resizing = false;
         }
@@ -294,7 +292,7 @@ namespace ReaLTaiizor.Controls
             // draw checkbox text
             using (MaterialNativeTextRenderer NativeText = new(g))
             {
-                Rectangle textLocation = new(_boxOffset + (int)(TEXT_OFFSET * ScaleFactor), (int)(ScaleFactor), Width - (_boxOffset + (int)(TEXT_OFFSET * ScaleFactor)), (int)(HEIGHT_RIPPLE * ScaleFactor));
+                Rectangle textLocation = new(_boxOffset + (int)(TEXT_OFFSET * ScaleFactor), (int)ScaleFactor, Width - (_boxOffset + (int)(TEXT_OFFSET * ScaleFactor)), (int)(HEIGHT_RIPPLE * ScaleFactor));
                 NativeText.DrawTransparentText(Text, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor),
                     Enabled ? SkinManager.TextHighEmphasisColor : SkinManager.TextDisabledOrHintColor,
                     textLocation.Location,

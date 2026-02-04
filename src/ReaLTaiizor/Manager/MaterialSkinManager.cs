@@ -335,15 +335,15 @@ namespace ReaLTaiizor.Manager
         {
             int scaleKey = (int)Math.Round(scaleRatio * 100);
             string key = "textBox" + Math.Min(16, Math.Max(12, size)).ToString() + "-scale" + scaleKey;
-            if (logicalFonts.TryGetValue(key, out var existingFont))
+            if (logicalFonts.TryGetValue(key, out IntPtr existingFont))
             {
                 return existingFont;
             }
             lock (_fontLock)
             {
-                if (logicalFonts.TryGetValue(key, out var h))
+                if (logicalFonts.TryGetValue(key, out IntPtr h))
                     return h;
-                var hOriginalFont = GetTextBoxFontBySize(size);
+                IntPtr hOriginalFont = GetTextBoxFontBySize(size);
                 if (scaleKey == 100) return hOriginalFont;
                 LogFont lf = new LogFont();
                 if (GetObject(hOriginalFont, Marshal.SizeOf(lf), lf) == 0)
@@ -365,17 +365,17 @@ namespace ReaLTaiizor.Manager
         {
             int scaleKey = (int)Math.Round(scaleRatio * 100);
             string key = System.Enum.GetName(typeof(FontType), type) + "-scale" + scaleKey;
-            if (logicalFonts.TryGetValue(key, out var existingFont))
+            if (logicalFonts.TryGetValue(key, out IntPtr existingFont))
             {
                 return existingFont;
             }
             lock (_fontLock)
             {
-                if (logicalFonts.TryGetValue(key, out var cachedFont))
+                if (logicalFonts.TryGetValue(key, out IntPtr cachedFont))
                 {
                     return cachedFont;
                 }
-                var hOriginalFont = logicalFonts[System.Enum.GetName(typeof(FontType), type)];
+                IntPtr hOriginalFont = logicalFonts[System.Enum.GetName(typeof(FontType), type)];
                 if (scaleRatio == 1) return hOriginalFont;
                 LogFont lf = new LogFont();
                 if (GetObject(hOriginalFont, Marshal.SizeOf(lf), lf) == 0)
@@ -387,7 +387,7 @@ namespace ReaLTaiizor.Manager
                 return createdFont;
             }
         }
-        
+
         // Font stuff
         private Dictionary<string, IntPtr> logicalFonts;
 
@@ -398,7 +398,7 @@ namespace ReaLTaiizor.Manager
         [DllImport("gdi32.dll", CharSet = CharSet.Auto)]
         public static extern int GetObject(IntPtr hFont, int nSize, [In, Out] LogFont lf);
 
-        
+
 
         private void addFont(byte[] fontdata)
         {

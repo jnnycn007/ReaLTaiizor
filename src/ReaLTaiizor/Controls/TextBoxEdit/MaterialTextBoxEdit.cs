@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using static ReaLTaiizor.Helper.MaterialDrawHelper;
 using static ReaLTaiizor.Util.MaterialAnimations;
@@ -813,7 +812,7 @@ namespace ReaLTaiizor.Controls
         # endregion
 
         private readonly AnimationManager _animationManager;
-        
+
         public bool isFocused = false;
         private const int PREFIX_SUFFIX_PADDING = 4;
         private const int ICON_SIZE = 24;

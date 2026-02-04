@@ -630,9 +630,9 @@ namespace ReaLTaiizor.Controls
                 {
                     //Draw Expand button
                     System.Drawing.Drawing2D.GraphicsPath pth = new();
-                    PointF TopLeft = new(_expandcollapseBounds.X + 6 * ScaleFactor, _expandcollapseBounds.Y + 9 * ScaleFactor);
-                    PointF MidBottom = new(_expandcollapseBounds.X + 12 * ScaleFactor, _expandcollapseBounds.Y + 15 * ScaleFactor);
-                    PointF TopRight = new(_expandcollapseBounds.X + 18 * ScaleFactor, _expandcollapseBounds.Y + 9 * ScaleFactor);
+                    PointF TopLeft = new(_expandcollapseBounds.X + (6 * ScaleFactor), _expandcollapseBounds.Y + (9 * ScaleFactor));
+                    PointF MidBottom = new(_expandcollapseBounds.X + (12 * ScaleFactor), _expandcollapseBounds.Y + (15 * ScaleFactor));
+                    PointF TopRight = new(_expandcollapseBounds.X + (18 * ScaleFactor), _expandcollapseBounds.Y + (9 * ScaleFactor));
                     pth.AddLine(TopLeft, MidBottom);
                     pth.AddLine(TopRight, MidBottom);
                     g.DrawPath(formButtonsPen, pth);
@@ -642,9 +642,9 @@ namespace ReaLTaiizor.Controls
                 {
                     // Draw Collapse button
                     System.Drawing.Drawing2D.GraphicsPath pth = new();
-                    PointF BottomLeft = new(_expandcollapseBounds.X + 6 * ScaleFactor, _expandcollapseBounds.Y + 15 * ScaleFactor);
-                    PointF MidTop = new(_expandcollapseBounds.X + 12 * ScaleFactor, _expandcollapseBounds.Y + 9 * ScaleFactor);
-                    PointF BottomRight = new(_expandcollapseBounds.X + 18 * ScaleFactor, _expandcollapseBounds.Y + 15 * ScaleFactor);
+                    PointF BottomLeft = new(_expandcollapseBounds.X + (6 * ScaleFactor), _expandcollapseBounds.Y + (15 * ScaleFactor));
+                    PointF MidTop = new(_expandcollapseBounds.X + (12 * ScaleFactor), _expandcollapseBounds.Y + (9 * ScaleFactor));
+                    PointF BottomRight = new(_expandcollapseBounds.X + (18 * ScaleFactor), _expandcollapseBounds.Y + (15 * ScaleFactor));
                     pth.AddLine(BottomLeft, MidTop);
                     pth.AddLine(BottomRight, MidTop);
                     g.DrawPath(formButtonsPen, pth);
@@ -654,7 +654,7 @@ namespace ReaLTaiizor.Controls
             if (!Collapse && ShowValidationButtons)
             {
                 //Draw divider
-                using (var dividerPen = new Pen(SkinManager.DividersColor, 1))
+                using (Pen dividerPen = new Pen(SkinManager.DividersColor, 1))
                 {
                     g.DrawLine(dividerPen, new Point(0, Height - (int)(_footerHeight * ScaleFactor)), new Point(Width, Height - (int)(_footerHeight * ScaleFactor)));
                 }

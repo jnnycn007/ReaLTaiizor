@@ -437,7 +437,7 @@ namespace ReaLTaiizor.Forms
         private Rectangle _maxButtonBounds => new(ClientSize.Width - (2 * (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor)), ClientRectangle.Y, (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt));
         private Rectangle _xButtonBounds => new(ClientSize.Width - (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor), ClientRectangle.Y, (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt));
         private Rectangle _actionBarBounds => new(ClientRectangle.X, ClientRectangle.Y + (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt), ClientSize.Width, (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt));
-        private Rectangle _drawerButtonBounds => new(ClientRectangle.X + (int)(SkinManager.FORM_PADDING * ScaleFactor / 2) + 3, (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + ((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2) - ((int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt) / 2), ((int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactor)), (int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt));
+        private Rectangle _drawerButtonBounds => new(ClientRectangle.X + (int)(SkinManager.FORM_PADDING * ScaleFactor / 2) + 3, (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + ((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2) - ((int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt) / 2), (int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactor), (int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt));
         private Rectangle _statusBarBounds => new(ClientRectangle.X, ClientRectangle.Y, ClientSize.Width, (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt));
         private Rectangle _drawerIconRect;
 
@@ -482,9 +482,9 @@ namespace ReaLTaiizor.Forms
             {
                 if (!_scaleRatio.HasValue)
                 {
-                    _scaleRatio= SkinManager.GetDeviceScaleFactor(this);
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
                 }
-                return  _scaleRatio.Value;
+                return _scaleRatio.Value;
             }
             set
             {
@@ -504,7 +504,7 @@ namespace ReaLTaiizor.Forms
             }
             set
             {
-                _scaleRatioSqrt= value;
+                _scaleRatioSqrt = value;
             }
         }
         #endregion
@@ -1417,7 +1417,7 @@ namespace ReaLTaiizor.Forms
 
                 // Y center
                 int centerY = _drawerIconRect.Y
-                    + (int)((ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2);
+                    + (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt / 2);
 
                 // Total Height = (nums - 1) * space
                 int totalHeight =
@@ -1425,13 +1425,13 @@ namespace ReaLTaiizor.Forms
                     * (int)(DRAWER_LINE_SPACING * ScaleFactorSqrt);
 
                 // First Y
-                int firstLineY = centerY - totalHeight / 2;
+                int firstLineY = centerY - (totalHeight / 2);
 
                 // Draw lines
                 for (int i = 0; i < DRAWER_LINE_COUNT; i++)
                 {
                     int y = firstLineY
-                        + i * (int)(DRAWER_LINE_SPACING * ScaleFactorSqrt);
+                        + (i * (int)(DRAWER_LINE_SPACING * ScaleFactorSqrt));
 
                     g.DrawLine(drawerPen, startX, y, endX, y);
                 }
@@ -1442,7 +1442,7 @@ namespace ReaLTaiizor.Forms
             {
                 //Form title
                 using MaterialNativeTextRenderer NativeText = new(g);
-                var font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.H6, ScaleFactor);
+                IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.H6, ScaleFactor);
                 Rectangle textLocation = new(DrawerTabControl != null ? (int)(TITLE_LEFT_PADDING * ScaleFactor) : (int)(TITLE_LEFT_PADDING * ScaleFactor) - ((int)(ICON_SIZE * ScaleFactor) + ((int)(ACTION_BAR_PADDING * ScaleFactor) * 2)), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt), ClientSize.Width, (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt));
                 NativeText.DrawTransparentText(Text, font,
                     SkinManager.ColorScheme.TextColor,
@@ -1454,7 +1454,7 @@ namespace ReaLTaiizor.Forms
             {
                 //Form title
                 using MaterialNativeTextRenderer NativeText = new(g);
-                var font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle2, ScaleFactor);
+                IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle2, ScaleFactor);
                 Rectangle textLocation = new(10, 4, ClientSize.Width, ClientSize.Height);
                 NativeText.DrawTransparentText(Text, font,
                     SkinManager.ColorScheme.TextColor,

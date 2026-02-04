@@ -252,9 +252,9 @@ namespace ReaLTaiizor.Controls
 
             // Create and Draw the arrow
             GraphicsPath pth = new();
-            PointF TopRight = new(this.Width - 0.5f * ScaleFactor - SkinManager.FORM_PADDING, (this.Height >> 1) - 2.5f * ScaleFactor);
-            PointF MidBottom = new(this.Width - 4.5f * ScaleFactor - SkinManager.FORM_PADDING, (this.Height >> 1) + 2.5f * ScaleFactor);
-            PointF TopLeft = new(this.Width - 8.5f * ScaleFactor - SkinManager.FORM_PADDING, (this.Height >> 1) - 2.5f * ScaleFactor);
+            PointF TopRight = new(this.Width - (0.5f * ScaleFactor) - SkinManager.FORM_PADDING, (this.Height >> 1) - (2.5f * ScaleFactor));
+            PointF MidBottom = new(this.Width - (4.5f * ScaleFactor) - SkinManager.FORM_PADDING, (this.Height >> 1) + (2.5f * ScaleFactor));
+            PointF TopLeft = new(this.Width - (8.5f * ScaleFactor) - SkinManager.FORM_PADDING, (this.Height >> 1) - (2.5f * ScaleFactor));
             // Magic numbers warning
 #warning Magic Numbers
             pth.AddLine(TopLeft, TopRight);
@@ -273,7 +273,7 @@ namespace ReaLTaiizor.Controls
             Rectangle hintRect = new(SkinManager.FORM_PADDING, ClientRectangle.Y, Width, LINE_Y);
 
             // bottom line base
-            g.FillRectangle(SkinManager.DividersAlternativeBrush, 0, LINE_Y, Width, (int)(INDICATOR_HEIGHT) / 2);
+            g.FillRectangle(SkinManager.DividersAlternativeBrush, 0, LINE_Y, Width, (int)INDICATOR_HEIGHT / 2);
 
             if (!_animationManager.IsAnimating())
             {

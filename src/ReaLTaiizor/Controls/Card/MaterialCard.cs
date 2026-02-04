@@ -86,11 +86,11 @@ namespace ReaLTaiizor.Controls
 
         protected override void InitLayout()
         {
-            LocationChanged += (sender, e) => 
+            LocationChanged += (sender, e) =>
             {
                 ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
-                ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this); 
-                Parent?.Invalidate(); 
+                ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                Parent?.Invalidate();
             };
             ForeColor = SkinManager.TextHighEmphasisColor;
         }

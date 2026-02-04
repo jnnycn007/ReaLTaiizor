@@ -5,14 +5,12 @@ using ReaLTaiizor.Helper;
 using ReaLTaiizor.Manager;
 using ReaLTaiizor.Util;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Drawing.Text;
 using System.Globalization;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using static ReaLTaiizor.Helper.MaterialDrawHelper;
 using static ReaLTaiizor.Util.MaterialAnimations;
@@ -270,7 +268,7 @@ namespace ReaLTaiizor.Controls
         private readonly AnimationManager _hoverAnimationManager = null;
         private readonly AnimationManager _focusAnimationManager = null;
         private readonly AnimationManager _animationManager = null;
-        
+
 
         /// <summary>
         /// Defines the _textSize
@@ -502,7 +500,7 @@ namespace ReaLTaiizor.Controls
         {
             // ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
             // ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
-            
+
             Graphics g = pevent.Graphics;
 
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;

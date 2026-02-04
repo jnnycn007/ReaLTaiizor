@@ -265,7 +265,7 @@ namespace ReaLTaiizor.Controls
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            Location = new Point(Convert.ToInt32(Owner.Location.X + (Owner.Width / 2) - (Width / 2)), Convert.ToInt32(Owner.Location.Y + Owner.Height - Height - DOWN_PADDING * ScaleFactor));
+            Location = new Point(Convert.ToInt32(Owner.Location.X + (Owner.Width / 2) - (Width / 2)), Convert.ToInt32(Owner.Location.Y + Owner.Height - Height - (DOWN_PADDING * ScaleFactor)));
             _AnimationManager.StartNewAnimation(AnimationDirection.In);
             _duration.Start();
         }

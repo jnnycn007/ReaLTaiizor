@@ -261,11 +261,11 @@ namespace ReaLTaiizor.Controls
             RectangleF thumbBounds = new((int)(TRACK_CENTER_X_BEGIN * ScaleFactor) + OffsetX - (int)(THUMB_SIZE_HALF * ScaleFactor), (int)(TRACK_CENTER_Y * ScaleFactor) - (int)(THUMB_SIZE_HALF * ScaleFactor), (int)(THUMB_SIZE * ScaleFactor), (int)(THUMB_SIZE * ScaleFactor));
             using (SolidBrush shadowBrush = new(Color.FromArgb(12, 0, 0, 0)))
             {
-                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - 2 * ScaleFactor, thumbBounds.Y - 1 * ScaleFactor, thumbBounds.Width + 4 * ScaleFactor, thumbBounds.Height + 6 * ScaleFactor));
-                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - 1 * ScaleFactor, thumbBounds.Y - 1 * ScaleFactor, thumbBounds.Width + 2 * ScaleFactor, thumbBounds.Height + 4 * ScaleFactor));
-                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - 0 * ScaleFactor, thumbBounds.Y - 0 * ScaleFactor, thumbBounds.Width + 0 * ScaleFactor, thumbBounds.Height + 2 * ScaleFactor));
-                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - 0 * ScaleFactor, thumbBounds.Y + 2 * ScaleFactor, thumbBounds.Width + 0 * ScaleFactor, thumbBounds.Height + 0 * ScaleFactor));
-                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - 0 * ScaleFactor, thumbBounds.Y + 1 * ScaleFactor, thumbBounds.Width + 0 * ScaleFactor, thumbBounds.Height + 0 * ScaleFactor));
+                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - (2 * ScaleFactor), thumbBounds.Y - (1 * ScaleFactor), thumbBounds.Width + (4 * ScaleFactor), thumbBounds.Height + (6 * ScaleFactor)));
+                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - (1 * ScaleFactor), thumbBounds.Y - (1 * ScaleFactor), thumbBounds.Width + (2 * ScaleFactor), thumbBounds.Height + (4 * ScaleFactor)));
+                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - (0 * ScaleFactor), thumbBounds.Y - (0 * ScaleFactor), thumbBounds.Width + (0 * ScaleFactor), thumbBounds.Height + (2 * ScaleFactor)));
+                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - (0 * ScaleFactor), thumbBounds.Y + (2 * ScaleFactor), thumbBounds.Width + (0 * ScaleFactor), thumbBounds.Height + (0 * ScaleFactor)));
+                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - (0 * ScaleFactor), thumbBounds.Y + (1 * ScaleFactor), thumbBounds.Width + (0 * ScaleFactor), thumbBounds.Height + (0 * ScaleFactor)));
             }
 
             // draw Thumb

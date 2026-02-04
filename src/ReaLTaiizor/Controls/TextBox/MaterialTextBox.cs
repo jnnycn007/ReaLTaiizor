@@ -140,7 +140,7 @@ namespace ReaLTaiizor.Controls
                 }
             }
         }
-        
+
         private const int ICON_SIZE = 24;
         private const int HINT_TEXT_SMALL_SIZE = 18;
         private const int HINT_TEXT_SMALL_Y = 4;
@@ -715,7 +715,7 @@ namespace ReaLTaiizor.Controls
                 // Draw user text
                 NativeText.DrawTransparentText(
                     textToDisplay,
-                    SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1,ScaleFactor),
+                    SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor),
                     Enabled ? SkinManager.TextHighEmphasisColor : SkinManager.TextDisabledOrHintColor,
                     textRect.Location,
                     textRect.Size,

@@ -358,7 +358,7 @@ namespace ReaLTaiizor.Controls
                         originalImg.Height,
                         GraphicsUnit.Pixel,
                         grayImageAttributes
-                        );  
+                        );
                 }
 
                 // Create a pre-processed copy of the image (PRIMARY COLOR)
@@ -366,7 +366,7 @@ namespace ReaLTaiizor.Controls
                 using (Graphics gColor = Graphics.FromImage(bcolor))
                 {
                     gColor.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                    gColor.Clear(Color.Transparent); 
+                    gColor.Clear(Color.Transparent);
 
                     Rectangle destRectScaled = new(0, 0, sW, sH);
 
@@ -378,7 +378,7 @@ namespace ReaLTaiizor.Controls
                         originalImg.Height,
                         GraphicsUnit.Pixel,
                         colorImageAttributes
-                        ); 
+                        );
                 }
 
                 // added processed image to brush for drawing
