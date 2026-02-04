@@ -510,14 +510,14 @@ namespace ReaLTaiizor.Controls
 
             GraphicsPath _inactiveTrackPath = CreateRoundRect(
                 _sliderRectangle.X + (int)Math.Round(_thumbRadius * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
-                _sliderRectangle.Y + (Height / 2) - (int)Math.Round(_inactiveTrack * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
+                _sliderRectangle.Y + (int)Math.Round(Height / 2f, MidpointRounding.AwayFromZero) - (int)Math.Round(_inactiveTrack * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
                 _sliderRectangle.Width - (int)Math.Round(_thumbRadius * ScaleFactor, MidpointRounding.AwayFromZero),
                 (int)Math.Round(_inactiveTrack * ScaleFactor, MidpointRounding.AwayFromZero),
                 2);
             //g.FillPath(_disabledBrush, (int)(_inactiveTrack * ScaleFactor)Path);
             GraphicsPath _activeTrackPath = CreateRoundRect(
                 _sliderRectangle.X + (int)Math.Round(_thumbRadius * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
-                _sliderRectangle.Y + (Height / 2) - (int)Math.Round(_activeTrack * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
+                _sliderRectangle.Y + (int)Math.Round(Height / 2f, MidpointRounding.AwayFromZero) - (int)Math.Round(_activeTrack * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
                 _indicatorRectangleNormal.X - _sliderRectangle.X,
                 (int)Math.Round(_activeTrack * ScaleFactor, MidpointRounding.AwayFromZero),
                 2);
