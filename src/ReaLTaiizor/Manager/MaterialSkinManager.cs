@@ -409,11 +409,6 @@ namespace ReaLTaiizor.Manager
 
         private PrivateFontCollection privateFontCollection = new();
 
-        [DllImport("gdi32.dll", CharSet = CharSet.Auto)]
-        public static extern int GetObject(IntPtr hFont, int nSize, [In, Out] LogFont lf);
-
-
-
         private void addFont(byte[] fontdata)
         {
             // Add font to system table in memory
