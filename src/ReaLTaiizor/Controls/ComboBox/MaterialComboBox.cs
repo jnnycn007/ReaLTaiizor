@@ -313,7 +313,7 @@ namespace ReaLTaiizor.Controls
             Rectangle textRect = new(
                 SkinManager.FORM_PADDING,
                 hasHint && UseTallSize ? hintRect.Y + hintRect.Height - (int)(HINTRECT_PADDING * ScaleFactor) : ClientRectangle.Y,
-                ClientRectangle.Width - (SkinManager.FORM_PADDING * 3) - (int)((int)(CLIENT_PADDING * ScaleFactor) * ScaleFactor),
+                ClientRectangle.Width - (SkinManager.FORM_PADDING * 3) - (int)(CLIENT_PADDING * ScaleFactor),
                 hasHint && UseTallSize ? LINE_Y - (hintRect.Y + hintRect.Height) : LINE_Y);
 
             g.Clip = new Region(textRect);
