@@ -352,14 +352,23 @@ namespace ReaLTaiizor.Manager
                     return hOriginalFont;
                 }
 
-                LogFont lf = new();
-                if (GetObject(hOriginalFont, Marshal.SizeOf(lf), lf) == 0)
+                try
                 {
-                    return IntPtr.Zero; // Failed fetching handle
+                    using (Font originalFont = Font.FromHfont(hOriginalFont))
+                    {
+                        float scaledSize = originalFont.Size * (float)scaleRatio;
+                        using (Font scaledFont = new Font(originalFont.FontFamily, scaledSize, originalFont.Style, originalFont.Unit))
+                        {
+                            IntPtr createdFont = scaledFont.ToHfont();
+                            logicalFonts.Add(key, createdFont);
+                            return createdFont;
+                        }
+                    }
                 }
-                IntPtr createdFont = createLogicalFont(lf.lfFaceName, (int)(-lf.lfHeight * scaleRatio), (logFontWeight)System.Enum.ToObject(MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM.GetType(), lf.lfWeight), lfItalic: lf.lfItalic);
-                logicalFonts.Add(key, createdFont);
-                return createdFont;
+                catch
+                {
+                    return IntPtr.Zero; // Failed fetching handle or creating scaled font
+                }
             }
         }
 
