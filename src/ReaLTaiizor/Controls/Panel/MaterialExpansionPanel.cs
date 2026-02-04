@@ -54,10 +54,8 @@ namespace ReaLTaiizor.Controls
                 }
                 return _scaleRatio.Value;
             }
-            set
-            {
-                _scaleRatio = value;
-            }
+
+            set => _scaleRatio = value;
         }
         private float? _scaleRatioSqrt; // Cache
         private float ScaleFactorSqrt
@@ -70,10 +68,8 @@ namespace ReaLTaiizor.Controls
                 }
                 return _scaleRatioSqrt.Value;
             }
-            set
-            {
-                _scaleRatioSqrt = value;
-            }
+
+            set => _scaleRatioSqrt = value;
         }
 
         private enum ButtonState
@@ -654,10 +650,8 @@ namespace ReaLTaiizor.Controls
             if (!Collapse && ShowValidationButtons)
             {
                 //Draw divider
-                using (Pen dividerPen = new Pen(SkinManager.DividersColor, 1))
-                {
-                    g.DrawLine(dividerPen, new Point(0, Height - (int)(_footerHeight * ScaleFactor)), new Point(Width, Height - (int)(_footerHeight * ScaleFactor)));
-                }
+                using Pen dividerPen = new(SkinManager.DividersColor, 1);
+                g.DrawLine(dividerPen, new Point(0, Height - (int)(_footerHeight * ScaleFactor)), new Point(Width, Height - (int)(_footerHeight * ScaleFactor)));
             }
         }
 

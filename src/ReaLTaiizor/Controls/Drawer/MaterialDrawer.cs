@@ -403,10 +403,14 @@ namespace ReaLTaiizor.Controls
 
                 // add to dictionary
                 string ik = string.Concat(tabPage.ImageKey, "_", tabPage.Name);
-                TextureBrush tBrush = new TextureBrush(bgray);
-                tBrush.WrapMode = WrapMode.Clamp;
-                TextureBrush tBrushColor = new TextureBrush(bcolor);
-                tBrushColor.WrapMode = WrapMode.Clamp;
+                TextureBrush tBrush = new(bgray)
+                {
+                    WrapMode = WrapMode.Clamp
+                };
+                TextureBrush tBrushColor = new(bcolor)
+                {
+                    WrapMode = WrapMode.Clamp
+                };
                 // calc center positions.
                 float x = _drawerItemRects[currentTabIndex].X + (drawerItemHeight / 2.0f) - (sW / 2.0f);
                 float y = _drawerItemRects[currentTabIndex].Y + (drawerItemHeight / 2.0f) - (sH / 2.0f);
@@ -454,10 +458,8 @@ namespace ReaLTaiizor.Controls
                 }
                 return _scaleRatio.Value;
             }
-            set
-            {
-                _scaleRatio = value;
-            }
+
+            set => _scaleRatio = value;
         }
         private float? _scaleRatioSqrt; // Cache
         private float ScaleFactorSqrt
@@ -470,10 +472,8 @@ namespace ReaLTaiizor.Controls
                 }
                 return _scaleRatioSqrt.Value;
             }
-            set
-            {
-                _scaleRatioSqrt = value;
-            }
+
+            set => _scaleRatioSqrt = value;
         }
 
         public MaterialDrawer()

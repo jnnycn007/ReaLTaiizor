@@ -342,10 +342,17 @@ namespace ReaLTaiizor.Manager
             lock (_fontLock)
             {
                 if (logicalFonts.TryGetValue(key, out IntPtr h))
+                {
                     return h;
+                }
+
                 IntPtr hOriginalFont = GetTextBoxFontBySize(size);
-                if (scaleKey == 100) return hOriginalFont;
-                LogFont lf = new LogFont();
+                if (scaleKey == 100)
+                {
+                    return hOriginalFont;
+                }
+
+                LogFont lf = new();
                 if (GetObject(hOriginalFont, Marshal.SizeOf(lf), lf) == 0)
                 {
                     return IntPtr.Zero; // Failed fetching handle
@@ -376,8 +383,12 @@ namespace ReaLTaiizor.Manager
                     return cachedFont;
                 }
                 IntPtr hOriginalFont = logicalFonts[System.Enum.GetName(typeof(FontType), type)];
-                if (scaleRatio == 1) return hOriginalFont;
-                LogFont lf = new LogFont();
+                if (scaleRatio == 1)
+                {
+                    return hOriginalFont;
+                }
+
+                LogFont lf = new();
                 if (GetObject(hOriginalFont, Marshal.SizeOf(lf), lf) == 0)
                 {
                     return IntPtr.Zero; // Failed fetching handle

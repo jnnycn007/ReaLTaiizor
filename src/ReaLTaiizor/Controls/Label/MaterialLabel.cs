@@ -100,10 +100,8 @@ namespace ReaLTaiizor.Controls
                 }
                 return _scaleRatio.Value;
             }
-            set
-            {
-                _scaleRatio = value;
-            }
+
+            set => _scaleRatio = value;
         }
         private float? _scaleRatioSqrt; // Cache
         private float ScaleFactorSqrt
@@ -116,10 +114,8 @@ namespace ReaLTaiizor.Controls
                 }
                 return _scaleRatioSqrt.Value;
             }
-            set
-            {
-                _scaleRatioSqrt = value;
-            }
+
+            set => _scaleRatioSqrt = value;
         }
 
         private void updateAligment()
