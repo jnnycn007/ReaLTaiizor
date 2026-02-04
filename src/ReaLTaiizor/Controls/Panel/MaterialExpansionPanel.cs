@@ -158,7 +158,7 @@ namespace ReaLTaiizor.Controls
         public int ExpandHeight
         {
             get => _expandHeight;
-            set { if (value < (int)(_minHeight * ScaleFactor)) { value = (int)(_minHeight * ScaleFactor); } _expandHeight = value; Invalidate(); }
+            set { if (value < _minHeight) { value = _minHeight; } _expandHeight = value; Invalidate(); }
         }
 
         [DefaultValue(true)]
