@@ -354,16 +354,12 @@ namespace ReaLTaiizor.Manager
 
                 try
                 {
-                    using (Font originalFont = Font.FromHfont(hOriginalFont))
-                    {
-                        float scaledSize = originalFont.Size * (float)scaleRatio;
-                        using (Font scaledFont = new Font(originalFont.FontFamily, scaledSize, originalFont.Style, originalFont.Unit))
-                        {
-                            IntPtr createdFont = scaledFont.ToHfont();
-                            logicalFonts.Add(key, createdFont);
-                            return createdFont;
-                        }
-                    }
+                    using Font originalFont = Font.FromHfont(hOriginalFont);
+                    float scaledSize = originalFont.Size * (float)scaleRatio;
+                    using Font scaledFont = new(originalFont.FontFamily, scaledSize, originalFont.Style, originalFont.Unit);
+                    IntPtr createdFont = scaledFont.ToHfont();
+                    logicalFonts.Add(key, createdFont);
+                    return createdFont;
                 }
                 catch
                 {
@@ -397,16 +393,12 @@ namespace ReaLTaiizor.Manager
                     return hOriginalFont;
                 }
 
-                using (Font originalFont = Font.FromHfont(hOriginalFont))
-                {
-                    float newSize = originalFont.Size * (float)scaleRatio;
-                    using (Font scaledFont = new Font(originalFont.FontFamily, newSize, originalFont.Style, originalFont.Unit))
-                    {
-                        IntPtr createdFont = scaledFont.ToHfont();
-                        logicalFonts.Add(key, createdFont);
-                        return createdFont;
-                    }
-                }
+                using Font originalFont = Font.FromHfont(hOriginalFont);
+                float newSize = originalFont.Size * (float)scaleRatio;
+                using Font scaledFont = new(originalFont.FontFamily, newSize, originalFont.Style, originalFont.Unit);
+                IntPtr createdFont = scaledFont.ToHfont();
+                logicalFonts.Add(key, createdFont);
+                return createdFont;
             }
         }
 
