@@ -5,7 +5,6 @@ using ReaLTaiizor.Forms;
 using ReaLTaiizor.Manager;
 using ReaLTaiizor.Util;
 using System;
-using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Runtime.InteropServices;
@@ -25,6 +24,8 @@ namespace ReaLTaiizor.Controls
         private const int BUTTON_HEIGHT = 36;
         private const int TEXT_TOP_PADDING = 17;
         private const int TEXT_BOTTOM_PADDING = 28;
+        private const int MSG_BOX_WIDTH = 560;
+        private int FONT_HEIGHT = 19; // Need to be changed with Font..
         private int _header_Height = 40;
 
         private MaterialButton _validationButton = new();
@@ -36,6 +37,36 @@ namespace ReaLTaiizor.Controls
         private string _title;
 
         //public ObservableCollection<MaterialButton> Buttons { get; set; }
+
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+
+            set => _scaleRatio = value;
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+
+            set => _scaleRatioSqrt = value;
+        }
 
         [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
         private static extern IntPtr CreateRoundRectRgn
@@ -125,29 +156,29 @@ namespace ReaLTaiizor.Controls
                 Controls.Add(_cancelButton);
             }
 
-            Width = 560;
-            int TextWidth = TextRenderer.MeasureText(_text, SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1)).Width;
-            int RectWidth = Width - (2 * LEFT_RIGHT_PADDING) - BUTTON_PADDING;
-            int RectHeight = ((TextWidth / RectWidth) + 1) * 19;
+            Width = (int)(MSG_BOX_WIDTH * ScaleFactor);
+            int TextWidth = TextRenderer.MeasureText(_text, SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor)).Width;
+            int RectWidth = Width - (2 * (int)(LEFT_RIGHT_PADDING * ScaleFactor)) - (int)(BUTTON_PADDING * ScaleFactor);
+            int RectHeight = ((TextWidth / RectWidth) + 1) * (int)(FONT_HEIGHT * ScaleFactor);
             Rectangle textRect = new(
-                LEFT_RIGHT_PADDING,
-                _header_Height + TEXT_TOP_PADDING,
+                (int)(LEFT_RIGHT_PADDING * ScaleFactor),
+                (int)(_header_Height * ScaleFactor) + (int)(TEXT_TOP_PADDING * ScaleFactor),
                 RectWidth,
                 RectHeight + 9);
 
-            Height = _header_Height + TEXT_TOP_PADDING + textRect.Height + TEXT_BOTTOM_PADDING + 52; //560;
+            Height = (int)(_header_Height * ScaleFactor) + (int)(TEXT_TOP_PADDING * ScaleFactor) + textRect.Height + (int)(TEXT_BOTTOM_PADDING * ScaleFactor) + 52; //560;
             Region = Region.FromHrgn(CreateRoundRectRgn(0, 0, Width, Height, 6, 6));
 
-            int _buttonWidth = TextRenderer.MeasureText(ValidationButtonText, SkinManager.GetFontByType(MaterialSkinManager.FontType.Button)).Width + 32;
-            Rectangle _validationbuttonBounds = new(Width - BUTTON_PADDING - _buttonWidth, Height - BUTTON_PADDING - BUTTON_HEIGHT, _buttonWidth, BUTTON_HEIGHT);
+            int _buttonWidth = TextRenderer.MeasureText(ValidationButtonText, SkinManager.GetFontByType(MaterialSkinManager.FontType.Button, ScaleFactor)).Width + 32;
+            Rectangle _validationbuttonBounds = new(Width - (int)(BUTTON_PADDING * ScaleFactor) - _buttonWidth, Height - (int)(BUTTON_PADDING * ScaleFactor) - (int)(BUTTON_HEIGHT * ScaleFactor), _buttonWidth, (int)(BUTTON_HEIGHT * ScaleFactor));
             _validationButton.Width = _validationbuttonBounds.Width;
             _validationButton.Height = _validationbuttonBounds.Height;
             _validationButton.Top = _validationbuttonBounds.Top;
             _validationButton.Left = _validationbuttonBounds.Left;  //Button minimum width management
             _validationButton.Visible = true;
 
-            _buttonWidth = TextRenderer.MeasureText(CancelButtonText, SkinManager.GetFontByType(MaterialSkinManager.FontType.Button)).Width + 32;
-            Rectangle _cancelbuttonBounds = new(_validationbuttonBounds.Left - BUTTON_PADDING - _buttonWidth, Height - BUTTON_PADDING - BUTTON_HEIGHT, _buttonWidth, BUTTON_HEIGHT);
+            _buttonWidth = TextRenderer.MeasureText(CancelButtonText, SkinManager.GetFontByType(MaterialSkinManager.FontType.Button, ScaleFactor)).Width + 32;
+            Rectangle _cancelbuttonBounds = new(_validationbuttonBounds.Left - (int)(BUTTON_PADDING * ScaleFactor) - _buttonWidth, Height - (int)(BUTTON_PADDING * ScaleFactor) - (int)(BUTTON_HEIGHT * ScaleFactor), _buttonWidth, (int)(BUTTON_HEIGHT * ScaleFactor));
             _cancelButton.Width = _cancelbuttonBounds.Width;
             _cancelButton.Height = _cancelbuttonBounds.Height;
             _cancelButton.Top = _cancelbuttonBounds.Top;
@@ -188,6 +219,9 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnLoad(EventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             base.OnLoad(e);
 
             Location = new Point(Convert.ToInt32(Owner.Location.X + (Owner.Width / 2) - (Width / 2)), Convert.ToInt32(Owner.Location.Y + (Owner.Height / 2) - (Height / 2)));
@@ -204,6 +238,8 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
 
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
@@ -212,10 +248,10 @@ namespace ReaLTaiizor.Controls
 
             // Calc title Rect
             Rectangle titleRect = new(
-                LEFT_RIGHT_PADDING,
+                (int)(LEFT_RIGHT_PADDING * ScaleFactor),
                 0,
-                Width - (2 * LEFT_RIGHT_PADDING),
-                _header_Height);
+                Width - (2 * (int)(LEFT_RIGHT_PADDING * ScaleFactor)),
+                (int)(_header_Height * ScaleFactor));
 
             //Draw title
             using (MaterialNativeTextRenderer NativeText = new(g))
@@ -223,7 +259,7 @@ namespace ReaLTaiizor.Controls
                 // Draw header text
                 NativeText.DrawTransparentText(
                     _title,
-                    SkinManager.GetLogFontByType(MaterialSkinManager.FontType.H6),
+                    SkinManager.GetLogFontByType(MaterialSkinManager.FontType.H6, ScaleFactor),
                     SkinManager.TextHighEmphasisColor,
                     titleRect.Location,
                     titleRect.Size,
@@ -232,15 +268,15 @@ namespace ReaLTaiizor.Controls
 
             // Calc text Rect
 
-            int TextWidth = TextRenderer.MeasureText(_text, SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1)).Width;
-            int RectWidth = Width - (2 * LEFT_RIGHT_PADDING) - BUTTON_PADDING;
-            int RectHeight = ((TextWidth / RectWidth) + 1) * 19;
+            int TextWidth = TextRenderer.MeasureText(_text, SkinManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor)).Width;
+            int RectWidth = Width - (2 * (int)(LEFT_RIGHT_PADDING * ScaleFactor)) - (int)(BUTTON_PADDING * ScaleFactor);
+            int RectHeight = ((TextWidth / RectWidth) + 1) * (int)(FONT_HEIGHT * ScaleFactor);
 
             Rectangle textRect = new(
-                LEFT_RIGHT_PADDING,
-                _header_Height + 17,
+                (int)(LEFT_RIGHT_PADDING * ScaleFactor),
+                (int)(_header_Height * ScaleFactor) + (int)(TEXT_TOP_PADDING * ScaleFactor),
                 RectWidth,
-                RectHeight + 19);
+                RectHeight + (int)(FONT_HEIGHT * ScaleFactor));
 
             //Draw  Text
             using (MaterialNativeTextRenderer NativeText = new(g))
@@ -248,7 +284,7 @@ namespace ReaLTaiizor.Controls
                 // Draw header text
                 NativeText.DrawMultilineTransparentText(
                     _text,
-                    SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1),
+                    SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor),
                     SkinManager.TextHighEmphasisColor,
                     textRect.Location,
                     textRect.Size,
@@ -257,7 +293,7 @@ namespace ReaLTaiizor.Controls
 
         }
 
-        protected override void OnClosing(CancelEventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
             _formOverlay.Visible = false;
             _formOverlay.Close();
@@ -265,7 +301,7 @@ namespace ReaLTaiizor.Controls
 
             DialogResult res = this.DialogResult;
 
-            base.OnClosing(e);
+            base.OnFormClosing(e);
         }
 
         void _AnimationManager_OnAnimationFinished(object sender)
@@ -285,8 +321,11 @@ namespace ReaLTaiizor.Controls
 
         private void InitializeComponent()
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             this.SuspendLayout();
-            this.ClientSize = new Size(560, 182);
+            this.ClientSize = new Size((int)(MSG_BOX_WIDTH * ScaleFactor), 182);
             this.Name = "Dialog";
             this.ResumeLayout(false);
 

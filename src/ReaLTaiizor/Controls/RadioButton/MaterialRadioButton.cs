@@ -81,6 +81,36 @@ namespace ReaLTaiizor.Controls
         private const int RADIOBUTTON_INNER_CIRCLE_SIZE = RADIOBUTTON_SIZE - (2 * RADIOBUTTON_OUTER_CIRCLE_WIDTH);
         private const int TEXT_OFFSET = 26;
 
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+
+            set => _scaleRatio = value;
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+
+            set => _scaleRatioSqrt = value;
+        }
+
         public MaterialRadioButton()
         {
             SetStyle(ControlStyles.DoubleBuffer | ControlStyles.OptimizedDoubleBuffer, true);
@@ -124,21 +154,35 @@ namespace ReaLTaiizor.Controls
 
         private void OnSizeChanged(object sender, EventArgs eventArgs)
         {
-            _boxOffset = (Height / 2) - (int)(RADIOBUTTON_SIZE / 2);
-            _radioButtonBounds = new Rectangle(_boxOffset, _boxOffset, RADIOBUTTON_SIZE, RADIOBUTTON_SIZE);
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
+            _boxOffset = (Height / 2) - (int)((int)(RADIOBUTTON_SIZE * ScaleFactor) / 2);
+            _radioButtonBounds = new Rectangle(_boxOffset, _boxOffset, (int)(RADIOBUTTON_SIZE * ScaleFactor), (int)(RADIOBUTTON_SIZE * ScaleFactor));
         }
 
         public override Size GetPreferredSize(Size proposedSize)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             Size strSize;
 
             using (MaterialNativeTextRenderer NativeText = new(CreateGraphics()))
             {
-                strSize = NativeText.MeasureLogString(Text, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1));
+                strSize = NativeText.MeasureLogString(Text, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor));
             }
 
-            int w = _boxOffset + TEXT_OFFSET + strSize.Width;
-            return Ripple ? new Size(w, HEIGHT_RIPPLE) : new Size(w, HEIGHT_NO_RIPPLE);
+            int w = _boxOffset + (int)(TEXT_OFFSET * ScaleFactor) + strSize.Width;
+            return Ripple ? new Size(w, (int)(HEIGHT_RIPPLE * ScaleFactor)) : new Size(w, (int)(HEIGHT_NO_RIPPLE * ScaleFactor));
+        }
+
+        protected override void OnDpiChangedAfterParent(EventArgs e)
+        {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
+            base.OnDpiChangedAfterParent(e);
         }
 
         protected override void OnPaint(PaintEventArgs pevent)
@@ -150,16 +194,16 @@ namespace ReaLTaiizor.Controls
             // clear the control
             g.Clear(Parent.BackColor == Color.Transparent ? ((Parent.Parent == null || (Parent.Parent != null && Parent.Parent.BackColor == Color.Transparent)) ? SkinManager.BackgroundColor : Parent.Parent.BackColor) : Parent.BackColor);
 
-            int RADIOBUTTON_CENTER = _boxOffset + RADIOBUTTON_SIZE_HALF;
+            int RADIOBUTTON_CENTER = _boxOffset + (int)(RADIOBUTTON_SIZE_HALF * ScaleFactor);
             Point animationSource = new(RADIOBUTTON_CENTER, RADIOBUTTON_CENTER);
 
             double animationProgress = _checkAM.GetProgress();
 
             int colorAlpha = Enabled ? (int)(animationProgress * 255.0) : SkinManager.CheckBoxOffDisabledColor.A;
             int backgroundAlpha = Enabled ? (int)(SkinManager.CheckboxOffColor.A * (1.0 - animationProgress)) : SkinManager.CheckBoxOffDisabledColor.A;
-            float animationSize = (float)(animationProgress * 9f);
+            float animationSize = (float)(animationProgress * 9f * ScaleFactor);
             float animationSizeHalf = animationSize / 2;
-            int rippleHeight = (HEIGHT_RIPPLE % 2 == 0) ? HEIGHT_RIPPLE - 3 : HEIGHT_RIPPLE - 2;
+            int rippleHeight = ((int)(HEIGHT_RIPPLE * ScaleFactor) % 2 == 0) ? (int)(HEIGHT_RIPPLE * ScaleFactor) - 3 : (int)(HEIGHT_RIPPLE * ScaleFactor) - 2;
 
             Color RadioColor = Color.FromArgb(colorAlpha, Enabled ? UseAccentColor ? SkinManager.ColorScheme.AccentColor : SkinManager.ColorScheme.PrimaryColor : SkinManager.CheckBoxOffDisabledColor);
 
@@ -190,13 +234,13 @@ namespace ReaLTaiizor.Controls
             // draw radiobutton circle
             using (Pen pen = new(BlendColor(Parent.BackColor, Enabled ? SkinManager.CheckboxOffColor : SkinManager.CheckBoxOffDisabledColor, backgroundAlpha), 2))
             {
-                g.DrawEllipse(pen, new Rectangle(_boxOffset, _boxOffset, RADIOBUTTON_SIZE, RADIOBUTTON_SIZE));
+                g.DrawEllipse(pen, new Rectangle(_boxOffset, _boxOffset, (int)(RADIOBUTTON_SIZE * ScaleFactor), (int)(RADIOBUTTON_SIZE * ScaleFactor)));
             }
 
             if (Enabled)
             {
                 using Pen pen = new(RadioColor, 2);
-                g.DrawEllipse(pen, new Rectangle(_boxOffset, _boxOffset, RADIOBUTTON_SIZE, RADIOBUTTON_SIZE));
+                g.DrawEllipse(pen, new Rectangle(_boxOffset, _boxOffset, (int)(RADIOBUTTON_SIZE * ScaleFactor), (int)(RADIOBUTTON_SIZE * ScaleFactor)));
             }
 
             if (Checked)
@@ -207,8 +251,8 @@ namespace ReaLTaiizor.Controls
 
             // Text
             using MaterialNativeTextRenderer NativeText = new(g);
-            Rectangle textLocation = new(_boxOffset + TEXT_OFFSET, 0, Width, Height);
-            NativeText.DrawTransparentText(Text, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1),
+            Rectangle textLocation = new(_boxOffset + (int)(TEXT_OFFSET * ScaleFactor), 0, Width, Height);
+            NativeText.DrawTransparentText(Text, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor),
                 Enabled ? SkinManager.TextHighEmphasisColor : SkinManager.TextDisabledOrHintColor,
                 textLocation.Location,
                 textLocation.Size,

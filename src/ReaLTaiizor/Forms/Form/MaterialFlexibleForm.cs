@@ -27,7 +27,7 @@ namespace ReaLTaiizor.Forms
 
         public static double MAX_HEIGHT_FACTOR = 0.9;
 
-        private MaterialMultiLineTextBox richTextBoxMessage;
+        private MaterialMultiLineTextBoxEdit richTextBoxMessage;
         private MaterialLabel materialLabel1;
         private MaterialButton leftButton;
         private MaterialButton middleButton;
@@ -62,7 +62,7 @@ namespace ReaLTaiizor.Forms
             this.messageContainer = new System.Windows.Forms.Panel();
             this.materialLabel1 = new MaterialLabel();
             this.pictureBoxForIcon = new System.Windows.Forms.PictureBox();
-            this.richTextBoxMessage = new MaterialMultiLineTextBox();
+            this.richTextBoxMessage = new MaterialMultiLineTextBoxEdit();
             this.leftButton = new MaterialButton();
             this.middleButton = new MaterialButton();
             this.rightButton = new MaterialButton();
@@ -116,7 +116,7 @@ namespace ReaLTaiizor.Forms
             | System.Windows.Forms.AnchorStyles.Left
             | System.Windows.Forms.AnchorStyles.Right);
             this.richTextBoxMessage.BackColor = System.Drawing.Color.FromArgb((int)(byte)255, (int)(byte)255, (int)(byte)255);
-            this.richTextBoxMessage.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            //this.richTextBoxMessage.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.richTextBoxMessage.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.MaterialFlexibleFormBindingSource, "MessageText", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.richTextBoxMessage.Depth = 0;
             this.richTextBoxMessage.Font = new System.Drawing.Font("Roboto", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
@@ -126,12 +126,12 @@ namespace ReaLTaiizor.Forms
             this.richTextBoxMessage.MouseState = MaterialMouseState.HOVER;
             this.richTextBoxMessage.Name = "richTextBoxMessage";
             this.richTextBoxMessage.ReadOnly = true;
-            this.richTextBoxMessage.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
+            this.richTextBoxMessage.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.richTextBoxMessage.Size = new System.Drawing.Size(314, 65);
             this.richTextBoxMessage.TabIndex = 0;
             this.richTextBoxMessage.TabStop = false;
             this.richTextBoxMessage.Text = "<Message>";
-            this.richTextBoxMessage.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.richTextBoxMessage_LinkClicked);
+            //this.richTextBoxMessage.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.richTextBoxMessage_LinkClicked);
             // 
             // leftButton
             // 

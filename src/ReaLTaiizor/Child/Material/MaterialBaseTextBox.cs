@@ -73,8 +73,41 @@ namespace ReaLTaiizor.Child.Material
         private const uint WM_USER = 0x0400;
         private const uint EM_SETBKGNDCOLOR = WM_USER + 67;
         private const uint WM_KILLFOCUS = 0x0008;
+
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+
+            set => _scaleRatio = value;
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+
+            set => _scaleRatioSqrt = value;
+        }
         protected override void WndProc(ref Message m)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             base.WndProc(ref m);
 
 
@@ -93,7 +126,7 @@ namespace ReaLTaiizor.Child.Material
                 using MaterialNativeTextRenderer NativeText = new(Graphics.FromHwnd(m.HWnd));
                 NativeText.DrawTransparentText(
                 Hint,
-                SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1),
+                SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor),
                 Enabled ?
                 MaterialColorHelper.RemoveAlpha(SkinManager.TextMediumEmphasisColor, BackColor) : // not focused
                 MaterialColorHelper.RemoveAlpha(SkinManager.TextDisabledOrHintColor, BackColor), // Disabled
@@ -113,6 +146,7 @@ namespace ReaLTaiizor.Child.Material
             }
 
         }
+
 
     }
 
@@ -173,8 +207,42 @@ namespace ReaLTaiizor.Child.Material
         private const uint WM_USER = 0x0400;
         private const uint EM_SETBKGNDCOLOR = WM_USER + 67;
         private const uint WM_KILLFOCUS = 0x0008;
+
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+
+            set => _scaleRatio = value;
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+
+            set => _scaleRatioSqrt = value;
+        }
+
         protected override void WndProc(ref Message m)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             base.WndProc(ref m);
 
 
@@ -193,7 +261,7 @@ namespace ReaLTaiizor.Child.Material
                 using MaterialNativeTextRenderer NativeText = new(Graphics.FromHwnd(m.HWnd));
                 NativeText.DrawTransparentText(
                 Hint,
-                SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1),
+                SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor),
                 Enabled ?
                 MaterialColorHelper.RemoveAlpha(SkinManager.TextMediumEmphasisColor, BackColor) : // not focused
                 MaterialColorHelper.RemoveAlpha(SkinManager.TextDisabledOrHintColor, BackColor), // Disabled
@@ -213,6 +281,8 @@ namespace ReaLTaiizor.Child.Material
             }
 
         }
+
+
     }
 
     #endregion

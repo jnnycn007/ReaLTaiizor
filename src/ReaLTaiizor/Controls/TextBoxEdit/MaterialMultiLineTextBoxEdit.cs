@@ -30,7 +30,7 @@ namespace ReaLTaiizor.Controls
         [Browsable(false)]
         public MaterialSkinManager SkinManager => MaterialSkinManager.Instance;
 
-        public bool Focus()
+        public new bool Focus()
         {
             return baseTextBox.Focus();
         }
@@ -110,6 +110,11 @@ namespace ReaLTaiizor.Controls
         public override Color BackColor => Parent == null ? SkinManager.BackgroundColor : Parent.BackColor;
 
         public override string Text { get => baseTextBox.Text; set => baseTextBox.Text = value; }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+        }
 
         [Category("Appearance")]
         public HorizontalAlignment TextAlign { get => baseTextBox.TextAlign; set => baseTextBox.TextAlign = value; }
@@ -670,7 +675,7 @@ namespace ReaLTaiizor.Controls
 
         //private readonly AnimationManager animationManager;
         private readonly AnimationManager _animationManager;
-
+        //
         public bool isFocused = false;
         private const int HINT_TEXT_SMALL_SIZE = 18;
         private const int HINT_TEXT_SMALL_Y = 4;
@@ -684,9 +689,58 @@ namespace ReaLTaiizor.Controls
         private readonly int SB_LINEUP = 0;
         private readonly int SB_LINEDOWN = 1;
         private readonly uint WM_VSCROLL = 277;
+        private const int ACTIVATION_INDICATOR_HEIGHT = 2;
+        private const int FONT_HEIGHT = 20;
         private readonly IntPtr ptrLparam = new(0);
 
+        private bool _needsLayoutRefresh = false;
+
+        private int _left_padding;
+        private int _right_padding;
+
         protected readonly MaterialBaseTextBox baseTextBox;
+
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+
+            set => _scaleRatio = value;
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+
+            set => _scaleRatioSqrt = value;
+        }
+
+        public void UpdateRects()
+        {
+            _left_padding = (int)(LEFT_PADDING * ScaleFactor);
+            _right_padding = (int)(RIGHT_PADDING * ScaleFactor);
+
+            baseTextBox.Location = new Point(_left_padding, (int)(TOP_PADDING * ScaleFactor));
+            baseTextBox.Width = Width - (_left_padding + _right_padding);
+            baseTextBox.Height = ClientRectangle.Height - (int)(TOP_PADDING * ScaleFactor) - (int)(BOTTOM_PADDING * ScaleFactor);
+            // baseTextBox.Height = (int)(FONT_HEIGHT * ScaleFactor);
+        }
+
         public MaterialMultiLineTextBoxEdit()
         {
             AllowScroll = true;
@@ -708,7 +762,7 @@ namespace ReaLTaiizor.Controls
             baseTextBox = new MaterialBaseTextBox
             {
                 BorderStyle = BorderStyle.None,
-                Font = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1),
+                Font = SkinManager.GetFontByType(MaterialSkinManager.FontType.Subtitle1, ScaleFactor),
                 ForeColor = SkinManager.TextHighEmphasisColor,
                 Multiline = true
             };
@@ -735,11 +789,13 @@ namespace ReaLTaiizor.Controls
                 {
                     base.Focus();
                 }
+                UpdateRects();
             };
             baseTextBox.LostFocus += (sender, args) =>
             {
                 isFocused = false;
                 _animationManager.StartNewAnimation(AnimationDirection.Out);
+                UpdateRects();
             };
 
             baseTextBox.TextChanged += new EventHandler(Redraw);
@@ -756,13 +812,31 @@ namespace ReaLTaiizor.Controls
 
         private void Redraw(object sencer, EventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             SuspendLayout();
             Invalidate();
             ResumeLayout(false);
         }
 
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            _needsLayoutRefresh = true;
+        }
+
+
         protected override void OnPaint(PaintEventArgs pevent)
         {
+            // ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            // ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            if (_needsLayoutRefresh)
+            {
+                UpdateRects();
+                _needsLayoutRefresh = false;
+            }
+
             Graphics g = pevent.Graphics;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
             g.Clear(Parent.BackColor == Color.Transparent ? ((Parent.Parent == null || (Parent.Parent != null && Parent.Parent.BackColor == Color.Transparent)) ? SkinManager.BackgroundColor : Parent.Parent.BackColor) : Parent.BackColor);
@@ -896,11 +970,11 @@ namespace ReaLTaiizor.Controls
         {
             base.OnResize(e);
 
-            baseTextBox.Location = new Point(LEFT_PADDING, TOP_PADDING);
-            baseTextBox.Width = Width - (LEFT_PADDING + RIGHT_PADDING);
-            baseTextBox.Height = Height - (TOP_PADDING + BOTTOM_PADDING);
+            baseTextBox.Location = new Point((int)(LEFT_PADDING * ScaleFactor), (int)(TOP_PADDING * ScaleFactor));
+            baseTextBox.Width = Width - ((int)(LEFT_PADDING * ScaleFactor) + (int)(RIGHT_PADDING * ScaleFactor));
+            baseTextBox.Height = Height - ((int)(TOP_PADDING * ScaleFactor) + (int)(BOTTOM_PADDING * ScaleFactor));
 
-            LINE_Y = Height - LINE_BOTTOM_PADDING;
+            LINE_Y = Height - (int)(LINE_BOTTOM_PADDING * ScaleFactor);
 
         }
 
@@ -959,6 +1033,7 @@ namespace ReaLTaiizor.Controls
                 SendKeys.Send("{TAB}");
             }
         }
+
     }
 
     #endregion

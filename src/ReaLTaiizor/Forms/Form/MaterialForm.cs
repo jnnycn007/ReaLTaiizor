@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -26,6 +27,13 @@ namespace ReaLTaiizor.Forms
     public class MaterialForm : Form, MaterialControlI
     {
         #region Public Properties
+
+        /// <summary>
+        /// Indicate if the form should respond to System Dpi Scaling Ratio
+        /// </summary>
+        //[DefaultValue(true)]
+        //public bool ScalingAware { get; set; } = true;
+
         [Browsable(false)]
         public int Depth { get; set; }
 
@@ -80,6 +88,9 @@ namespace ReaLTaiizor.Forms
             }
         }
 
+        /// <summary>
+        /// This num is DPI-aware
+        /// </summary>
         [Category("Drawer")]
         public int DrawerWidth { get; set; }
 
@@ -259,7 +270,7 @@ namespace ReaLTaiizor.Forms
             set => base.FormBorderStyle = value;
         }
 
-        public Rectangle UserArea => new(ClientRectangle.X, ClientRectangle.Y + STATUS_BAR_HEIGHT + ACTION_BAR_HEIGHT, ClientSize.Width, ClientSize.Height - (STATUS_BAR_HEIGHT + ACTION_BAR_HEIGHT));
+        public Rectangle UserArea => new(ClientRectangle.X, ClientRectangle.Y + (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt), ClientSize.Width, ClientSize.Height - ((int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt)));
         #endregion
 
         #region Enums
@@ -406,6 +417,14 @@ namespace ReaLTaiizor.Forms
         private const int TITLE_LEFT_PADDING = 72;
         private const int ACTION_BAR_PADDING = 16;
         private const int ACTION_BAR_HEIGHT_DEFAULT = 40;
+
+        // Drawer (hamburger) icon specs – logical units
+        // DO NOT USE MAGIC NUMS
+        private const float DRAWER_LINE_THICKNESS = 2f;
+        private const int DRAWER_LINE_COUNT = 3;
+        private const int DRAWER_LINE_SPACING = 6;     // vertical distance between lines
+        private const int DRAWER_LINE_LENGTH = 18;     // line width
+
         #endregion
 
         #region Private Fields
@@ -414,12 +433,12 @@ namespace ReaLTaiizor.Forms
         private ResizeDirection _resizeDir;
         private ButtonState _buttonState = ButtonState.None;
 
-        private Rectangle _minButtonBounds => new(ClientSize.Width - (3 * STATUS_BAR_BUTTON_WIDTH), ClientRectangle.Y, STATUS_BAR_BUTTON_WIDTH, STATUS_BAR_HEIGHT);
-        private Rectangle _maxButtonBounds => new(ClientSize.Width - (2 * STATUS_BAR_BUTTON_WIDTH), ClientRectangle.Y, STATUS_BAR_BUTTON_WIDTH, STATUS_BAR_HEIGHT);
-        private Rectangle _xButtonBounds => new(ClientSize.Width - STATUS_BAR_BUTTON_WIDTH, ClientRectangle.Y, STATUS_BAR_BUTTON_WIDTH, STATUS_BAR_HEIGHT);
-        private Rectangle _actionBarBounds => new(ClientRectangle.X, ClientRectangle.Y + STATUS_BAR_HEIGHT, ClientSize.Width, ACTION_BAR_HEIGHT);
-        private Rectangle _drawerButtonBounds => new(ClientRectangle.X + (SkinManager.FORM_PADDING / 2) + 3, STATUS_BAR_HEIGHT + (ACTION_BAR_HEIGHT / 2) - (ACTION_BAR_HEIGHT_DEFAULT / 2), ACTION_BAR_HEIGHT_DEFAULT, ACTION_BAR_HEIGHT_DEFAULT);
-        private Rectangle _statusBarBounds => new(ClientRectangle.X, ClientRectangle.Y, ClientSize.Width, STATUS_BAR_HEIGHT);
+        private Rectangle _minButtonBounds => new(ClientSize.Width - (3 * (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor)), ClientRectangle.Y, (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt));
+        private Rectangle _maxButtonBounds => new(ClientSize.Width - (2 * (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor)), ClientRectangle.Y, (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt));
+        private Rectangle _xButtonBounds => new(ClientSize.Width - (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor), ClientRectangle.Y, (int)(STATUS_BAR_BUTTON_WIDTH * ScaleFactor), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt));
+        private Rectangle _actionBarBounds => new(ClientRectangle.X, ClientRectangle.Y + (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt), ClientSize.Width, (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt));
+        private Rectangle _drawerButtonBounds => new(ClientRectangle.X + (int)(SkinManager.FORM_PADDING * ScaleFactor / 2) + 3, (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + ((int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt) / 2) - ((int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt) / 2), (int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactor), (int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt));
+        private Rectangle _statusBarBounds => new(ClientRectangle.X, ClientRectangle.Y, ClientSize.Width, (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt));
         private Rectangle _drawerIconRect;
 
         private bool Maximized
@@ -455,6 +474,35 @@ namespace ReaLTaiizor.Forms
 
         private int STATUS_BAR_HEIGHT = 24;
         private int ACTION_BAR_HEIGHT = 40;
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+
+            set => _scaleRatio = value;
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+
+            set => _scaleRatioSqrt = value;
+        }
         #endregion
 
         public MaterialForm()
@@ -476,7 +524,7 @@ namespace ReaLTaiizor.Forms
             FormStyle = FormStyles.ActionBar_40;
 
             //Keep space for resize by mouse
-            Padding = new Padding(PADDING_MINIMUM, STATUS_BAR_HEIGHT + ACTION_BAR_HEIGHT, PADDING_MINIMUM, PADDING_MINIMUM);
+            Padding = new Padding((int)(PADDING_MINIMUM * ScaleFactorSqrt), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt), (int)(PADDING_MINIMUM * ScaleFactorSqrt), (int)(PADDING_MINIMUM * ScaleFactorSqrt));
 
             _clickAnimManager = new AnimationManager()
             {
@@ -498,6 +546,7 @@ namespace ReaLTaiizor.Forms
         }
 
         #region Private Methods
+
         protected void AddDrawerOverlayForm()
         {
             if (DrawerTabControl == null)
@@ -564,7 +613,7 @@ namespace ReaLTaiizor.Forms
             drawerForm.ControlBox = false;
             drawerForm.FormBorderStyle = FormBorderStyle.None;
             drawerForm.Visible = true;
-            drawerForm.Size = new Size(DrawerWidth, H);
+            drawerForm.Size = new Size((int)(DrawerWidth * ScaleFactor), H);
             drawerForm.Location = new Point(PointToScreen(Point.Empty).X, Y);
             drawerForm.ShowInTaskbar = false;
             drawerForm.Owner = this; //drawerOverlay
@@ -574,7 +623,7 @@ namespace ReaLTaiizor.Forms
             // Add drawer to overlay form
             drawerForm.Controls.Add(drawerControl);
             drawerControl.Location = new Point(0, 0);
-            drawerControl.Size = new Size(DrawerWidth, H);
+            drawerControl.Size = new Size((int)(DrawerWidth * ScaleFactor), H);
             drawerControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom;
             drawerControl.BaseTabControl = DrawerTabControl;
             drawerControl.DrawerHideTabName = DrawerHideTabName;
@@ -610,7 +659,7 @@ namespace ReaLTaiizor.Forms
             Resize += (sender, e) =>
             {
                 H = ClientSize.Height - _statusBarBounds.Height - _actionBarBounds.Height;
-                drawerForm.Size = new Size(DrawerWidth, H);
+                drawerForm.Size = new Size((int)(DrawerWidth * ScaleFactor), H);
                 drawerOverlay.Size = new Size(ClientSize.Width, H);
             };
 
@@ -624,6 +673,10 @@ namespace ReaLTaiizor.Forms
             // Close when click outside menu
             drawerOverlay.Click += (sender, e) =>
             {
+                drawerOverlay.TopMost = false;
+                drawerForm.TopMost = true;
+                drawerForm.TopMost = TopMost;
+                // 3 lines above is to make sure overlay not cover drawerForm after focused once.
                 drawerControl.Hide();
             };
 
@@ -703,7 +756,7 @@ namespace ReaLTaiizor.Forms
             }
             else
             {
-                Padding = new Padding(PADDING_MINIMUM, originalPadding.Top, originalPadding.Right, originalPadding.Bottom);
+                Padding = new Padding((int)(PADDING_MINIMUM * ScaleFactorSqrt), originalPadding.Top, originalPadding.Right, originalPadding.Bottom);
             }
         }
 
@@ -861,40 +914,40 @@ namespace ReaLTaiizor.Forms
                     break;
                 case FormStyles.ActionBar_None:
                     ACTION_BAR_HEIGHT = 0;
-                    STATUS_BAR_HEIGHT = STATUS_BAR_HEIGHT_DEFAULT;
+                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt);
                     break;
                 case FormStyles.ActionBar_40:
-                    ACTION_BAR_HEIGHT = ACTION_BAR_HEIGHT_DEFAULT;
-                    STATUS_BAR_HEIGHT = STATUS_BAR_HEIGHT_DEFAULT;
+                    ACTION_BAR_HEIGHT = (int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt);
+                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt);
                     break;
                 case FormStyles.ActionBar_48:
-                    ACTION_BAR_HEIGHT = 48;
-                    STATUS_BAR_HEIGHT = STATUS_BAR_HEIGHT_DEFAULT;
+                    ACTION_BAR_HEIGHT = (int)(48 * ScaleFactorSqrt);
+                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt);
                     break;
                 case FormStyles.ActionBar_56:
-                    ACTION_BAR_HEIGHT = 56;
-                    STATUS_BAR_HEIGHT = STATUS_BAR_HEIGHT_DEFAULT;
+                    ACTION_BAR_HEIGHT = (int)(56 * ScaleFactorSqrt);
+                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt);
                     break;
                 case FormStyles.ActionBar_64:
-                    ACTION_BAR_HEIGHT = 64;
-                    STATUS_BAR_HEIGHT = STATUS_BAR_HEIGHT_DEFAULT;
+                    ACTION_BAR_HEIGHT = (int)(64 * ScaleFactorSqrt);
+                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt);
                     break;
                 default:
-                    ACTION_BAR_HEIGHT = ACTION_BAR_HEIGHT_DEFAULT;
-                    STATUS_BAR_HEIGHT = STATUS_BAR_HEIGHT_DEFAULT;
+                    ACTION_BAR_HEIGHT = (int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt);
+                    STATUS_BAR_HEIGHT = (int)(STATUS_BAR_HEIGHT_DEFAULT * ScaleFactorSqrt);
                     break;
             }
 
-            Padding = new Padding(DrawerShowIconsWhenHidden ? drawerControl.MinWidth : PADDING_MINIMUM, STATUS_BAR_HEIGHT + ACTION_BAR_HEIGHT, Padding.Right, Padding.Bottom);
+            Padding = new Padding(DrawerShowIconsWhenHidden ? drawerControl.MinWidth : (int)(PADDING_MINIMUM * ScaleFactorSqrt), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt), Padding.Right, Padding.Bottom);
             originalPadding = Padding;
 
             if (DrawerTabControl != null)
             {
-                int height = ClientSize.Height - (STATUS_BAR_HEIGHT + ACTION_BAR_HEIGHT);
-                Point location = Point.Add(Location, new Size(0, STATUS_BAR_HEIGHT + ACTION_BAR_HEIGHT));
+                int height = ClientSize.Height - ((int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt));
+                Point location = Point.Add(Location, new Size(0, (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt) + (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt)));
                 drawerOverlay.Size = new Size(ClientSize.Width, height);
                 drawerOverlay.Location = location;
-                drawerForm.Size = new Size(DrawerWidth, height);
+                drawerForm.Size = new Size((int)(DrawerWidth * ScaleFactor), height);
                 drawerForm.Location = location;
             }
 
@@ -903,6 +956,27 @@ namespace ReaLTaiizor.Forms
         #endregion
 
         #region WinForms Methods
+
+        protected override void OnLoad(EventArgs e)
+        {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            base.OnLoad(e);
+        }
+
+        protected override void OnDpiChanged(DpiChangedEventArgs e)
+        {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            Invalidate();
+            base.OnDpiChanged(e);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+        }
+
         protected override CreateParams CreateParams
         {
             get
@@ -1080,42 +1154,42 @@ namespace ReaLTaiizor.Forms
             //True if the mouse is hovering over a child control
             bool isChildUnderMouse = GetChildAtPoint(coords) != null;
 
-            if (!isChildUnderMouse && !Maximized && coords.Y < BORDER_WIDTH && coords.X > BORDER_WIDTH && coords.X < ClientSize.Width - BORDER_WIDTH)
+            if (!isChildUnderMouse && !Maximized && coords.Y < (int)(BORDER_WIDTH * ScaleFactorSqrt) && coords.X > (int)(BORDER_WIDTH * ScaleFactorSqrt) && coords.X < ClientSize.Width - (int)(BORDER_WIDTH * ScaleFactorSqrt))
             {
                 _resizeDir = ResizeDirection.Top;
                 Cursor = Cursors.SizeNS;
             }
-            else if (!isChildUnderMouse && !Maximized && coords.X <= BORDER_WIDTH && coords.Y < BORDER_WIDTH)
+            else if (!isChildUnderMouse && !Maximized && coords.X <= (int)(BORDER_WIDTH * ScaleFactorSqrt) && coords.Y < (int)(BORDER_WIDTH * ScaleFactorSqrt))
             {
                 _resizeDir = ResizeDirection.TopLeft;
                 Cursor = Cursors.SizeNWSE;
             }
-            else if (!isChildUnderMouse && !Maximized && coords.X >= ClientSize.Width - BORDER_WIDTH && coords.Y < BORDER_WIDTH)
+            else if (!isChildUnderMouse && !Maximized && coords.X >= ClientSize.Width - (int)(BORDER_WIDTH * ScaleFactorSqrt) && coords.Y < (int)(BORDER_WIDTH * ScaleFactorSqrt))
             {
                 _resizeDir = ResizeDirection.TopRight;
                 Cursor = Cursors.SizeNESW;
             }
-            else if (!isChildUnderMouse && !Maximized && coords.X <= BORDER_WIDTH && coords.Y >= ClientSize.Height - BORDER_WIDTH)
+            else if (!isChildUnderMouse && !Maximized && coords.X <= (int)(BORDER_WIDTH * ScaleFactorSqrt) && coords.Y >= ClientSize.Height - (int)(BORDER_WIDTH * ScaleFactorSqrt))
             {
                 _resizeDir = ResizeDirection.BottomLeft;
                 Cursor = Cursors.SizeNESW;
             }
-            else if ((!isChildUnderMouse || DrawerTabControl != null) && !Maximized && coords.X <= BORDER_WIDTH)
+            else if ((!isChildUnderMouse || DrawerTabControl != null) && !Maximized && coords.X <= (int)(BORDER_WIDTH * ScaleFactorSqrt))
             {
                 _resizeDir = ResizeDirection.Left;
                 Cursor = Cursors.SizeWE;
             }
-            else if (!isChildUnderMouse && !Maximized && coords.X >= ClientSize.Width - BORDER_WIDTH && coords.Y >= ClientSize.Height - BORDER_WIDTH)
+            else if (!isChildUnderMouse && !Maximized && coords.X >= ClientSize.Width - (int)(BORDER_WIDTH * ScaleFactorSqrt) && coords.Y >= ClientSize.Height - (int)(BORDER_WIDTH * ScaleFactorSqrt))
             {
                 _resizeDir = ResizeDirection.BottomRight;
                 Cursor = Cursors.SizeNWSE;
             }
-            else if (!isChildUnderMouse && !Maximized && coords.X >= ClientSize.Width - BORDER_WIDTH)
+            else if (!isChildUnderMouse && !Maximized && coords.X >= ClientSize.Width - (int)(BORDER_WIDTH * ScaleFactorSqrt))
             {
                 _resizeDir = ResizeDirection.Right;
                 Cursor = Cursors.SizeWE;
             }
-            else if (!isChildUnderMouse && !Maximized && coords.Y >= ClientSize.Height - BORDER_WIDTH)
+            else if (!isChildUnderMouse && !Maximized && coords.Y >= ClientSize.Height - (int)(BORDER_WIDTH * ScaleFactorSqrt))
             {
                 _resizeDir = ResizeDirection.Bottom;
                 Cursor = Cursors.SizeNS;
@@ -1143,6 +1217,12 @@ namespace ReaLTaiizor.Forms
 
             base.OnMouseUp(e);
             ReleaseCapture();
+        }
+
+        protected override void OnResize(EventArgs e)
+        {
+            RecalculateFormBoundaries();
+            base.OnResize(e);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -1305,7 +1385,7 @@ namespace ReaLTaiizor.Forms
                     g.FillRectangle(downBrush, _drawerButtonBounds);
                 }
 
-                _drawerIconRect = new Rectangle(SkinManager.FORM_PADDING / 2, STATUS_BAR_HEIGHT, ACTION_BAR_HEIGHT_DEFAULT, ACTION_BAR_HEIGHT);
+                _drawerIconRect = new Rectangle((int)(SkinManager.FORM_PADDING * ScaleFactor / 2), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt), (int)(ACTION_BAR_HEIGHT_DEFAULT * ScaleFactor), (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt));
                 // Ripple
                 if (_clickAnimManager.IsAnimating())
                 {
@@ -1320,38 +1400,47 @@ namespace ReaLTaiizor.Forms
                     rippleBrush.Dispose();
                 }
 
-                using Pen formButtonsPen = new(SkinManager.ColorScheme.TextColor, 2);
-                // Middle line
-                g.DrawLine(
-                   formButtonsPen,
-                   _drawerIconRect.X + (int)SkinManager.FORM_PADDING,
-                   _drawerIconRect.Y + (int)(ACTION_BAR_HEIGHT / 2),
-                   _drawerIconRect.X + (int)SkinManager.FORM_PADDING + 18,
-                   _drawerIconRect.Y + (int)(ACTION_BAR_HEIGHT / 2));
+                using Pen drawerPen = new(
+                    SkinManager.ColorScheme.TextColor,
+                    DRAWER_LINE_THICKNESS * ScaleFactorSqrt);
 
-                // Bottom line
-                g.DrawLine(
-                   formButtonsPen,
-                   _drawerIconRect.X + (int)SkinManager.FORM_PADDING,
-                   _drawerIconRect.Y + (int)(ACTION_BAR_HEIGHT / 2) - 6,
-                   _drawerIconRect.X + (int)SkinManager.FORM_PADDING + 18,
-                   _drawerIconRect.Y + (int)(ACTION_BAR_HEIGHT / 2) - 6);
+                drawerPen.StartCap = LineCap.Round;
+                drawerPen.EndCap = LineCap.Round;
 
-                // Top line
-                g.DrawLine(
-                   formButtonsPen,
-                   _drawerIconRect.X + (int)SkinManager.FORM_PADDING,
-                   _drawerIconRect.Y + (int)(ACTION_BAR_HEIGHT / 2) + 6,
-                   _drawerIconRect.X + (int)SkinManager.FORM_PADDING + 18,
-                   _drawerIconRect.Y + (int)(ACTION_BAR_HEIGHT / 2) + 6);
+                // X basic
+                int startX = _drawerIconRect.X + (int)(SkinManager.FORM_PADDING * ScaleFactor);
+                int endX = startX + (int)(DRAWER_LINE_LENGTH * ScaleFactorSqrt);
+
+                // Y center
+                int centerY = _drawerIconRect.Y
+                    + (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt / 2);
+
+                // Total Height = (nums - 1) * space
+                int totalHeight =
+                    (DRAWER_LINE_COUNT - 1)
+                    * (int)(DRAWER_LINE_SPACING * ScaleFactorSqrt);
+
+                // First Y
+                int firstLineY = centerY - (totalHeight / 2);
+
+                // Draw lines
+                for (int i = 0; i < DRAWER_LINE_COUNT; i++)
+                {
+                    int y = firstLineY
+                        + (i * (int)(DRAWER_LINE_SPACING * ScaleFactorSqrt));
+
+                    g.DrawLine(drawerPen, startX, y, endX, y);
+                }
+
             }
 
             if (ControlBox == true && FormStyle != FormStyles.ActionBar_None && FormStyle != FormStyles.StatusAndActionBar_None)
             {
                 //Form title
                 using MaterialNativeTextRenderer NativeText = new(g);
-                Rectangle textLocation = new(DrawerTabControl != null ? TITLE_LEFT_PADDING : TITLE_LEFT_PADDING - (ICON_SIZE + (ACTION_BAR_PADDING * 2)), STATUS_BAR_HEIGHT, ClientSize.Width, ACTION_BAR_HEIGHT);
-                NativeText.DrawTransparentText(Text, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.H6),
+                IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.H6, ScaleFactor);
+                Rectangle textLocation = new(DrawerTabControl != null ? (int)(TITLE_LEFT_PADDING * ScaleFactor) : (int)(TITLE_LEFT_PADDING * ScaleFactor) - ((int)(ICON_SIZE * ScaleFactor) + ((int)(ACTION_BAR_PADDING * ScaleFactor) * 2)), (int)(STATUS_BAR_HEIGHT * ScaleFactorSqrt), ClientSize.Width, (int)(ACTION_BAR_HEIGHT * ScaleFactorSqrt));
+                NativeText.DrawTransparentText(Text, font,
                     SkinManager.ColorScheme.TextColor,
                     textLocation.Location,
                     textLocation.Size,
@@ -1361,8 +1450,9 @@ namespace ReaLTaiizor.Forms
             {
                 //Form title
                 using MaterialNativeTextRenderer NativeText = new(g);
+                IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle2, ScaleFactor);
                 Rectangle textLocation = new(10, 4, ClientSize.Width, ClientSize.Height);
-                NativeText.DrawTransparentText(Text, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle2),
+                NativeText.DrawTransparentText(Text, font,
                     SkinManager.ColorScheme.TextColor,
                     textLocation.Location,
                     textLocation.Size,
@@ -1429,6 +1519,7 @@ namespace ReaLTaiizor.Forms
 
         [DllImport("user32.dll")]
         private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+
         #endregion
     }
 

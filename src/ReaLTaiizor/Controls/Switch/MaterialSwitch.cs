@@ -76,6 +76,7 @@ namespace ReaLTaiizor.Controls
         private const int TRACK_SIZE_HEIGHT = (int)14;
         private const int TRACK_SIZE_WIDTH = (int)36;
         private const int TRACK_RADIUS = (int)(TRACK_SIZE_HEIGHT / 2);
+        private const int TEXT_OFFSET = THUMB_SIZE;
 
         private int TRACK_CENTER_Y;
         private int TRACK_CENTER_X_BEGIN;
@@ -85,6 +86,36 @@ namespace ReaLTaiizor.Controls
         private const int RIPPLE_DIAMETER = 37;
 
         private int _trackOffsetY;
+
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+
+            set => _scaleRatio = value;
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+
+            set => _scaleRatioSqrt = value;
+        }
 
         public MaterialSwitch()
         {
@@ -132,10 +163,12 @@ namespace ReaLTaiizor.Controls
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            _trackOffsetY = (Height / 2) - (int)(THUMB_SIZE_HALF * ScaleFactor);
 
-            _trackOffsetY = (Height / 2) - THUMB_SIZE_HALF;
-
-            TRACK_CENTER_Y = _trackOffsetY + THUMB_SIZE_HALF - 1;
+            TRACK_CENTER_Y = (int)(Height / 2f / ScaleFactor);
+            // To avoid additional ScaleFactor applying.
             TRACK_CENTER_X_BEGIN = TRACK_CENTER_Y;
             TRACK_CENTER_X_END = TRACK_CENTER_X_BEGIN + TRACK_SIZE_WIDTH - (TRACK_RADIUS * 2);
             TRACK_CENTER_X_DELTA = TRACK_CENTER_X_END - TRACK_CENTER_X_BEGIN;
@@ -143,21 +176,25 @@ namespace ReaLTaiizor.Controls
 
         public override Size GetPreferredSize(Size proposedSize)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             Size strSize;
             using (MaterialNativeTextRenderer NativeText = new(CreateGraphics()))
             {
-                strSize = NativeText.MeasureLogString(Text, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1));
+                strSize = NativeText.MeasureLogString(Text, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor));
             }
-            int w = TRACK_SIZE_WIDTH + THUMB_SIZE + strSize.Width;
-            return Ripple ? new Size(w, RIPPLE_DIAMETER) : new Size(w, THUMB_SIZE);
+            int w = (int)(TRACK_SIZE_WIDTH * ScaleFactor) + (int)(THUMB_SIZE * ScaleFactor) + strSize.Width;
+            return Ripple ? new Size(w, (int)(RIPPLE_DIAMETER * ScaleFactor)) : new Size(w, (int)(THUMB_SIZE * ScaleFactor));
         }
 
         private static readonly Point[] CheckmarkLine = { new(3, 8), new(7, 12), new(14, 5) };
 
-        private const int TEXT_OFFSET = THUMB_SIZE;
-
         protected override void OnPaint(PaintEventArgs pevent)
         {
+            // ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            // ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             Graphics g = pevent.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
@@ -172,7 +209,7 @@ namespace ReaLTaiizor.Controls
                         Enabled ? UseAccentColor ? SkinManager.ColorScheme.AccentColor : SkinManager.ColorScheme.PrimaryColor : BlendColor(UseAccentColor ? SkinManager.ColorScheme.AccentColor : SkinManager.ColorScheme.PrimaryColor, SkinManager.SwitchOffDisabledThumbColor, 197), // On color
                         animationProgress * 255); // Blend amount
 
-            using (GraphicsPath path = CreateRoundRect(new Rectangle(TRACK_CENTER_X_BEGIN - TRACK_RADIUS, TRACK_CENTER_Y - (TRACK_SIZE_HEIGHT / 2), TRACK_SIZE_WIDTH, TRACK_SIZE_HEIGHT), TRACK_RADIUS))
+            using (GraphicsPath path = CreateRoundRect(new Rectangle((int)(TRACK_CENTER_X_BEGIN * ScaleFactor) - (int)(TRACK_RADIUS * ScaleFactor), (int)(TRACK_CENTER_Y * ScaleFactor) - ((int)(TRACK_SIZE_HEIGHT * ScaleFactor) / 2), (int)(TRACK_SIZE_WIDTH * ScaleFactor), (int)(TRACK_SIZE_HEIGHT * ScaleFactor)), (int)(TRACK_RADIUS * ScaleFactor)))
             {
                 using SolidBrush trackBrush = new(
                     Color.FromArgb(Enabled ? SkinManager.SwitchOffTrackColor.A : SkinManager.BackgroundDisabledColor.A, // Track alpha
@@ -185,7 +222,7 @@ namespace ReaLTaiizor.Controls
             }
 
             // Calculate animation movement X position
-            int OffsetX = (int)(TRACK_CENTER_X_DELTA * animationProgress);
+            int OffsetX = (int)((int)(TRACK_CENTER_X_DELTA * ScaleFactor) * animationProgress);
 
             // Ripple
             int rippleSize = (Height % 2 == 0) ? Height - 2 : Height - 3;
@@ -202,7 +239,7 @@ namespace ReaLTaiizor.Controls
                     int rippleAnimatedDiameter = (_rippleAM.GetDirection(i) == AnimationDirection.InOutIn) ? (int)(rippleSize * (0.7 + (0.3 * rippleAnimProgress))) : rippleSize;
 
                     using SolidBrush rippleBrush = new(Color.FromArgb((int)(40 * rippleAnimProgress), rippleColor.RemoveAlpha()));
-                    g.FillEllipse(rippleBrush, new Rectangle(TRACK_CENTER_X_BEGIN + OffsetX - (rippleAnimatedDiameter / 2), TRACK_CENTER_Y - (rippleAnimatedDiameter / 2), rippleAnimatedDiameter, rippleAnimatedDiameter));
+                    g.FillEllipse(rippleBrush, new Rectangle((int)(TRACK_CENTER_X_BEGIN * ScaleFactor) + OffsetX - (rippleAnimatedDiameter / 2), (int)(TRACK_CENTER_Y * ScaleFactor) - (rippleAnimatedDiameter / 2), rippleAnimatedDiameter, rippleAnimatedDiameter));
                 }
             }
 
@@ -213,18 +250,18 @@ namespace ReaLTaiizor.Controls
                 int rippleAnimatedDiameter = (int)(rippleSize * (0.7 + (0.3 * rippleAnimProgress)));
 
                 using SolidBrush rippleBrush = new(Color.FromArgb((int)(40 * rippleAnimProgress), rippleColor.RemoveAlpha()));
-                g.FillEllipse(rippleBrush, new Rectangle(TRACK_CENTER_X_BEGIN + OffsetX - (rippleAnimatedDiameter / 2), TRACK_CENTER_Y - (rippleAnimatedDiameter / 2), rippleAnimatedDiameter, rippleAnimatedDiameter));
+                g.FillEllipse(rippleBrush, new Rectangle((int)(TRACK_CENTER_X_BEGIN * ScaleFactor) + OffsetX - (rippleAnimatedDiameter / 2), (int)(TRACK_CENTER_Y * ScaleFactor) - (rippleAnimatedDiameter / 2), rippleAnimatedDiameter, rippleAnimatedDiameter));
             }
 
             // draw Thumb Shadow
-            RectangleF thumbBounds = new(TRACK_CENTER_X_BEGIN + OffsetX - THUMB_SIZE_HALF, TRACK_CENTER_Y - THUMB_SIZE_HALF, THUMB_SIZE, THUMB_SIZE);
+            RectangleF thumbBounds = new((int)(TRACK_CENTER_X_BEGIN * ScaleFactor) + OffsetX - (int)(THUMB_SIZE_HALF * ScaleFactor), (int)(TRACK_CENTER_Y * ScaleFactor) - (int)(THUMB_SIZE_HALF * ScaleFactor), (int)(THUMB_SIZE * ScaleFactor), (int)(THUMB_SIZE * ScaleFactor));
             using (SolidBrush shadowBrush = new(Color.FromArgb(12, 0, 0, 0)))
             {
-                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - 2, thumbBounds.Y - 1, thumbBounds.Width + 4, thumbBounds.Height + 6));
-                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - 1, thumbBounds.Y - 1, thumbBounds.Width + 2, thumbBounds.Height + 4));
-                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - 0, thumbBounds.Y - 0, thumbBounds.Width + 0, thumbBounds.Height + 2));
-                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - 0, thumbBounds.Y + 2, thumbBounds.Width + 0, thumbBounds.Height + 0));
-                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - 0, thumbBounds.Y + 1, thumbBounds.Width + 0, thumbBounds.Height + 0));
+                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - (2 * ScaleFactor), thumbBounds.Y - (1 * ScaleFactor), thumbBounds.Width + (4 * ScaleFactor), thumbBounds.Height + (6 * ScaleFactor)));
+                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - (1 * ScaleFactor), thumbBounds.Y - (1 * ScaleFactor), thumbBounds.Width + (2 * ScaleFactor), thumbBounds.Height + (4 * ScaleFactor)));
+                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - (0 * ScaleFactor), thumbBounds.Y - (0 * ScaleFactor), thumbBounds.Width + (0 * ScaleFactor), thumbBounds.Height + (2 * ScaleFactor)));
+                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - (0 * ScaleFactor), thumbBounds.Y + (2 * ScaleFactor), thumbBounds.Width + (0 * ScaleFactor), thumbBounds.Height + (0 * ScaleFactor)));
+                g.FillEllipse(shadowBrush, new RectangleF(thumbBounds.X - (0 * ScaleFactor), thumbBounds.Y + (1 * ScaleFactor), thumbBounds.Width + (0 * ScaleFactor), thumbBounds.Height + (0 * ScaleFactor)));
             }
 
             // draw Thumb
@@ -235,10 +272,10 @@ namespace ReaLTaiizor.Controls
 
             // draw text
             using MaterialNativeTextRenderer NativeText = new(g);
-            Rectangle textLocation = new(TEXT_OFFSET + TRACK_SIZE_WIDTH, 0, Width - (TEXT_OFFSET + TRACK_SIZE_WIDTH), Height);
+            Rectangle textLocation = new((int)(TEXT_OFFSET * ScaleFactor) + (int)(TRACK_SIZE_WIDTH * ScaleFactor), 0, Width - ((int)(TEXT_OFFSET * ScaleFactor) + (int)(TRACK_SIZE_WIDTH * ScaleFactor)), Height);
             NativeText.DrawTransparentText(
                 Text,
-                SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1),
+                SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor),
                 Enabled ? SkinManager.TextHighEmphasisColor : SkinManager.TextDisabledOrHintColor,
                 textLocation.Location,
                 textLocation.Size,
@@ -247,7 +284,7 @@ namespace ReaLTaiizor.Controls
 
         private Bitmap DrawCheckMarkBitmap()
         {
-            Bitmap checkMark = new(THUMB_SIZE, THUMB_SIZE);
+            Bitmap checkMark = new((int)(THUMB_SIZE * ScaleFactor), (int)(THUMB_SIZE * ScaleFactor));
             Graphics g = Graphics.FromImage(checkMark);
 
             // clear everything, transparent

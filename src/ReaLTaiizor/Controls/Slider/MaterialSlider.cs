@@ -38,6 +38,36 @@ namespace ReaLTaiizor.Controls
         private const int _thumbRadius = 20;
         private const int _thumbRadiusHoverPressed = 40;
 
+
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+
+            set => _scaleRatio = value;
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+
+            set => _scaleRatioSqrt = value;
+        }
         #endregion
 
         #region "Public Properties"
@@ -85,8 +115,8 @@ namespace ReaLTaiizor.Controls
                 {
                     _value = value;
                 }
-                //_mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width) - _thumbRadius / 2));
-                _mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width - _thumbRadius)));
+                //_mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width) - (int)(_thumbRadius * ScaleFactor) / 2));
+                _mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width - (int)(_thumbRadius * ScaleFactor))));
                 RecalcutlateIndicator();
             }
         }
@@ -123,8 +153,8 @@ namespace ReaLTaiizor.Controls
             set
             {
                 field = value;
-                //_mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width) - _thumbRadius / 2));
-                _mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width - _thumbRadius)));
+                //_mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width) - (int)(_thumbRadius * ScaleFactor) / 2));
+                _mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width - (int)(_thumbRadius * ScaleFactor))));
                 RecalcutlateIndicator();
             }
         }
@@ -138,8 +168,8 @@ namespace ReaLTaiizor.Controls
             set
             {
                 field = value;
-                //_mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width) - _thumbRadius / 2));
-                _mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width - _thumbRadius)));
+                //_mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width) - (int)(_thumbRadius * ScaleFactor) / 2));
+                _mouseX = _sliderRectangle.X + ((int)((double)_value / (double)(RangeMax - RangeMin) * (double)(_sliderRectangle.Width - (int)(_thumbRadius * ScaleFactor))));
                 RecalcutlateIndicator();
             }
         }
@@ -218,7 +248,7 @@ namespace ReaLTaiizor.Controls
             set
             {
                 field = value;
-                Font = SkinManager.GetFontByType(field);
+                Font = SkinManager.GetFontByType(field, ScaleFactor);
                 Refresh();
             }
         } = MaterialSkinManager.FontType.Body1;
@@ -251,7 +281,7 @@ namespace ReaLTaiizor.Controls
             ForeColor = SkinManager.TextHighEmphasisColor; // Color.Black;
             RangeMax = 100;
             RangeMin = 0;
-            Size = new Size(250, _thumbRadiusHoverPressed);
+            Size = new Size(250, (int)(_thumbRadiusHoverPressed * ScaleFactor));
             Text = "My Data";
             Value = 50;
             ValueSuffix = "";
@@ -276,7 +306,7 @@ namespace ReaLTaiizor.Controls
         protected override void OnSizeChanged(EventArgs e)
         {
             base.OnSizeChanged(e);
-            Height = _thumbRadiusHoverPressed;
+            Height = (int)(_thumbRadiusHoverPressed * ScaleFactor);
             UpdateRects();
         }
 
@@ -355,21 +385,21 @@ namespace ReaLTaiizor.Controls
         private void UpdateValue(MouseEventArgs e)
         {
             int v = 0;
-            if (e.X >= _sliderRectangle.X + (_thumbRadius / 2) && e.X <= _sliderRectangle.Right - (_thumbRadius / 2))
+            if (e.X >= _sliderRectangle.X + ((int)(_thumbRadius * ScaleFactor) / 2) && e.X <= _sliderRectangle.Right - ((int)(_thumbRadius * ScaleFactor) / 2))
             {
-                _mouseX = e.X - (_thumbRadius / 2);
-                double ValuePerPx = ((double)(RangeMax - RangeMin)) / (_sliderRectangle.Width - _thumbRadius);
+                _mouseX = e.X - ((int)(_thumbRadius * ScaleFactor) / 2);
+                double ValuePerPx = ((double)(RangeMax - RangeMin)) / (_sliderRectangle.Width - (int)(_thumbRadius * ScaleFactor));
                 v = (int)(ValuePerPx * (_mouseX - _sliderRectangle.X));
                 //if (_valueMax!=0 && v > _valueMax) v = _valueMax;
             }
-            else if (e.X < _sliderRectangle.X)// + (_thumbRadius / 2))
+            else if (e.X < _sliderRectangle.X)// + ((int)(_thumbRadius * ScaleFactor) / 2))
             {
                 _mouseX = _sliderRectangle.X;
                 v = RangeMin;
             }
-            else if (e.X > _sliderRectangle.Right - _thumbRadius)// / 2)
+            else if (e.X > _sliderRectangle.Right - (int)(_thumbRadius * ScaleFactor))// / 2)
             {
-                _mouseX = _sliderRectangle.Right - _thumbRadius;
+                _mouseX = _sliderRectangle.Right - (int)(_thumbRadius * ScaleFactor);
                 v = RangeMax;
             }
 
@@ -390,30 +420,47 @@ namespace ReaLTaiizor.Controls
 
         private void UpdateRects()
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             Size textSize;
             Size valueSize;
             using (MaterialNativeTextRenderer NativeText = new(CreateGraphics()))
             {
-                textSize = NativeText.MeasureLogString(ShowText ? Text : "", SkinManager.GetLogFontByType(FontType));
-                valueSize = NativeText.MeasureLogString(ShowValue ? ValuePrefix + RangeMax.ToString() + ValueSuffix : "", SkinManager.GetLogFontByType(FontType));
+                textSize = NativeText.MeasureLogString(ShowText ? Text : "", SkinManager.GetLogFontByType(FontType, ScaleFactor));
+                valueSize = NativeText.MeasureLogString(ShowValue ? ValuePrefix + RangeMax + ValueSuffix : "", SkinManager.GetLogFontByType(FontType, ScaleFactor));
             }
-            _valueRectangle = new Rectangle(Width - valueSize.Width - (_thumbRadiusHoverPressed / 4), 0, valueSize.Width + (_thumbRadiusHoverPressed / 4), Height);
-            _textRectangle = new Rectangle(0, 0, textSize.Width + (_thumbRadiusHoverPressed / 4), Height);
-            _sliderRectangle = new Rectangle(_textRectangle.Right, 0, _valueRectangle.Left - _textRectangle.Right, _thumbRadius);
-            _mouseX = _sliderRectangle.X + ((int)(((double)_value / (double)(RangeMax - RangeMin) * (double)_sliderRectangle.Width) - (_thumbRadius / 2)));
+            _valueRectangle = new Rectangle(Width - valueSize.Width - ((int)(_thumbRadiusHoverPressed * ScaleFactor) / 4), 0, valueSize.Width + ((int)(_thumbRadiusHoverPressed * ScaleFactor) / 4), Height);
+            _textRectangle = new Rectangle(0, 0, textSize.Width + ((int)(_thumbRadiusHoverPressed * ScaleFactor) / 4), Height);
+            _sliderRectangle = new Rectangle(_textRectangle.Right, 0, _valueRectangle.Left - _textRectangle.Right, (int)(_thumbRadius * ScaleFactor));
+            _mouseX = _sliderRectangle.X + ((int)(((double)_value / (double)(RangeMax - RangeMin) * (double)_sliderRectangle.Width) - ((int)(_thumbRadius * ScaleFactor) / 2)));
             RecalcutlateIndicator();
         }
 
         private void RecalcutlateIndicator()
         {
-            _indicatorRectangle = new Rectangle(_mouseX, (Height - _thumbRadius) / 2, _thumbRadius, _thumbRadius);
-            _indicatorRectangleNormal = new Rectangle(_indicatorRectangle.X, (Height / 2) - (_thumbRadius / 2), _thumbRadius, _thumbRadius);
-            _indicatorRectanglePressed = new Rectangle(_indicatorRectangle.X + (_thumbRadius / 2) - (_thumbRadiusHoverPressed / 2), (Height / 2) - (_thumbRadiusHoverPressed / 2), _thumbRadiusHoverPressed, _thumbRadiusHoverPressed);
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
+            _indicatorRectangle = new Rectangle(_mouseX, (Height - (int)(_thumbRadius * ScaleFactor)) / 2, (int)(_thumbRadius * ScaleFactor), (int)(_thumbRadius * ScaleFactor));
+            _indicatorRectangleNormal = new Rectangle(_indicatorRectangle.X, (Height / 2) - ((int)(_thumbRadius * ScaleFactor) / 2), (int)(_thumbRadius * ScaleFactor), (int)(_thumbRadius * ScaleFactor));
+            _indicatorRectanglePressed = new Rectangle(_indicatorRectangle.X + ((int)(_thumbRadius * ScaleFactor) / 2) - ((int)(_thumbRadiusHoverPressed * ScaleFactor) / 2), (Height / 2) - ((int)(_thumbRadiusHoverPressed * ScaleFactor) / 2), (int)(_thumbRadiusHoverPressed * ScaleFactor), (int)(_thumbRadiusHoverPressed * ScaleFactor));
             Invalidate();
+        }
+
+        protected override void OnDpiChangedAfterParent(EventArgs e)
+        {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
+            base.OnDpiChangedAfterParent(e);
         }
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            // ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            // ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             Graphics g = e.Graphics;
             g.SmoothingMode = SmoothingMode.AntiAlias;
             g.TextRenderingHint = TextRenderingHint.AntiAlias;
@@ -455,15 +502,25 @@ namespace ReaLTaiizor.Controls
             //_thumbPressedColor = Color.FromArgb((int)(2.55 * 30), (Value == 0 ? Color.Gray : _accentColor));            _thumbHoverColor = Color.FromArgb((int)(2.55 * 15), (Value == 0 ? Color.Gray : _accentColor));
             _thumbHoverColor = Color.FromArgb((int)(2.55 * 15), _accentColor);
             _thumbPressedColor = Color.FromArgb((int)(2.55 * 30), _accentColor);
-            //Pen LinePen = new Pen(_disabledColor, _inactiveTrack);
+            //Pen LinePen = new Pen(_disabledColor, (int)(_inactiveTrack * ScaleFactor));
 
             //Draw track
             //g.DrawLine(LinePen, _indicatorSize / 2, Height / 2 + (Height - _indicatorSize) / 2, Width - _indicatorSize / 2, Height / 2 + (Height - _indicatorSize) / 2);
             //g.DrawLine(LinePen, _sliderRectangle.X + (_indicatorSize / 2), Height / 2 , _sliderRectangle.Right - (_indicatorSize / 2), Height / 2 );
 
-            GraphicsPath _inactiveTrackPath = CreateRoundRect(_sliderRectangle.X + (_thumbRadius / 2), _sliderRectangle.Y + (Height / 2) - (_inactiveTrack / 2), _sliderRectangle.Width - _thumbRadius, _inactiveTrack, 2);
-            //g.FillPath(_disabledBrush, _inactiveTrackPath);
-            GraphicsPath _activeTrackPath = CreateRoundRect(_sliderRectangle.X + (_thumbRadius / 2), _sliderRectangle.Y + (Height / 2) - (_activeTrack / 2), _indicatorRectangleNormal.X - _sliderRectangle.X, _activeTrack, 2);
+            GraphicsPath _inactiveTrackPath = CreateRoundRect(
+                _sliderRectangle.X + (int)Math.Round(_thumbRadius * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
+                _sliderRectangle.Y + (int)Math.Round(Height / 2f, MidpointRounding.AwayFromZero) - (int)Math.Round(_inactiveTrack * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
+                _sliderRectangle.Width - (int)Math.Round(_thumbRadius * ScaleFactor, MidpointRounding.AwayFromZero),
+                (int)Math.Round(_inactiveTrack * ScaleFactor, MidpointRounding.AwayFromZero),
+                2);
+            //g.FillPath(_disabledBrush, (int)(_inactiveTrack * ScaleFactor)Path);
+            GraphicsPath _activeTrackPath = CreateRoundRect(
+                _sliderRectangle.X + (int)Math.Round(_thumbRadius * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
+                _sliderRectangle.Y + (int)Math.Round(Height / 2f, MidpointRounding.AwayFromZero) - (int)Math.Round(_activeTrack * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
+                _indicatorRectangleNormal.X - _sliderRectangle.X,
+                (int)Math.Round(_activeTrack * ScaleFactor, MidpointRounding.AwayFromZero),
+                2);
 
             if (Enabled)
             {
@@ -509,7 +566,7 @@ namespace ReaLTaiizor.Controls
                 // Draw text
                 NativeText.DrawTransparentText(
                 Text,
-                SkinManager.GetLogFontByType(FontType),
+                SkinManager.GetLogFontByType(FontType, ScaleFactor),
                 Enabled ? SkinManager.TextHighEmphasisColor : SkinManager.TextDisabledOrHintColor,
                 _textRectangle.Location,
                 _textRectangle.Size,
@@ -521,7 +578,7 @@ namespace ReaLTaiizor.Controls
                 // Draw value
                 NativeText.DrawTransparentText(
                     ValuePrefix + Value.ToString() + ValueSuffix,
-                    SkinManager.GetLogFontByType(FontType),
+                    SkinManager.GetLogFontByType(FontType, ScaleFactor),
                     Enabled ? SkinManager.TextHighEmphasisColor : SkinManager.TextDisabledOrHintColor,
                     _valueRectangle.Location,
                     _valueRectangle.Size,

@@ -36,6 +36,8 @@ namespace ReaLTaiizor.Manager
 
         public int FORM_PADDING = 14;
 
+        private readonly object _fontLock = new(); // To avoid cross-thread unexpected behaviour.
+
         // Constructor
         private MaterialSkinManager()
         {
@@ -61,7 +63,7 @@ namespace ReaLTaiizor.Manager
             }
 
             // create and save font handles for GDI
-            logicalFonts = new Dictionary<string, IntPtr>(18)
+            logicalFonts = new Dictionary<string, IntPtr>()
             {
                 { "H1", createLogicalFont("Roboto Light", 96, MaterialNativeTextRenderer.logFontWeight.FW_LIGHT) },
                 { "H2", createLogicalFont("Roboto Light", 60, MaterialNativeTextRenderer.logFontWeight.FW_LIGHT) },
@@ -297,23 +299,28 @@ namespace ReaLTaiizor.Manager
 
         public Font GetFontByType(FontType type)
         {
+            return GetFontByType(type, 1);
+        }
+
+        public Font GetFontByType(FontType type, float scaleRatio)
+        {
             return type switch
             {
-                FontType.H1 => new Font(RobotoFontFamilies["Roboto_Light"], 96f, FontStyle.Regular, GraphicsUnit.Pixel),
-                FontType.H2 => new Font(RobotoFontFamilies["Roboto_Light"], 60f, FontStyle.Regular, GraphicsUnit.Pixel),
-                FontType.H3 => new Font(RobotoFontFamilies["Roboto"], 48f, FontStyle.Bold, GraphicsUnit.Pixel),
-                FontType.H4 => new Font(RobotoFontFamilies["Roboto"], 34f, FontStyle.Bold, GraphicsUnit.Pixel),
-                FontType.H5 => new Font(RobotoFontFamilies["Roboto"], 24f, FontStyle.Bold, GraphicsUnit.Pixel),
-                FontType.H6 => new Font(RobotoFontFamilies["Roboto_Medium"], 20f, FontStyle.Bold, GraphicsUnit.Pixel),
-                FontType.Subtitle1 => new Font(RobotoFontFamilies["Roboto"], 16f, FontStyle.Regular, GraphicsUnit.Pixel),
-                FontType.Subtitle2 => new Font(RobotoFontFamilies["Roboto_Medium"], 14f, FontStyle.Bold, GraphicsUnit.Pixel),
-                FontType.SubtleEmphasis => new Font(RobotoFontFamilies["Roboto"], 12f, FontStyle.Italic, GraphicsUnit.Pixel),
-                FontType.Body1 => new Font(RobotoFontFamilies["Roboto"], 14f, FontStyle.Regular, GraphicsUnit.Pixel),
-                FontType.Body2 => new Font(RobotoFontFamilies["Roboto"], 12f, FontStyle.Regular, GraphicsUnit.Pixel),
-                FontType.Button => new Font(RobotoFontFamilies["Roboto"], 14f, FontStyle.Bold, GraphicsUnit.Pixel),
-                FontType.Caption => new Font(RobotoFontFamilies["Roboto"], 12f, FontStyle.Regular, GraphicsUnit.Pixel),
-                FontType.Overline => new Font(RobotoFontFamilies["Roboto"], 10f, FontStyle.Regular, GraphicsUnit.Pixel),
-                _ => new Font(RobotoFontFamilies["Roboto"], 14f, FontStyle.Regular, GraphicsUnit.Pixel),
+                FontType.H1 => new Font(RobotoFontFamilies["Roboto_Light"], 96f * scaleRatio, FontStyle.Regular, GraphicsUnit.Pixel),
+                FontType.H2 => new Font(RobotoFontFamilies["Roboto_Light"], 60f * scaleRatio, FontStyle.Regular, GraphicsUnit.Pixel),
+                FontType.H3 => new Font(RobotoFontFamilies["Roboto"], 48f * scaleRatio, FontStyle.Bold, GraphicsUnit.Pixel),
+                FontType.H4 => new Font(RobotoFontFamilies["Roboto"], 34f * scaleRatio, FontStyle.Bold, GraphicsUnit.Pixel),
+                FontType.H5 => new Font(RobotoFontFamilies["Roboto"], 24f * scaleRatio, FontStyle.Bold, GraphicsUnit.Pixel),
+                FontType.H6 => new Font(RobotoFontFamilies["Roboto_Medium"], 20f * scaleRatio, FontStyle.Bold, GraphicsUnit.Pixel),
+                FontType.Subtitle1 => new Font(RobotoFontFamilies["Roboto"], 16f * scaleRatio, FontStyle.Regular, GraphicsUnit.Pixel),
+                FontType.Subtitle2 => new Font(RobotoFontFamilies["Roboto_Medium"], 14f * scaleRatio, FontStyle.Bold, GraphicsUnit.Pixel),
+                FontType.SubtleEmphasis => new Font(RobotoFontFamilies["Roboto"], 12f * scaleRatio, FontStyle.Italic, GraphicsUnit.Pixel),
+                FontType.Body1 => new Font(RobotoFontFamilies["Roboto"], 14f * scaleRatio, FontStyle.Regular, GraphicsUnit.Pixel),
+                FontType.Body2 => new Font(RobotoFontFamilies["Roboto"], 12f * scaleRatio, FontStyle.Regular, GraphicsUnit.Pixel),
+                FontType.Button => new Font(RobotoFontFamilies["Roboto"], 14f * scaleRatio, FontStyle.Bold, GraphicsUnit.Pixel),
+                FontType.Caption => new Font(RobotoFontFamilies["Roboto"], 12f * scaleRatio, FontStyle.Regular, GraphicsUnit.Pixel),
+                FontType.Overline => new Font(RobotoFontFamilies["Roboto"], 10f * scaleRatio, FontStyle.Regular, GraphicsUnit.Pixel),
+                _ => new Font(RobotoFontFamilies["Roboto"], 14f * scaleRatio, FontStyle.Regular, GraphicsUnit.Pixel),
             };
         }
 
@@ -323,9 +330,75 @@ namespace ReaLTaiizor.Manager
             return logicalFonts[name];
         }
 
+        public IntPtr GetTextBoxFontBySize(int size, float scaleRatio)
+        {
+            int scaleKey = (int)Math.Round(scaleRatio * 100);
+            string key = "textBox" + Math.Min(16, Math.Max(12, size)).ToString() + "-scale" + scaleKey;
+            if (logicalFonts.TryGetValue(key, out IntPtr existingFont))
+            {
+                return existingFont;
+            }
+            lock (_fontLock)
+            {
+                if (logicalFonts.TryGetValue(key, out IntPtr h))
+                {
+                    return h;
+                }
+
+                IntPtr hOriginalFont = GetTextBoxFontBySize(size);
+                if (scaleKey == 100)
+                {
+                    return hOriginalFont;
+                }
+
+                try
+                {
+                    using Font originalFont = Font.FromHfont(hOriginalFont);
+                    float scaledSize = originalFont.Size * (float)scaleRatio;
+                    using Font scaledFont = new(originalFont.FontFamily, scaledSize, originalFont.Style, originalFont.Unit);
+                    IntPtr createdFont = scaledFont.ToHfont();
+                    logicalFonts.Add(key, createdFont);
+                    return createdFont;
+                }
+                catch
+                {
+                    return IntPtr.Zero; // Failed fetching handle or creating scaled font
+                }
+            }
+        }
+
         public IntPtr GetLogFontByType(FontType type)
         {
             return logicalFonts[System.Enum.GetName(typeof(FontType), type)];
+        }
+
+        public IntPtr GetLogFontByType(FontType type, float scaleRatio)
+        {
+            int scaleKey = (int)Math.Round(scaleRatio * 100);
+            string key = System.Enum.GetName(typeof(FontType), type) + "-scale" + scaleKey;
+            if (logicalFonts.TryGetValue(key, out IntPtr existingFont))
+            {
+                return existingFont;
+            }
+            lock (_fontLock)
+            {
+                if (logicalFonts.TryGetValue(key, out IntPtr cachedFont))
+                {
+                    return cachedFont;
+                }
+                IntPtr hOriginalFont = logicalFonts[System.Enum.GetName(typeof(FontType), type)];
+                if (Math.Abs(scaleRatio - 1f) < 0.0001f)
+                {
+                    return hOriginalFont;
+                }
+
+                using Font originalFont = Font.FromHfont(hOriginalFont);
+                float newSize = originalFont.Size * (float)scaleRatio;
+                using Font scaledFont = new(originalFont.FontFamily, newSize, originalFont.Style, originalFont.Unit);
+                IntPtr createdFont = scaledFont.ToHfont();
+                logicalFonts.Add(key, createdFont);
+                return createdFont;
+            }
         }
 
         // Font stuff
@@ -389,6 +462,21 @@ namespace ReaLTaiizor.Manager
                 materialForm.BackColor = newBackColor;
                 UpdateControlBackColor(materialForm, newBackColor);
             }
+        }
+
+        public float GetDeviceScaleFactor(Control control)
+        {
+            // 96 is Windows default scaling DPI（100% scale）
+            float scalingFactor = (float)control.DeviceDpi / 96f;
+            return scalingFactor;
+        }
+
+        public float GetDeviceScaleFactorSqrt(Control control)
+        {
+            // 96 is Windows default scaling DPI（100% scale）
+            float scalingFactor = (float)Math.Sqrt((float)control.DeviceDpi / 96f);
+            // Since a 'replace' to code will lead to operate scaling twice in some scenes, this method provide the sqrt value of a factor.
+            return scalingFactor;
         }
 
         private void UpdateControlBackColor(Control controlToUpdate, Color newBackColor)

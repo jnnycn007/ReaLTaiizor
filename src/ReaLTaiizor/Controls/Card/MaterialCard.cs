@@ -25,14 +25,44 @@ namespace ReaLTaiizor.Controls
         [Browsable(false)]
         public MaterialMouseState MouseState { get; set; }
 
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+
+            set => _scaleRatio = value;
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+
+            set => _scaleRatioSqrt = value;
+        }
+
         public MaterialCard()
         {
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer | ControlStyles.ResizeRedraw, true);
             Paint += new PaintEventHandler(paintControl);
             BackColor = SkinManager.BackgroundColor;
             ForeColor = SkinManager.TextHighEmphasisColor;
-            Margin = new Padding(SkinManager.FORM_PADDING);
-            Padding = new Padding(SkinManager.FORM_PADDING);
+            Margin = new Padding((int)(SkinManager.FORM_PADDING * ScaleFactor));
+            Padding = new Padding((int)(SkinManager.FORM_PADDING * ScaleFactor));
         }
 
         private void drawShadowOnParent(object sender, PaintEventArgs e)
@@ -52,7 +82,12 @@ namespace ReaLTaiizor.Controls
 
         protected override void InitLayout()
         {
-            LocationChanged += (sender, e) => { Parent?.Invalidate(); };
+            LocationChanged += (sender, e) =>
+            {
+                ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+                ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                Parent?.Invalidate();
+            };
             ForeColor = SkinManager.TextHighEmphasisColor;
         }
 
@@ -104,6 +139,8 @@ namespace ReaLTaiizor.Controls
             }
 
             control.Paint += shadowPaintEvent;
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
             control.Invalidate();
             _shadowDrawEventSubscribed = true;
         }
@@ -116,6 +153,8 @@ namespace ReaLTaiizor.Controls
             }
 
             control.Paint -= shadowPaintEvent;
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
             control.Invalidate();
             _shadowDrawEventSubscribed = false;
         }

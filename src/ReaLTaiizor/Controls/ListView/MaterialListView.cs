@@ -46,6 +46,36 @@ namespace ReaLTaiizor.Controls
         private const int PAD = 16;
         private const int ITEMS_HEIGHT = 52;
 
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+
+            set => _scaleRatio = value;
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+
+            set => _scaleRatioSqrt = value;
+        }
+
         public MaterialListView()
         {
             GridLines = false;
@@ -105,10 +135,10 @@ namespace ReaLTaiizor.Controls
             using MaterialNativeTextRenderer NativeText = new(g);
             NativeText.DrawTransparentText(
                 e.Header.Text,
-                SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle2),
+                SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Subtitle2, ScaleFactor),
                 Enabled ? SkinManager.TextHighEmphasisNoAlphaColor : SkinManager.TextDisabledOrHintColor,
-                new Point(e.Bounds.Location.X + PAD, e.Bounds.Location.Y),
-                new Size(e.Bounds.Size.Width - (PAD * 2), e.Bounds.Size.Height),
+                new Point(e.Bounds.Location.X + (int)(PAD * ScaleFactor), e.Bounds.Location.Y),
+                new Size(e.Bounds.Size.Width - ((int)(PAD * ScaleFactor) * 2), e.Bounds.Size.Height),
                 e.Header.TextAlign == HorizontalAlignment.Left ? MaterialNativeTextRenderer.TextAlignFlags.Left | MaterialNativeTextRenderer.TextAlignFlags.Middle
                 : e.Header.TextAlign == HorizontalAlignment.Right ? MaterialNativeTextRenderer.TextAlignFlags.Right | MaterialNativeTextRenderer.TextAlignFlags.Middle
                 : MaterialNativeTextRenderer.TextAlignFlags.Center | MaterialNativeTextRenderer.TextAlignFlags.Middle);
@@ -144,10 +174,10 @@ namespace ReaLTaiizor.Controls
                 using MaterialNativeTextRenderer NativeText = new(g);
                 NativeText.DrawTransparentText(
                     subItem.Text,
-                    SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body2),
+                    SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body2, ScaleFactor),
                     Enabled ? SkinManager.TextHighEmphasisNoAlphaColor : SkinManager.TextDisabledOrHintColor,
-                    new Point(subItem.Bounds.X + PAD, subItem.Bounds.Y),
-                    new Size(subItem.Bounds.Width - (PAD * 2), subItem.Bounds.Height),
+                    new Point(subItem.Bounds.X + (int)(PAD * ScaleFactor), subItem.Bounds.Y),
+                    new Size(subItem.Bounds.Width - ((int)(PAD * ScaleFactor) * 2), subItem.Bounds.Height),
                     Columns[id].TextAlign == HorizontalAlignment.Left
                             ? MaterialNativeTextRenderer.TextAlignFlags.Left | MaterialNativeTextRenderer.TextAlignFlags.Middle
                             : Columns[id].TextAlign == HorizontalAlignment.Right
@@ -160,18 +190,27 @@ namespace ReaLTaiizor.Controls
         // Resize
         protected override void OnColumnWidthChanging(ColumnWidthChangingEventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             base.OnColumnWidthChanging(e);
             AutoResize();
         }
 
         protected override void OnColumnWidthChanged(ColumnWidthChangedEventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             base.OnColumnWidthChanged(e);
             AutoResize();
         }
 
         protected override void OnResize(EventArgs e)
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             base.OnResize(e);
             AutoResize();
         }
@@ -205,8 +244,18 @@ namespace ReaLTaiizor.Controls
             Size = new Size(w, h);
         }
 
+        protected override void OnDpiChangedAfterParent(EventArgs e)
+        {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+            base.OnDpiChangedAfterParent(e);
+        }
+
         protected override void InitLayout()
         {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+
             base.InitLayout();
 
             // enforce settings

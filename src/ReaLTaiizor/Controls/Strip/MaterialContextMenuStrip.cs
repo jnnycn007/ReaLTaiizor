@@ -2,6 +2,7 @@
 
 using ReaLTaiizor.Manager;
 using ReaLTaiizor.Util;
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -37,10 +38,39 @@ namespace ReaLTaiizor.Controls
 
         public event ItemClickStart OnItemClickStart;
 
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+
+            set => _scaleRatio = value;
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+
+            set => _scaleRatioSqrt = value;
+        }
+
         public MaterialContextMenuStrip()
         {
-            Renderer = new MaterialToolStripRender();
-
+            Renderer = new MaterialToolStripRender(ScaleFactor);
             AnimationManager = new AnimationManager(false)
             {
                 Increment = 0.07,
@@ -52,12 +82,30 @@ namespace ReaLTaiizor.Controls
             BackColor = SkinManager.BackdropColor;
         }
 
+        //public override Size GetPreferredSize(Size constrainingSize)
+        //{
+        //    var baseSize = base.GetPreferredSize(constrainingSize);
+
+        //    return new Size(
+        //        (int)(baseSize.Width * ScaleFactor),
+        //        (int)(baseSize.Height * ScaleFactor));
+
+        //}
+
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+        }
+
         protected override void OnMouseUp(MouseEventArgs mea)
         {
             base.OnMouseUp(mea);
 
             AnimationSource = mea.Location;
         }
+
+        public override ToolStripItemCollection Items => base.Items;
 
         private ToolStripItemClickedEventArgs _delayesArgs;
 
@@ -87,14 +135,66 @@ namespace ReaLTaiizor.Controls
 
     public class MaterialToolStripMenuItem : ToolStripMenuItem
     {
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = ((MaterialContextMenuStrip)Owner).SkinManager.GetDeviceScaleFactor(Owner);
+                }
+                return _scaleRatio.Value;
+            }
+
+            set => _scaleRatio = value;
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = ((MaterialContextMenuStrip)Owner).SkinManager.GetDeviceScaleFactorSqrt(Owner);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+
+            set => _scaleRatioSqrt = value;
+        }
+
         public MaterialToolStripMenuItem()
         {
             AutoSize = false;
-            Size = new Size(128, 32);
+
+        }
+
+        public override Size GetPreferredSize(Size constrainingSize)
+        {
+            ScaleFactor = ((MaterialContextMenuStrip)Owner).SkinManager.GetDeviceScaleFactor(Owner);
+            ScaleFactorSqrt = ((MaterialContextMenuStrip)Owner).SkinManager.GetDeviceScaleFactorSqrt(Owner);
+
+            Size baseSize = base.GetPreferredSize(constrainingSize);
+
+            return new Size(
+                (int)baseSize.Width,
+                (int)(baseSize.Height * ScaleFactor));
+
+        }
+
+        protected override void OnOwnerChanged(EventArgs e)
+        {
+            ScaleFactor = ((MaterialContextMenuStrip)Owner).SkinManager.GetDeviceScaleFactor(Owner);
+            ScaleFactorSqrt = ((MaterialContextMenuStrip)Owner).SkinManager.GetDeviceScaleFactorSqrt(Owner);
+            Size = new Size((int)(128 * ScaleFactor), (int)(32 * ScaleFactor));
+            // Do not calc this in MaterialToolStripMenuItem() or the owner or parent is null!!!
         }
 
         protected override ToolStripDropDown CreateDefaultDropDown()
         {
+
             ToolStripDropDown baseDropDown = base.CreateDefaultDropDown();
             if (DesignMode)
             {
@@ -110,6 +210,42 @@ namespace ReaLTaiizor.Controls
 
     internal class MaterialToolStripRender : ToolStripProfessionalRenderer, MaterialControlI
     {
+        private readonly float ScaleRatio;
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = ScaleRatio;
+                }
+                return _scaleRatio.Value;
+            }
+
+            set => _scaleRatio = value;
+        }
+        private float? _scaleRatioSqrt; // Cache
+        private float ScaleFactorSqrt
+        {
+            get
+            {
+                if (!_scaleRatioSqrt.HasValue)
+                {
+                    _scaleRatioSqrt = (float)Math.Sqrt(ScaleRatio);
+                }
+                return _scaleRatioSqrt.Value;
+            }
+
+            set => _scaleRatioSqrt = value;
+        }
+
+        public MaterialToolStripRender(float scaleRatio)
+        {
+            ScaleRatio = scaleRatio;
+        }
+
         private const int LEFT_PADDING = 16;
         private const int RIGHT_PADDING = 8;
 
@@ -126,10 +262,11 @@ namespace ReaLTaiizor.Controls
             g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 
             Rectangle itemRect = GetItemRect(e.Item);
-            Rectangle textRect = new(LEFT_PADDING, itemRect.Y, itemRect.Width - (LEFT_PADDING + RIGHT_PADDING), itemRect.Height);
+            Rectangle textRect = new((int)(LEFT_PADDING * ScaleFactor), itemRect.Y, itemRect.Width - ((int)(LEFT_PADDING * ScaleFactor) + (int)(RIGHT_PADDING * ScaleFactor)), itemRect.Height);
 
+            IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body2, ScaleFactor);
             using MaterialNativeTextRenderer NativeText = new(g);
-            NativeText.DrawTransparentText(e.Text, SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body2),
+            NativeText.DrawTransparentText(e.Text, font,
                 e.Item.Enabled ? SkinManager.TextHighEmphasisColor : SkinManager.TextDisabledOrHintColor,
                 textRect.Location,
                 textRect.Size,
@@ -193,9 +330,9 @@ namespace ReaLTaiizor.Controls
             using GraphicsPath arrowPath = new();
             arrowPath.AddLines(
                 new[] {
-                        new Point(arrowMiddle.X - ARROW_SIZE, arrowMiddle.Y - ARROW_SIZE),
+                        new Point(arrowMiddle.X - (int)(ARROW_SIZE * ScaleFactor), arrowMiddle.Y - (int)(ARROW_SIZE * ScaleFactor)),
                         new Point(arrowMiddle.X, arrowMiddle.Y),
-                        new Point(arrowMiddle.X - ARROW_SIZE, arrowMiddle.Y + ARROW_SIZE) });
+                        new Point(arrowMiddle.X - (int)(ARROW_SIZE * ScaleFactor), arrowMiddle.Y + (int)(ARROW_SIZE * ScaleFactor)) });
             arrowPath.CloseFigure();
 
             g.FillPath(arrowBrush, arrowPath);
@@ -205,6 +342,7 @@ namespace ReaLTaiizor.Controls
         {
             return new Rectangle(0, item.ContentRectangle.Y, item.ContentRectangle.Width, item.ContentRectangle.Height);
         }
+
     }
 
     #endregion
