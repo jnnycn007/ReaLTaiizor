@@ -625,7 +625,7 @@ namespace ReaLTaiizor.Controls
                 if (Collapse)
                 {
                     //Draw Expand button
-                    System.Drawing.Drawing2D.GraphicsPath pth = new();
+                    GraphicsPath pth = new();
                     PointF TopLeft = new(_expandcollapseBounds.X + (6 * ScaleFactor), _expandcollapseBounds.Y + (9 * ScaleFactor));
                     PointF MidBottom = new(_expandcollapseBounds.X + (12 * ScaleFactor), _expandcollapseBounds.Y + (15 * ScaleFactor));
                     PointF TopRight = new(_expandcollapseBounds.X + (18 * ScaleFactor), _expandcollapseBounds.Y + (9 * ScaleFactor));
@@ -637,7 +637,7 @@ namespace ReaLTaiizor.Controls
                 else
                 {
                     // Draw Collapse button
-                    System.Drawing.Drawing2D.GraphicsPath pth = new();
+                    GraphicsPath pth = new();
                     PointF BottomLeft = new(_expandcollapseBounds.X + (6 * ScaleFactor), _expandcollapseBounds.Y + (15 * ScaleFactor));
                     PointF MidTop = new(_expandcollapseBounds.X + (12 * ScaleFactor), _expandcollapseBounds.Y + (9 * ScaleFactor));
                     PointF BottomRight = new(_expandcollapseBounds.X + (18 * ScaleFactor), _expandcollapseBounds.Y + (15 * ScaleFactor));
