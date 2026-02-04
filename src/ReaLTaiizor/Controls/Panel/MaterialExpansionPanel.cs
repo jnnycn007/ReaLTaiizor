@@ -632,7 +632,7 @@ namespace ReaLTaiizor.Controls
                     pth.AddLine(TopLeft, MidBottom);
                     pth.AddLine(TopRight, MidBottom);
                     g.DrawPath(formButtonsPen, pth);
-#warning Magic Numbers
+                    // Note: the numeric offsets above are magic numbers defining the expand glyph shape relative to _expandcollapseBounds and ScaleFactor.
                 }
                 else
                 {
