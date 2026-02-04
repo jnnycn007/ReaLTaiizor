@@ -155,6 +155,7 @@ namespace ReaLTaiizor.Controls
         #region Overridden events
         
         private bool _resizing = false;
+        private int originWidth = 0;
         protected override void OnSizeChanged(EventArgs e)
         {
             if (_resizing)
@@ -164,7 +165,12 @@ namespace ReaLTaiizor.Controls
             }
 
             _resizing = true;
-            Width = (int)(Width * ScaleFactor);
+            if (originWidth != Width) 
+            {
+                Width = (int)(Width * ScaleFactor);
+                originWidth = Width;
+            }
+            
             base.OnSizeChanged(e);
             
             _boxOffset = ((int)(HEIGHT_RIPPLE * ScaleFactor) / 2) - (int)(9 * ScaleFactor);
