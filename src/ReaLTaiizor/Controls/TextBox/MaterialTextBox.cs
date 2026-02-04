@@ -19,7 +19,7 @@ namespace ReaLTaiizor.Controls
 {
     #region MaterialTextBox
 
-    [ToolboxItem(false), Description("[HYrecv remake: This control have unexpected behavior in Windows DPI scaling env. Replace it with MaterialTextBoxEdit or it may mislead users!] \nThis control has been replaced by MaterialTextBoxEdit"), Obsolete("Use MaterialTextBoxEdit instead", false)]
+    [ToolboxItem(false), Description("[HYrecv remake: This control has unexpected behavior in Windows DPI scaling env. Replace it with MaterialTextBoxEdit or it may mislead users!] \nThis control has been replaced by MaterialTextBoxEdit"), Obsolete("Use MaterialTextBoxEdit instead", false)]
     public class MaterialTextBox : RichTextBox, MaterialControlI
     {
         MaterialContextMenuStrip cms = new MaterialTextBoxContextMenuStrip();

@@ -335,9 +335,9 @@ namespace ReaLTaiizor.Manager
         {
             int scaleKey = (int)Math.Round(scaleRatio * 100);
             string key = "textBox" + Math.Min(16, Math.Max(12, size)).ToString() + "-scale" + scaleKey;
-            if (logicalFonts.ContainsKey(key))
+            if (logicalFonts.TryGetValue(key, out var existingFont))
             {
-                return logicalFonts[key];
+                return existingFont;
             }
             lock (_fontLock)
             {
@@ -365,12 +365,16 @@ namespace ReaLTaiizor.Manager
         {
             int scaleKey = (int)Math.Round(scaleRatio * 100);
             string key = System.Enum.GetName(typeof(FontType), type) + "-scale" + scaleKey;
-            if (logicalFonts.ContainsKey(key))
+            if (logicalFonts.TryGetValue(key, out var existingFont))
             {
-                return logicalFonts[key];
+                return existingFont;
             }
             lock (_fontLock)
             {
+                if (logicalFonts.TryGetValue(key, out var cachedFont))
+                {
+                    return cachedFont;
+                }
                 var hOriginalFont = logicalFonts[System.Enum.GetName(typeof(FontType), type)];
                 if (scaleRatio == 1) return hOriginalFont;
                 LogFont lf = new LogFont();
