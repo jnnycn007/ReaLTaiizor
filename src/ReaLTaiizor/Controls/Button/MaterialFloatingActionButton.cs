@@ -302,8 +302,8 @@ namespace ReaLTaiizor.Controls
                 int target = Convert.ToInt32((_mini ? (int)(FAB_MINI_SIZE * ScaleFactor) : (int)(FAB_SIZE * ScaleFactor)) * _showAnimationManager.GetProgress());
                 fabBounds.Width = target == 0 ? 1 : target;
                 fabBounds.Height = target == 0 ? 1 : target;
-                fabBounds.X = Convert.ToInt32(((_mini ? (int)(FAB_MINI_SIZE * ScaleFactor) : (int)(FAB_SIZE * ScaleFactor)) / 2) - ((_mini ? (int)(FAB_MINI_SIZE * ScaleFactor) : (int)(FAB_SIZE * ScaleFactor)) / 2 * _showAnimationManager.GetProgress()));
-                fabBounds.Y = Convert.ToInt32(((_mini ? (int)(FAB_MINI_SIZE * ScaleFactor) : (int)(FAB_SIZE * ScaleFactor)) / 2) - ((_mini ? (int)(FAB_MINI_SIZE * ScaleFactor) : (int)(FAB_SIZE * ScaleFactor)) / 2 * _showAnimationManager.GetProgress()));
+                fabBounds.X = Convert.ToInt32(((_mini ? (int)(FAB_MINI_SIZE * ScaleFactor) : (int)(FAB_SIZE * ScaleFactor)) / 2f) - ((_mini ? (int)(FAB_MINI_SIZE * ScaleFactor) : (int)(FAB_SIZE * ScaleFactor)) / 2f * _showAnimationManager.GetProgress()));
+                fabBounds.Y = Convert.ToInt32(((_mini ? (int)(FAB_MINI_SIZE * ScaleFactor) : (int)(FAB_SIZE * ScaleFactor)) / 2f) - ((_mini ? (int)(FAB_MINI_SIZE * ScaleFactor) : (int)(FAB_SIZE * ScaleFactor)) / 2f * _showAnimationManager.GetProgress()));
             }
 
             // Clip to a round shape with a 1px padding
