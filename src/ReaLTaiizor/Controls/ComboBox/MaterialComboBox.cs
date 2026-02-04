@@ -251,6 +251,7 @@ namespace ReaLTaiizor.Controls
             PointF TopRight = new(this.Width - (0.5f * ScaleFactor) - SkinManager.FORM_PADDING, (this.Height >> 1) - (2.5f * ScaleFactor));
             PointF MidBottom = new(this.Width - (4.5f * ScaleFactor) - SkinManager.FORM_PADDING, (this.Height >> 1) + (2.5f * ScaleFactor));
             PointF TopLeft = new(this.Width - (8.5f * ScaleFactor) - SkinManager.FORM_PADDING, (this.Height >> 1) - (2.5f * ScaleFactor));
+            
             // TODO: The arrow coordinates use magic numbers; consider refactoring while preserving the current visual layout.
             pth.AddLine(TopLeft, TopRight);
             pth.AddLine(TopRight, MidBottom);
