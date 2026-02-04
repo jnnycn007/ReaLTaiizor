@@ -383,7 +383,7 @@ namespace ReaLTaiizor.Manager
                     return cachedFont;
                 }
                 IntPtr hOriginalFont = logicalFonts[System.Enum.GetName(typeof(FontType), type)];
-                if (scaleRatio == 1)
+                if (Math.Abs(scaleRatio - 1f) < 0.0001f)
                 {
                     return hOriginalFont;
                 }
