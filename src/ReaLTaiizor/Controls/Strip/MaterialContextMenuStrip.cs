@@ -210,7 +210,7 @@ namespace ReaLTaiizor.Controls
 
     internal class MaterialToolStripRender : ToolStripProfessionalRenderer, MaterialControlI
     {
-        private float ScaleRatio;
+        private readonly float ScaleRatio;
 
         private float? _scaleRatio; // Cache
         private float ScaleFactor
