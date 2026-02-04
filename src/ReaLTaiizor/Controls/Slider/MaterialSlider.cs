@@ -508,9 +508,19 @@ namespace ReaLTaiizor.Controls
             //g.DrawLine(LinePen, _indicatorSize / 2, Height / 2 + (Height - _indicatorSize) / 2, Width - _indicatorSize / 2, Height / 2 + (Height - _indicatorSize) / 2);
             //g.DrawLine(LinePen, _sliderRectangle.X + (_indicatorSize / 2), Height / 2 , _sliderRectangle.Right - (_indicatorSize / 2), Height / 2 );
 
-            GraphicsPath _inactiveTrackPath = CreateRoundRect(_sliderRectangle.X + ((int)(_thumbRadius * ScaleFactor) / 2), _sliderRectangle.Y + (Height / 2) - ((int)(_inactiveTrack * ScaleFactor) / 2), _sliderRectangle.Width - (int)(_thumbRadius * ScaleFactor), (int)(_inactiveTrack * ScaleFactor), 2);
+            GraphicsPath _inactiveTrackPath = CreateRoundRect(
+                _sliderRectangle.X + (int)Math.Round(_thumbRadius * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
+                _sliderRectangle.Y + (Height / 2) - (int)Math.Round(_inactiveTrack * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
+                _sliderRectangle.Width - (int)Math.Round(_thumbRadius * ScaleFactor, MidpointRounding.AwayFromZero),
+                (int)Math.Round(_inactiveTrack * ScaleFactor, MidpointRounding.AwayFromZero),
+                2);
             //g.FillPath(_disabledBrush, (int)(_inactiveTrack * ScaleFactor)Path);
-            GraphicsPath _activeTrackPath = CreateRoundRect(_sliderRectangle.X + ((int)(_thumbRadius * ScaleFactor) / 2), _sliderRectangle.Y + (Height / 2) - ((int)(_activeTrack * ScaleFactor) / 2), _indicatorRectangleNormal.X - _sliderRectangle.X, (int)(_activeTrack * ScaleFactor), 2);
+            GraphicsPath _activeTrackPath = CreateRoundRect(
+                _sliderRectangle.X + (int)Math.Round(_thumbRadius * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
+                _sliderRectangle.Y + (Height / 2) - (int)Math.Round(_activeTrack * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
+                _indicatorRectangleNormal.X - _sliderRectangle.X,
+                (int)Math.Round(_activeTrack * ScaleFactor, MidpointRounding.AwayFromZero),
+                2);
 
             if (Enabled)
             {
