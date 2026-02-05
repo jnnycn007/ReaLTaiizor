@@ -23,6 +23,42 @@ namespace ReaLTaiizor.Manager
 
     public class MaterialSkinManager
     {
+        private sealed class FontDescriptor
+        {
+            public string FaceName;
+            public int PixelSize; // Unscaled
+            public logFontWeight Weight;
+            public byte Italic;
+
+            public IntPtr Create(float scaleRatio)
+            {
+                int scaledSize = (int)Math.Round(PixelSize * scaleRatio);
+                return createLogicalFont(
+                    FaceName,
+                    scaledSize,
+                    Weight,
+                    Italic
+                );
+            }
+        }
+
+        private FontDescriptor CreateTextBoxDescriptor(int size)
+        {
+            return new FontDescriptor
+            {
+                FaceName = size >= 13 ? "Roboto Medium" : "Roboto",
+                PixelSize = size,
+                Weight = size >= 13
+                    ? logFontWeight.FW_MEDIUM
+                    : logFontWeight.FW_REGULAR,
+                Italic = 0
+            };
+        }
+
+
+        private readonly Dictionary<FontType, FontDescriptor> fontDescriptors;
+
+
         private readonly List<MaterialForm> _formsToManage = [];
 
         public delegate void SkinManagerEventHandler(object sender);
@@ -63,30 +99,52 @@ namespace ReaLTaiizor.Manager
                 RobotoFontFamilies.Add(ff.Name.Replace(' ', '_'), ff);
             }
 
-            // create and save font handles for GDI
-            logicalFonts = new Dictionary<string, IntPtr>()
+            fontDescriptors = new()
             {
-                { "H1", createLogicalFont("Roboto Light", 96, MaterialNativeTextRenderer.logFontWeight.FW_LIGHT) },
-                { "H2", createLogicalFont("Roboto Light", 60, MaterialNativeTextRenderer.logFontWeight.FW_LIGHT) },
-                { "H3", createLogicalFont("Roboto", 48, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
-                { "H4", createLogicalFont("Roboto", 34, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
-                { "H5", createLogicalFont("Roboto", 24, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
-                { "H6", createLogicalFont("Roboto Medium", 20, MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM) },
-                { "Subtitle1", createLogicalFont("Roboto", 16, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
-                { "Subtitle2", createLogicalFont("Roboto Medium", 14, MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM) },
-                { "SubtleEmphasis", createLogicalFont("Roboto", 12, MaterialNativeTextRenderer.logFontWeight.FW_NORMAL, 1) },
-                { "Body1", createLogicalFont("Roboto", 16, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
-                { "Body2", createLogicalFont("Roboto", 14, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
-                { "Button", createLogicalFont("Roboto Medium", 14, MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM) },
-                { "Caption", createLogicalFont("Roboto", 12, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
-                { "Overline", createLogicalFont("Roboto", 10, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
-                // Logical fonts for textbox animation
-                { "textBox16", createLogicalFont("Roboto", 16, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
-                { "textBox15", createLogicalFont("Roboto", 15, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
-                { "textBox14", createLogicalFont("Roboto", 14, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
-                { "textBox13", createLogicalFont("Roboto Medium", 13, MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM) },
-                { "textBox12", createLogicalFont("Roboto Medium", 12, MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM) }
+                { FontType.H1, new FontDescriptor { FaceName = "Roboto Light", PixelSize = 96, Weight = logFontWeight.FW_LIGHT } },
+                { FontType.H2, new FontDescriptor { FaceName = "Roboto Light", PixelSize = 60, Weight = logFontWeight.FW_LIGHT } },
+                { FontType.H3, new FontDescriptor { FaceName = "Roboto", PixelSize = 48, Weight = logFontWeight.FW_REGULAR } },
+                { FontType.H4, new FontDescriptor { FaceName = "Roboto", PixelSize = 34, Weight = logFontWeight.FW_REGULAR } },
+                { FontType.H5, new FontDescriptor { FaceName = "Roboto", PixelSize = 24, Weight = logFontWeight.FW_REGULAR } },
+                { FontType.H6, new FontDescriptor { FaceName = "Roboto Medium", PixelSize = 20, Weight = logFontWeight.FW_MEDIUM } },
+
+                { FontType.Subtitle1, new FontDescriptor { FaceName = "Roboto", PixelSize = 16, Weight = logFontWeight.FW_REGULAR } },
+                { FontType.Subtitle2, new FontDescriptor { FaceName = "Roboto Medium", PixelSize = 14, Weight = logFontWeight.FW_MEDIUM } },
+                { FontType.SubtleEmphasis, new FontDescriptor { FaceName = "Roboto", PixelSize = 12, Weight = logFontWeight.FW_NORMAL, Italic = 1 } },
+
+                { FontType.Body1, new FontDescriptor { FaceName = "Roboto", PixelSize = 16, Weight = logFontWeight.FW_REGULAR } },
+                { FontType.Body2, new FontDescriptor { FaceName = "Roboto", PixelSize = 14, Weight = logFontWeight.FW_REGULAR } },
+
+                { FontType.Button, new FontDescriptor { FaceName = "Roboto Medium", PixelSize = 14, Weight = logFontWeight.FW_MEDIUM } },
+                { FontType.Caption, new FontDescriptor { FaceName = "Roboto", PixelSize = 12, Weight = logFontWeight.FW_REGULAR } },
+                { FontType.Overline, new FontDescriptor { FaceName = "Roboto", PixelSize = 10, Weight = logFontWeight.FW_REGULAR } },
             };
+
+
+            // create and save font handles for GDI
+            logicalFonts = new Dictionary<string, IntPtr>();
+            //{
+            //    { "H1", createLogicalFont("Roboto Light", 96, MaterialNativeTextRenderer.logFontWeight.FW_LIGHT) },
+            //    { "H2", createLogicalFont("Roboto Light", 60, MaterialNativeTextRenderer.logFontWeight.FW_LIGHT) },
+            //    { "H3", createLogicalFont("Roboto", 48, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
+            //    { "H4", createLogicalFont("Roboto", 34, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
+            //    { "H5", createLogicalFont("Roboto", 24, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
+            //    { "H6", createLogicalFont("Roboto Medium", 20, MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM) },
+            //    { "Subtitle1", createLogicalFont("Roboto", 16, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
+            //    { "Subtitle2", createLogicalFont("Roboto Medium", 14, MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM) },
+            //    { "SubtleEmphasis", createLogicalFont("Roboto", 12, MaterialNativeTextRenderer.logFontWeight.FW_NORMAL, 1) },
+            //    { "Body1", createLogicalFont("Roboto", 16, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
+            //    { "Body2", createLogicalFont("Roboto", 14, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
+            //    { "Button", createLogicalFont("Roboto Medium", 14, MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM) },
+            //    { "Caption", createLogicalFont("Roboto", 12, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
+            //    { "Overline", createLogicalFont("Roboto", 10, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
+            //    // Logical fonts for textbox animation
+            //    { "textBox16", createLogicalFont("Roboto", 16, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
+            //    { "textBox15", createLogicalFont("Roboto", 15, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
+            //    { "textBox14", createLogicalFont("Roboto", 14, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
+            //    { "textBox13", createLogicalFont("Roboto Medium", 13, MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM) },
+            //    { "textBox12", createLogicalFont("Roboto Medium", 12, MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM) }
+            //};
         }
 
         // Destructor
@@ -327,85 +385,130 @@ namespace ReaLTaiizor.Manager
 
         public IntPtr GetTextBoxFontBySize(int size)
         {
-            string name = "textBox" + Math.Min(16, Math.Max(12, size)).ToString();
-            return logicalFonts[name];
+            return GetTextBoxFontBySize(size, 1f);
+            //string name = "textBox" + Math.Min(16, Math.Max(12, size)).ToString();
+            //return logicalFonts[name];
         }
 
         public IntPtr GetTextBoxFontBySize(int size, float scaleRatio)
         {
             int scaleKey = (int)Math.Round(scaleRatio * 100);
-            string key = "textBox" + Math.Min(16, Math.Max(12, size)).ToString() + "-scale" + scaleKey;
-            if (logicalFonts.TryGetValue(key, out IntPtr existingFont))
+            string cacheKey = $"TextBox-{size}-scale{scaleKey}";
+
+            if (logicalFonts.TryGetValue(cacheKey, out IntPtr cached))
             {
-                return existingFont;
+                return cached;
             }
+
             lock (_fontLock)
             {
-                if (logicalFonts.TryGetValue(key, out IntPtr h))
+                if (logicalFonts.TryGetValue(cacheKey, out cached))
                 {
-                    return h;
+                    return cached;
                 }
 
-                IntPtr hOriginalFont = GetTextBoxFontBySize(size);
-                if (scaleKey == 100)
-                {
-                    return hOriginalFont;
-                }
-
-                try
-                {
-                    using Font originalFont = Font.FromHfont(hOriginalFont);
-                    float scaledSize = originalFont.Size * (float)scaleRatio;
-                    using Font scaledFont = new(originalFont.FontFamily, scaledSize, originalFont.Style, originalFont.Unit);
-                    IntPtr createdFont = scaledFont.ToHfont();
-                    logicalFonts.Add(key, createdFont);
-                    return createdFont;
-                }
-                catch
-                {
-                    return IntPtr.Zero; // Failed fetching handle or creating scaled font
-                }
+                FontDescriptor descriptor = CreateTextBoxDescriptor(size);
+                IntPtr hFont = descriptor.Create(scaleRatio);
+                logicalFonts[cacheKey] = hFont;
+                return hFont;
             }
+
+            //int scaleKey = (int)Math.Round(scaleRatio * 100);
+            //string key = "textBox" + Math.Min(16, Math.Max(12, size)).ToString() + "-scale" + scaleKey;
+            //if (logicalFonts.TryGetValue(key, out IntPtr existingFont))
+            //{
+            //    return existingFont;
+            //}
+            //lock (_fontLock)
+            //{
+            //    if (logicalFonts.TryGetValue(key, out IntPtr h))
+            //    {
+            //        return h;
+            //    }
+
+            //    IntPtr hOriginalFont = GetTextBoxFontBySize(size);
+            //    if (scaleKey == 100)
+            //    {
+            //        return hOriginalFont;
+            //    }
+
+            //    try
+            //    {
+            //        using Font originalFont = Font.FromHfont(hOriginalFont);
+            //        float scaledSize = originalFont.Size * (float)scaleRatio;
+            //        using Font scaledFont = new(originalFont.FontFamily, scaledSize, originalFont.Style, originalFont.Unit);
+            //        IntPtr createdFont = scaledFont.ToHfont();
+            //        logicalFonts.Add(key, createdFont);
+            //        return createdFont;
+            //    }
+            //    catch
+            //    {
+            //        return IntPtr.Zero; // Failed fetching handle or creating scaled font
+            //    }
+            //}
         }
 
         public IntPtr GetLogFontByType(FontType type)
         {
-            return logicalFonts[System.Enum.GetName(typeof(FontType), type)];
+            return GetLogFontByType(type, 1f);
+        
+            //return logicalFonts[System.Enum.GetName(typeof(FontType), type)];
         }
 
         public IntPtr GetLogFontByType(FontType type, float scaleRatio)
         {
             int scaleKey = (int)Math.Round(scaleRatio * 100);
-            string key = System.Enum.GetName(typeof(FontType), type) + "-scale" + scaleKey;
-            if (logicalFonts.TryGetValue(key, out IntPtr existingFont))
+            string cacheKey = $"{type}-scale{scaleKey}";
+
+            if (logicalFonts.TryGetValue(cacheKey, out IntPtr cached))
             {
-                return existingFont;
+                return cached;
             }
+
             lock (_fontLock)
             {
-                if (logicalFonts.TryGetValue(key, out IntPtr cachedFont))
+                if (logicalFonts.TryGetValue(cacheKey, out cached))
                 {
-                    return cachedFont;
-                }
-                IntPtr hOriginalFont = logicalFonts[System.Enum.GetName(typeof(FontType), type)];
-                if (Math.Abs(scaleRatio - 1f) < 0.0001f)
-                {
-                    return hOriginalFont;
+                    return cached;
                 }
 
-                LogFont lf = new();
-                if (GetObject(hOriginalFont, Marshal.SizeOf(lf), lf) == 0) return IntPtr.Zero; // Failed fetching handle
-                IntPtr createdFont = createLogicalFont(lf.lfFaceName, (int)(-lf.lfHeight * scaleRatio), (logFontWeight)System.Enum.ToObject(MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM.GetType(), lf.lfWeight), lfItalic: lf.lfItalic);
-                logicalFonts.Add(key, createdFont);
-                return createdFont;
-
-                //using Font originalFont = Font.FromHfont(hOriginalFont);
-                //float newSize = originalFont.Size * (float)scaleRatio;
-                //using Font scaledFont = new(originalFont.FontFamily, newSize, originalFont.Style, originalFont.Unit);
-                //IntPtr createdFont = scaledFont.ToHfont();
-                //logicalFonts.Add(key, createdFont);
-                //return createdFont;
+                FontDescriptor descriptor = fontDescriptors[type];
+                IntPtr hFont = descriptor.Create(scaleRatio);
+                logicalFonts[cacheKey] = hFont;
+                return hFont;
             }
+
+            //int scaleKey = (int)Math.Round(scaleRatio * 100);
+            //string key = System.Enum.GetName(typeof(FontType), type) + "-scale" + scaleKey;
+            //if (logicalFonts.TryGetValue(key, out IntPtr existingFont))
+            //{
+            //    return existingFont;
+            //}
+            //lock (_fontLock)
+            //{
+            //    if (logicalFonts.TryGetValue(key, out IntPtr cachedFont))
+            //    {
+            //        return cachedFont;
+            //    }
+            //    IntPtr hOriginalFont = logicalFonts[System.Enum.GetName(typeof(FontType), type)];
+            //    if (Math.Abs(scaleRatio - 1f) < 0.0001f)
+            //    {
+            //        return hOriginalFont;
+            //    }
+
+            //    LogFont lf = new();
+            //    if (GetObject(hOriginalFont, Marshal.SizeOf(lf), lf) == 0) return IntPtr.Zero; // Failed fetching handle
+            //    IntPtr createdFont = createLogicalFont(lf.lfFaceName, (int)(-lf.lfHeight * scaleRatio), (logFontWeight)System.Enum.ToObject(MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM.GetType(), lf.lfWeight), lfItalic: lf.lfItalic);
+            //    logicalFonts.Add(key, createdFont);
+            //    return createdFont;
+
+            //    //using Font originalFont = Font.FromHfont(hOriginalFont);
+            //    //float newSize = originalFont.Size * (float)scaleRatio;
+            //    //using Font scaledFont = new(originalFont.FontFamily, newSize, originalFont.Style, originalFont.Unit);
+            //    //IntPtr createdFont = scaledFont.ToHfont();
+            //    //logicalFonts.Add(key, createdFont);
+            //    //return createdFont;
+            //}
         }
 
         // Font stuff
@@ -430,7 +533,7 @@ namespace ReaLTaiizor.Manager
             privateFontCollection.AddMemoryFont(ptrFont, dataLength);
         }
 
-        private IntPtr createLogicalFont(string fontName, int size, MaterialNativeTextRenderer.logFontWeight weight, byte lfItalic = 0)
+        private static IntPtr createLogicalFont(string fontName, int size, MaterialNativeTextRenderer.logFontWeight weight, byte lfItalic = 0)
         {
             // Logical font:
             MaterialNativeTextRenderer.LogFont lfont = new()
@@ -552,9 +655,6 @@ namespace ReaLTaiizor.Manager
                 }
             }
         }
-
-        [DllImport("gdi32.dll", CharSet = CharSet.Auto)]
-        public static extern int GetObject(IntPtr hFont, int nSize, [In, Out] LogFont lf);
 
     }
 
