@@ -13,6 +13,7 @@ using System.Drawing.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using static ReaLTaiizor.Util.MaterialNativeTextRenderer;
 
 #endregion
 
@@ -392,12 +393,18 @@ namespace ReaLTaiizor.Manager
                     return hOriginalFont;
                 }
 
-                using Font originalFont = Font.FromHfont(hOriginalFont);
-                float newSize = originalFont.Size * (float)scaleRatio;
-                using Font scaledFont = new(originalFont.FontFamily, newSize, originalFont.Style, originalFont.Unit);
-                IntPtr createdFont = scaledFont.ToHfont();
+                LogFont lf = new();
+                if (GetObject(hOriginalFont, Marshal.SizeOf(lf), lf) == 0) return IntPtr.Zero; // Failed fetching handle
+                IntPtr createdFont = createLogicalFont(lf.lfFaceName, (int)(-lf.lfHeight * scaleRatio), (logFontWeight)System.Enum.ToObject(MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM.GetType(), lf.lfWeight), lfItalic: lf.lfItalic);
                 logicalFonts.Add(key, createdFont);
                 return createdFont;
+
+                //using Font originalFont = Font.FromHfont(hOriginalFont);
+                //float newSize = originalFont.Size * (float)scaleRatio;
+                //using Font scaledFont = new(originalFont.FontFamily, newSize, originalFont.Style, originalFont.Unit);
+                //IntPtr createdFont = scaledFont.ToHfont();
+                //logicalFonts.Add(key, createdFont);
+                //return createdFont;
             }
         }
 
@@ -545,6 +552,10 @@ namespace ReaLTaiizor.Manager
                 }
             }
         }
+
+        [DllImport("gdi32.dll", CharSet = CharSet.Auto)]
+        public static extern int GetObject(IntPtr hFont, int nSize, [In, Out] LogFont lf);
+
     }
 
     #endregion
