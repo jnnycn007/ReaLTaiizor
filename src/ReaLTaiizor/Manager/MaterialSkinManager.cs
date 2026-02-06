@@ -112,8 +112,8 @@ namespace ReaLTaiizor.Manager
                 { FontType.Subtitle2, new FontDescriptor { FaceName = "Roboto Medium", PixelSize = 14, Weight = logFontWeight.FW_MEDIUM } },
                 { FontType.SubtleEmphasis, new FontDescriptor { FaceName = "Roboto", PixelSize = 12, Weight = logFontWeight.FW_NORMAL, Italic = 1 } },
 
-                { FontType.Body1, new FontDescriptor { FaceName = "Roboto", PixelSize = 16, Weight = logFontWeight.FW_REGULAR } },
-                { FontType.Body2, new FontDescriptor { FaceName = "Roboto", PixelSize = 14, Weight = logFontWeight.FW_REGULAR } },
+                { FontType.Body1, new FontDescriptor { FaceName = "Roboto", PixelSize = 14, Weight = logFontWeight.FW_REGULAR } },
+                { FontType.Body2, new FontDescriptor { FaceName = "Roboto", PixelSize = 12, Weight = logFontWeight.FW_REGULAR } },
 
                 { FontType.Button, new FontDescriptor { FaceName = "Roboto Medium", PixelSize = 14, Weight = logFontWeight.FW_MEDIUM } },
                 { FontType.Caption, new FontDescriptor { FaceName = "Roboto", PixelSize = 12, Weight = logFontWeight.FW_REGULAR } },
