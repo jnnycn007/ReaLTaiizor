@@ -451,38 +451,6 @@ namespace ReaLTaiizor.Manager
                 logicalFonts[cacheKey] = hFont;
                 return hFont;
             }
-
-            //int scaleKey = (int)Math.Round(scaleRatio * 100);
-            //string key = System.Enum.GetName(typeof(FontType), type) + "-scale" + scaleKey;
-            //if (logicalFonts.TryGetValue(key, out IntPtr existingFont))
-            //{
-            //    return existingFont;
-            //}
-            //lock (_fontLock)
-            //{
-            //    if (logicalFonts.TryGetValue(key, out IntPtr cachedFont))
-            //    {
-            //        return cachedFont;
-            //    }
-            //    IntPtr hOriginalFont = logicalFonts[System.Enum.GetName(typeof(FontType), type)];
-            //    if (Math.Abs(scaleRatio - 1f) < 0.0001f)
-            //    {
-            //        return hOriginalFont;
-            //    }
-
-            //    LogFont lf = new();
-            //    if (GetObject(hOriginalFont, Marshal.SizeOf(lf), lf) == 0) return IntPtr.Zero; // Failed fetching handle
-            //    IntPtr createdFont = createLogicalFont(lf.lfFaceName, (int)(-lf.lfHeight * scaleRatio), (logFontWeight)System.Enum.ToObject(MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM.GetType(), lf.lfWeight), lfItalic: lf.lfItalic);
-            //    logicalFonts.Add(key, createdFont);
-            //    return createdFont;
-
-            //    //using Font originalFont = Font.FromHfont(hOriginalFont);
-            //    //float newSize = originalFont.Size * (float)scaleRatio;
-            //    //using Font scaledFont = new(originalFont.FontFamily, newSize, originalFont.Style, originalFont.Unit);
-            //    //IntPtr createdFont = scaledFont.ToHfont();
-            //    //logicalFonts.Add(key, createdFont);
-            //    //return createdFont;
-            //}
         }
 
         // Font stuff
