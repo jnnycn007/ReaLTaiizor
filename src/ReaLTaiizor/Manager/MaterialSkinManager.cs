@@ -424,8 +424,6 @@ namespace ReaLTaiizor.Manager
         public IntPtr GetLogFontByType(FontType type)
         {
             return GetLogFontByType(type, 1f);
-        
-            //return logicalFonts[System.Enum.GetName(typeof(FontType), type)];
         }
 
         public IntPtr GetLogFontByType(FontType type, float scaleRatio)
