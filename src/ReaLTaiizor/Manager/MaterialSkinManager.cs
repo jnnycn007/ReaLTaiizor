@@ -479,7 +479,10 @@ namespace ReaLTaiizor.Manager
                     return cached;
                 }
 
-                FontDescriptor descriptor = fontDescriptors[type];
+                if (!fontDescriptors.TryGetValue(type, out FontDescriptor descriptor))
+                {
+                    throw new ArgumentException($"No font descriptor is registered for font type '{type}'.", nameof(type));
+                }
                 IntPtr hFont = descriptor.Create(scaleRatio);
                 logicalFonts[cacheKey] = hFont;
                 return hFont;
