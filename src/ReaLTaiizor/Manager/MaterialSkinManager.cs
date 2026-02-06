@@ -28,7 +28,7 @@ namespace ReaLTaiizor.Manager
             public string FaceName;
             public int PixelSize; // Unscaled
             public logFontWeight Weight;
-            public byte Italic;
+            public byte Italic = 0;
 
             public IntPtr Create(float scaleRatio)
             {
