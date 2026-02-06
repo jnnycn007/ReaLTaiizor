@@ -33,12 +33,19 @@ namespace ReaLTaiizor.Manager
             public IntPtr Create(float scaleRatio)
             {
                 int scaledSize = (int)Math.Round(PixelSize * scaleRatio);
-                return createLogicalFont(
+                IntPtr fontHandle = createLogicalFont(
                     FaceName,
                     scaledSize,
                     Weight,
                     Italic
                 );
+
+                if (fontHandle == IntPtr.Zero)
+                {
+                    throw new InvalidOperationException("Failed to create logical font using CreateFontIndirect.");
+                }
+
+                return fontHandle;
             }
         }
 
