@@ -136,16 +136,7 @@ namespace ReaLTaiizor.Manager
             // future, they should be added to this initialization explicitly.
 
             // create and save font handles for GDI
-            logicalFonts = new Dictionary<string, IntPtr>();
-            //{
-            //    { "H1", createLogicalFont("Roboto Light", 96, MaterialNativeTextRenderer.logFontWeight.FW_LIGHT) },
-            //    { "H2", createLogicalFont("Roboto Light", 60, MaterialNativeTextRenderer.logFontWeight.FW_LIGHT) },
-            //    { "H3", createLogicalFont("Roboto", 48, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
-            //    { "H4", createLogicalFont("Roboto", 34, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
-            //    { "H5", createLogicalFont("Roboto", 24, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
-            //    { "H6", createLogicalFont("Roboto Medium", 20, MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM) },
-            //    { "Subtitle1", createLogicalFont("Roboto", 16, MaterialNativeTextRenderer.logFontWeight.FW_REGULAR) },
-            //    { "Subtitle2", createLogicalFont("Roboto Medium", 14, MaterialNativeTextRenderer.logFontWeight.FW_MEDIUM) },
+            logicalFonts = [];
         }
 
         // Destructor

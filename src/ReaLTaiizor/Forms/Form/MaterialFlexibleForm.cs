@@ -62,39 +62,39 @@ namespace ReaLTaiizor.Forms
 
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.MaterialFlexibleFormBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.components = new Container();
+            this.MaterialFlexibleFormBindingSource = new BindingSource(this.components);
             this.messageContainer = new System.Windows.Forms.Panel();
-            this.materialLabel1 = new ReaLTaiizor.Controls.MaterialLabel();
-            this.pictureBoxForIcon = new System.Windows.Forms.PictureBox();
-            this.richTextBoxMessage = new ReaLTaiizor.Controls.MaterialMultiLineTextBoxEdit();
-            this.leftButton = new ReaLTaiizor.Controls.MaterialButton();
-            this.middleButton = new ReaLTaiizor.Controls.MaterialButton();
-            this.rightButton = new ReaLTaiizor.Controls.MaterialButton();
-            ((System.ComponentModel.ISupportInitialize)(this.MaterialFlexibleFormBindingSource)).BeginInit();
+            this.materialLabel1 = new MaterialLabel();
+            this.pictureBoxForIcon = new PictureBox();
+            this.richTextBoxMessage = new MaterialMultiLineTextBoxEdit();
+            this.leftButton = new MaterialButton();
+            this.middleButton = new MaterialButton();
+            this.rightButton = new MaterialButton();
+            ((ISupportInitialize)this.MaterialFlexibleFormBindingSource).BeginInit();
             this.messageContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxForIcon)).BeginInit();
+            ((ISupportInitialize)this.pictureBoxForIcon).BeginInit();
             this.SuspendLayout();
             // 
             // messageContainer
             // 
-            this.messageContainer.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.messageContainer.BackColor = System.Drawing.Color.White;
+            this.messageContainer.Anchor = (AnchorStyles)(AnchorStyles.Top | AnchorStyles.Bottom
+            | AnchorStyles.Left
+            | AnchorStyles.Right);
+            this.messageContainer.BackColor = Color.White;
             this.messageContainer.Controls.Add(this.materialLabel1);
             this.messageContainer.Controls.Add(this.pictureBoxForIcon);
             this.messageContainer.Controls.Add(this.richTextBoxMessage);
-            this.messageContainer.Location = new System.Drawing.Point(1, (int)((STATU_BAR_PADDING + ACTION_BAR_PADDING + 10) * ScaleFactor));
+            this.messageContainer.Location = new Point(1, (int)((STATU_BAR_PADDING + ACTION_BAR_PADDING + 10) * ScaleFactor));
             this.messageContainer.Name = "messageContainer";
             this.messageContainer.Size = new System.Drawing.Size(445, 135);
             this.messageContainer.TabIndex = 1;
             // 
             // materialLabel1
             // 
-            this.materialLabel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.materialLabel1.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom
+            | System.Windows.Forms.AnchorStyles.Left
+            | System.Windows.Forms.AnchorStyles.Right);
             this.materialLabel1.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.MaterialFlexibleFormBindingSource, "MessageText", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.materialLabel1.Depth = 0;
             this.materialLabel1.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
@@ -117,9 +117,9 @@ namespace ReaLTaiizor.Forms
             // 
             // richTextBoxMessage
             // 
-            this.richTextBoxMessage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.richTextBoxMessage.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom
+            | System.Windows.Forms.AnchorStyles.Left
+            | System.Windows.Forms.AnchorStyles.Right);
             this.richTextBoxMessage.AnimateReadOnly = false;
             this.richTextBoxMessage.BackColor = System.Drawing.Color.White;
             this.richTextBoxMessage.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
@@ -127,7 +127,7 @@ namespace ReaLTaiizor.Forms
             this.richTextBoxMessage.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.richTextBoxMessage.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.MaterialFlexibleFormBindingSource, "MessageText", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.richTextBoxMessage.Depth = 0;
-            this.richTextBoxMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.richTextBoxMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.richTextBoxMessage.HideSelection = true;
             this.richTextBoxMessage.Location = new System.Drawing.Point((int)(56 * ScaleFactor), 12);
             this.richTextBoxMessage.Margin = new System.Windows.Forms.Padding(0);
@@ -242,9 +242,9 @@ namespace ReaLTaiizor.Forms
             this.Text = "<Caption>";
             this.Load += new System.EventHandler(this.MaterialFlexibleForm_Load);
             this.Shown += new System.EventHandler(this.MaterialFlexibleForm_Shown);
-            ((System.ComponentModel.ISupportInitialize)(this.MaterialFlexibleFormBindingSource)).EndInit();
+            ((ISupportInitialize)this.MaterialFlexibleFormBindingSource).EndInit();
             this.messageContainer.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxForIcon)).EndInit();
+            ((ISupportInitialize)this.pictureBoxForIcon).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -480,7 +480,7 @@ namespace ReaLTaiizor.Forms
             //Calculate margins
             int marginWidth = MaterialFlexibleForm.Width - MaterialFlexibleForm.richTextBoxMessage.Width;
             int marginHeight = MaterialFlexibleForm.Height - MaterialFlexibleForm.richTextBoxMessage.Height;
-            
+
 
             int minimumHeight = MaterialFlexibleForm.messageContainer.Top + MaterialFlexibleForm.pictureBoxForIcon.Height + (int)(2 * 8 * MaterialFlexibleForm.ScaleFactor) + (int)(54 * MaterialFlexibleForm.ScaleFactor);
             if (marginHeight < minimumHeight)
@@ -713,10 +713,8 @@ namespace ReaLTaiizor.Forms
                 }
                 return _scaleRatio.Value;
             }
-            set
-            {
-                _scaleRatio = value;
-            }
+
+            set => _scaleRatio = value;
         }
         private float? _scaleRatioSqrt; // Cache
         private float ScaleFactorSqrt
@@ -729,10 +727,8 @@ namespace ReaLTaiizor.Forms
                 }
                 return _scaleRatioSqrt.Value;
             }
-            set
-            {
-                _scaleRatioSqrt = value;
-            }
+
+            set => _scaleRatioSqrt = value;
         }
 
         public static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton defaultButton, bool UseRichTextBox = true, ButtonsPosition buttonsPosition = ButtonsPosition.Right)
@@ -747,7 +743,7 @@ namespace ReaLTaiizor.Forms
                 CaptionText = caption,
                 MessageText = text
             };
-            
+
             MaterialFlexibleForm.Width = (int)(MaterialFlexibleForm.Width * MaterialFlexibleForm.ScaleFactor);
             MaterialFlexibleForm.Height = (int)(MaterialFlexibleForm.Height * MaterialFlexibleForm.ScaleFactor);
             MaterialFlexibleForm.MaterialFlexibleFormBindingSource.DataSource = MaterialFlexibleForm;
