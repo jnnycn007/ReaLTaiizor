@@ -419,40 +419,6 @@ namespace ReaLTaiizor.Manager
                 logicalFonts[cacheKey] = hFont;
                 return hFont;
             }
-
-            //int scaleKey = (int)Math.Round(scaleRatio * 100);
-            //string key = "textBox" + Math.Min(16, Math.Max(12, size)).ToString() + "-scale" + scaleKey;
-            //if (logicalFonts.TryGetValue(key, out IntPtr existingFont))
-            //{
-            //    return existingFont;
-            //}
-            //lock (_fontLock)
-            //{
-            //    if (logicalFonts.TryGetValue(key, out IntPtr h))
-            //    {
-            //        return h;
-            //    }
-
-            //    IntPtr hOriginalFont = GetTextBoxFontBySize(size);
-            //    if (scaleKey == 100)
-            //    {
-            //        return hOriginalFont;
-            //    }
-
-            //    try
-            //    {
-            //        using Font originalFont = Font.FromHfont(hOriginalFont);
-            //        float scaledSize = originalFont.Size * (float)scaleRatio;
-            //        using Font scaledFont = new(originalFont.FontFamily, scaledSize, originalFont.Style, originalFont.Unit);
-            //        IntPtr createdFont = scaledFont.ToHfont();
-            //        logicalFonts.Add(key, createdFont);
-            //        return createdFont;
-            //    }
-            //    catch
-            //    {
-            //        return IntPtr.Zero; // Failed fetching handle or creating scaled font
-            //    }
-            //}
         }
 
         public IntPtr GetLogFontByType(FontType type)
