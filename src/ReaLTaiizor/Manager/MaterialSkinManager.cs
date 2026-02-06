@@ -120,6 +120,13 @@ namespace ReaLTaiizor.Manager
                 { FontType.Overline, new FontDescriptor { FaceName = "Roboto", PixelSize = 10, Weight = logFontWeight.FW_REGULAR } },
             };
 
+            // NOTE:
+            // fontDescriptors is intentionally limited to a predefined set of FontType values
+            // (H1–H6, Subtitle1/2, SubtleEmphasis, Body1/2, Button, Caption, Overline).
+            // Textbox and other dynamic font sizes are created on-the-fly and are not cached
+            // in this dictionary, to avoid an unbounded font cache and to preserve the current
+            // behavior of the public API. If additional FontType values are introduced in the
+            // future, they should be added to this initialization explicitly.
 
             // create and save font handles for GDI
             logicalFonts = new Dictionary<string, IntPtr>();
