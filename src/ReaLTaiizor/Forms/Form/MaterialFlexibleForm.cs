@@ -27,9 +27,9 @@ namespace ReaLTaiizor.Forms
 
         public static double MAX_HEIGHT_FACTOR = 0.9;
 
-        private const int STATU_BAR_PADDING = 24;
+        private const int STATUS_BAR_PADDING = 24;
         private const int ACTION_BAR_PADDING = 40;
-        private const int CONTENT_VERTICAL_PADDING = 20;
+        // private const int CONTENT_VERTICAL_PADDING = 20;
         private const int BUTTON_BAR_PADDING = 10;
 
         private MaterialMultiLineTextBoxEdit richTextBoxMessage;
@@ -50,6 +50,12 @@ namespace ReaLTaiizor.Forms
         public ButtonsPosition ButtonsPositionEnum { get; set; } = ButtonsPosition.Right;
 
         private IContainer components = null;
+
+        protected override void OnHandleCreated(EventArgs e)
+        {
+            base.OnHandleCreated(e);
+            
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -85,7 +91,7 @@ namespace ReaLTaiizor.Forms
             this.messageContainer.Controls.Add(this.materialLabel1);
             this.messageContainer.Controls.Add(this.pictureBoxForIcon);
             this.messageContainer.Controls.Add(this.richTextBoxMessage);
-            this.messageContainer.Location = new Point(1, (int)((STATU_BAR_PADDING + ACTION_BAR_PADDING + 10) * ScaleFactor));
+            this.messageContainer.Location = new System.Drawing.Point(1, 65);
             this.messageContainer.Name = "messageContainer";
             this.messageContainer.Size = new System.Drawing.Size(445, 135);
             this.messageContainer.TabIndex = 1;
@@ -109,9 +115,9 @@ namespace ReaLTaiizor.Forms
             // pictureBoxForIcon
             // 
             this.pictureBoxForIcon.BackColor = System.Drawing.Color.Transparent;
-            this.pictureBoxForIcon.Location = new System.Drawing.Point((int)(12 * ScaleFactor), 12);
+            this.pictureBoxForIcon.Location = new System.Drawing.Point(12, 12);
             this.pictureBoxForIcon.Name = "pictureBoxForIcon";
-            this.pictureBoxForIcon.Size = new System.Drawing.Size((int)(32 * ScaleFactor), (int)(32 * ScaleFactor));
+            this.pictureBoxForIcon.Size = new System.Drawing.Size(32, 32);
             this.pictureBoxForIcon.TabIndex = 8;
             this.pictureBoxForIcon.TabStop = false;
             // 
@@ -129,7 +135,7 @@ namespace ReaLTaiizor.Forms
             this.richTextBoxMessage.Depth = 0;
             this.richTextBoxMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
             this.richTextBoxMessage.HideSelection = true;
-            this.richTextBoxMessage.Location = new System.Drawing.Point((int)(56 * ScaleFactor), 12);
+            this.richTextBoxMessage.Location = new System.Drawing.Point(56, 12);
             this.richTextBoxMessage.Margin = new System.Windows.Forms.Padding(0);
             this.richTextBoxMessage.MaxLength = 32767;
             this.richTextBoxMessage.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
@@ -457,6 +463,10 @@ namespace ReaLTaiizor.Forms
 
         private static void SetDialogSizes(MaterialFlexibleForm MaterialFlexibleForm, string text, string caption)
         {
+            MaterialFlexibleForm.messageContainer.Location = new Point(1, (int)((STATUS_BAR_PADDING + ACTION_BAR_PADDING + 10) * MaterialFlexibleForm.ScaleFactor));
+            MaterialFlexibleForm.pictureBoxForIcon.Size = new System.Drawing.Size((int)(32 * MaterialFlexibleForm.ScaleFactor), (int)(32 * MaterialFlexibleForm.ScaleFactor));
+            MaterialFlexibleForm.pictureBoxForIcon.Location = new System.Drawing.Point((int)(12 * MaterialFlexibleForm.ScaleFactor), 12);
+            MaterialFlexibleForm.richTextBoxMessage.Location = new System.Drawing.Point((int)(56 * MaterialFlexibleForm.ScaleFactor), 12);
             //First set the bounds for the maximum dialog size
             MaterialFlexibleForm.MaximumSize = new Size(Convert.ToInt32(SystemInformation.WorkingArea.Width * MaterialFlexibleForm.GetCorrectedWorkingAreaFactor(MAX_WIDTH_FACTOR)),
                                                           Convert.ToInt32(SystemInformation.WorkingArea.Height * MaterialFlexibleForm.GetCorrectedWorkingAreaFactor(MAX_HEIGHT_FACTOR)));
@@ -491,7 +501,7 @@ namespace ReaLTaiizor.Forms
             //Set calculated dialog size (if the calculated values exceed the maximums, they were cut by windows forms automatically)
             MaterialFlexibleForm.Size = new Size(textWidth + marginWidth,
                                                    textHeight + marginHeight);
-            MaterialFlexibleForm.messageContainer.Height = MaterialFlexibleForm.Height - (int)((ACTION_BAR_PADDING + STATU_BAR_PADDING + BUTTON_BAR_PADDING) * MaterialFlexibleForm.ScaleFactor) - MaterialFlexibleForm.rightButton.Height;
+            MaterialFlexibleForm.messageContainer.Height = MaterialFlexibleForm.Height - (int)((ACTION_BAR_PADDING + STATUS_BAR_PADDING + BUTTON_BAR_PADDING) * MaterialFlexibleForm.ScaleFactor) - MaterialFlexibleForm.rightButton.Height;
         }
 
         private static void SetDialogIcon(MaterialFlexibleForm MaterialFlexibleForm, MessageBoxIcon icon)
