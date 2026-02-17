@@ -31,6 +31,7 @@ namespace ReaLTaiizor.Forms
         private const int ACTION_BAR_PADDING = 40;
         // private const int CONTENT_VERTICAL_PADDING = 20;
         private const int BUTTON_BAR_PADDING = 10;
+        private const int BUTTONS_PADDING = 10;
 
         private MaterialMultiLineTextBoxEdit richTextBoxMessage;
         private MaterialLabel materialLabel1;
@@ -491,7 +492,6 @@ namespace ReaLTaiizor.Forms
             int marginWidth = MaterialFlexibleForm.Width - MaterialFlexibleForm.richTextBoxMessage.Width;
             int marginHeight = MaterialFlexibleForm.Height - MaterialFlexibleForm.richTextBoxMessage.Height;
 
-
             int minimumHeight = MaterialFlexibleForm.messageContainer.Top + MaterialFlexibleForm.pictureBoxForIcon.Height + (int)(2 * 8 * MaterialFlexibleForm.ScaleFactor) + (int)(54 * MaterialFlexibleForm.ScaleFactor);
             if (marginHeight < minimumHeight)
             {
@@ -500,8 +500,9 @@ namespace ReaLTaiizor.Forms
 
             //Set calculated dialog size (if the calculated values exceed the maximums, they were cut by windows forms automatically)
             MaterialFlexibleForm.Size = new Size(textWidth + marginWidth,
-                                                   textHeight + marginHeight);
-            MaterialFlexibleForm.messageContainer.Height = MaterialFlexibleForm.Height - (int)((ACTION_BAR_PADDING + STATUS_BAR_PADDING + BUTTON_BAR_PADDING) * MaterialFlexibleForm.ScaleFactor) - MaterialFlexibleForm.rightButton.Height;
+                                                   textHeight + marginHeight + (int)(MaterialFlexibleForm.leftButton.Height * MaterialFlexibleForm.ScaleFactor * (MaterialFlexibleForm.ScaleFactor - 1)));
+            MaterialFlexibleForm.messageContainer.Height = MaterialFlexibleForm.Height - (int)((ACTION_BAR_PADDING + STATUS_BAR_PADDING + BUTTON_BAR_PADDING) * MaterialFlexibleForm.ScaleFactor) - MaterialFlexibleForm.rightButton.Height - ((int)(MaterialFlexibleForm.leftButton.Height * MaterialFlexibleForm.ScaleFactor * (MaterialFlexibleForm.ScaleFactor - 1)));
+            
         }
 
         private static void SetDialogIcon(MaterialFlexibleForm MaterialFlexibleForm, MessageBoxIcon icon)
@@ -789,7 +790,11 @@ namespace ReaLTaiizor.Forms
 
         private static void SetButtonsPosition(MaterialFlexibleForm fMF, ButtonsPosition buttonsPosition)
         {
-            const int padding = 10;
+            const int padding = BUTTONS_PADDING;
+            fMF.leftButton.Size = new((int)(fMF.leftButton.Width * fMF.ScaleFactor), (int)(fMF.leftButton.Height * fMF.ScaleFactor));
+            fMF.middleButton.Size = new((int)(fMF.middleButton.Width * fMF.ScaleFactor), (int)(fMF.middleButton.Height * fMF.ScaleFactor));
+            fMF.rightButton.Size = new((int)(fMF.rightButton.Width * fMF.ScaleFactor), (int)(fMF.rightButton.Height * fMF.ScaleFactor));
+            
             int visibleButtonsWidth = 0;
             switch (buttonsPosition)
             {
