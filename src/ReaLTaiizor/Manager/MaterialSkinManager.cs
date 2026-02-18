@@ -61,7 +61,7 @@ namespace ReaLTaiizor.Manager
         /// <summary>
         /// Create LFont Descriptor Object for TextBox Rendering
         /// </summary>
-        /// <param name="size">Should in [12, 16]</param>
+        /// <param name="size">Should be in [12, 16]</param>
         /// <returns></returns>
         private FontDescriptor CreateTextBoxDescriptor(int size)
         {
@@ -476,15 +476,7 @@ namespace ReaLTaiizor.Manager
             foreach (var type in fontDescriptors.Keys)
             {
                 string cacheKey = $"{type}-scale{scaleKey}";
-                if (logicalFonts.TryGetValue(cacheKey, out IntPtr cached))
-                {
-                    continue;
-                }
-
-                if (!fontDescriptors.TryGetValue(type, out FontDescriptor descriptor))
-                {
-                    throw new ArgumentException($"No font descriptor is registered for font type '{type}'.", nameof(type));
-                }
+                fontDescriptors.TryGetValue(type, out FontDescriptor descriptor);
                 IntPtr hFont = descriptor.Create(scaleRatio);
                 logicalFonts[cacheKey] = hFont;
             }
@@ -495,7 +487,6 @@ namespace ReaLTaiizor.Manager
                 {
                     continue;
                 }
-
                 FontDescriptor descriptor = CreateTextBoxDescriptor(i);
                 IntPtr hFont = descriptor.Create(scaleRatio);
                 logicalFonts[cacheKey] = hFont;
