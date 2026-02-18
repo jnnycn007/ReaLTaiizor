@@ -476,7 +476,11 @@ namespace ReaLTaiizor.Manager
             foreach (var type in fontDescriptors.Keys)
             {
                 string cacheKey = $"{type}-scale{scaleKey}";
-                fontDescriptors.TryGetValue(type, out FontDescriptor descriptor);
+                if (logicalFonts.TryGetValue(cacheKey, out IntPtr cached))
+                {
+                    continue;
+                }
+                var descriptor = fontDescriptors[type];
                 IntPtr hFont = descriptor.Create(scaleRatio);
                 logicalFonts[cacheKey] = hFont;
             }
