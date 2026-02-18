@@ -13,6 +13,7 @@ using System.Drawing.Text;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using static ReaLTaiizor.Native.WinApi;
 using static ReaLTaiizor.Util.MaterialNativeTextRenderer;
 
 #endregion
@@ -69,7 +70,7 @@ namespace ReaLTaiizor.Manager
             if (size < 12) size = 12;
             return new FontDescriptor
             (
-                size >= 13 ? "Roboto Medium" : "Roboto",
+                size <= 13 ? "Roboto Medium" : "Roboto",
                 size,
                 size >= 13
                     ? logFontWeight.FW_MEDIUM
@@ -424,6 +425,7 @@ namespace ReaLTaiizor.Manager
 
             lock (_fontLock)
             {
+                PreloadSpecifiedScaleLFonts(scaleRatio);
                 if (logicalFonts.TryGetValue(cacheKey, out cached))
                 {
                     return cached;
@@ -453,6 +455,7 @@ namespace ReaLTaiizor.Manager
 
             lock (_fontLock)
             {
+                PreloadSpecifiedScaleLFonts(scaleRatio);
                 if (logicalFonts.TryGetValue(cacheKey, out cached))
                 {
                     return cached;
@@ -465,6 +468,42 @@ namespace ReaLTaiizor.Manager
                 IntPtr hFont = descriptor.Create(scaleRatio);
                 logicalFonts[cacheKey] = hFont;
                 return hFont;
+            }
+        }
+
+        private void PreloadSpecifiedScaleLFonts(float scaleRatio)
+        {
+            int scaleKey = (int)Math.Round(scaleRatio * 100);
+            foreach (var type in fontDescriptors.Keys)
+            {
+                string cacheKey = $"{type}-scale{scaleKey}";
+                if (logicalFonts.TryGetValue(cacheKey, out IntPtr cached))
+                {
+                    continue;
+                }
+
+                if (!fontDescriptors.TryGetValue(type, out FontDescriptor descriptor))
+                {
+                    throw new ArgumentException($"No font descriptor is registered for font type '{type}'.", nameof(type));
+                }
+                IntPtr hFont = descriptor.Create(scaleRatio);
+                logicalFonts[cacheKey] = hFont;
+            }
+            for (int i = 12; i < 17; i++)
+            {
+                FontDescriptor fd = CreateTextBoxDescriptor(i);
+                string cacheKey = $"TextBox-{i}-scale{scaleKey}";
+                if (logicalFonts.TryGetValue(cacheKey, out IntPtr cached))
+                {
+                    continue;
+                }
+
+                lock (_fontLock)
+                {
+                    FontDescriptor descriptor = CreateTextBoxDescriptor(i);
+                    IntPtr hFont = descriptor.Create(scaleRatio);
+                    logicalFonts[cacheKey] = hFont;
+                }
             }
         }
 
