@@ -29,7 +29,6 @@ namespace ReaLTaiizor.Forms
 
         private const int STATUS_BAR_PADDING = 24;
         private const int ACTION_BAR_PADDING = 40;
-        // private const int CONTENT_VERTICAL_PADDING = 20;
         private const int BUTTON_BAR_PADDING = 10;
         private const int BUTTONS_PADDING = 10;
 
@@ -51,12 +50,6 @@ namespace ReaLTaiizor.Forms
         public ButtonsPosition ButtonsPositionEnum { get; set; } = ButtonsPosition.Right;
 
         private IContainer components = null;
-
-        protected override void OnHandleCreated(EventArgs e)
-        {
-            base.OnHandleCreated(e);
-            
-        }
 
         protected override void Dispose(bool disposing)
         {
@@ -259,7 +252,6 @@ namespace ReaLTaiizor.Forms
         protected override void OnDpiChanged(DpiChangedEventArgs e)
         {
             ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
-            ScaleFactorSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
             base.OnDpiChanged(e);
         }
 
@@ -501,6 +493,20 @@ namespace ReaLTaiizor.Forms
             //Set calculated dialog size (if the calculated values exceed the maximums, they were cut by windows forms automatically)
             MaterialFlexibleForm.Size = new Size(textWidth + marginWidth,
                                                    textHeight + marginHeight + (int)(MaterialFlexibleForm.leftButton.Height * MaterialFlexibleForm.ScaleFactor * (MaterialFlexibleForm.ScaleFactor - 1)));
+            // NOTE:
+            // This uses a quadratic term: H * S * (S - 1).
+            // The method is executed before the buttons are actually scaled.
+            // At this point, leftButton.Height still represents the original size (H),
+            // while the layout pass will later apply scaling (S).
+            //
+            // A simple linear compensation (H * (S - 1)) was insufficient,
+            // because WinForms DPI layout applies additional scaling during layout.
+            // The extra * S term compensates for this pre-layout scaling stage
+            // and avoids clipping at high DPI (e.g., 200%).
+            //
+            // Verified visually at 100% and 200% scaling.
+            // If layout order changes in the future, this formula may need adjustment.
+
             MaterialFlexibleForm.messageContainer.Height = MaterialFlexibleForm.Height - (int)((ACTION_BAR_PADDING + STATUS_BAR_PADDING + BUTTON_BAR_PADDING) * MaterialFlexibleForm.ScaleFactor) - MaterialFlexibleForm.rightButton.Height - ((int)(MaterialFlexibleForm.leftButton.Height * MaterialFlexibleForm.ScaleFactor * (MaterialFlexibleForm.ScaleFactor - 1)));
             
         }
@@ -726,20 +732,6 @@ namespace ReaLTaiizor.Forms
             }
 
             set => _scaleRatio = value;
-        }
-        private float? _scaleRatioSqrt; // Cache
-        private float ScaleFactorSqrt
-        {
-            get
-            {
-                if (!_scaleRatioSqrt.HasValue)
-                {
-                    _scaleRatioSqrt = SkinManager.GetDeviceScaleFactorSqrt(this);
-                }
-                return _scaleRatioSqrt.Value;
-            }
-
-            set => _scaleRatioSqrt = value;
         }
 
         public static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton defaultButton, bool UseRichTextBox = true, ButtonsPosition buttonsPosition = ButtonsPosition.Right)

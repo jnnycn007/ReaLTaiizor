@@ -25,10 +25,19 @@ namespace ReaLTaiizor.Manager
     {
         private sealed class FontDescriptor
         {
-            public string FaceName;
-            public int PixelSize; // Unscaled
-            public logFontWeight Weight;
-            public byte Italic = 0;
+            public string FaceName { get; }
+            public int PixelSize { get; } // Unscaled
+            public logFontWeight Weight { get; }
+            public byte Italic { get; } = 0;
+
+            public FontDescriptor(string faceName, int pixelSize,
+                          logFontWeight weight, byte italic = 0)
+            {
+                FaceName = faceName;
+                PixelSize = pixelSize;
+                Weight = weight;
+                Italic = italic;
+            }
 
             public IntPtr Create(float scaleRatio)
             {
@@ -49,17 +58,24 @@ namespace ReaLTaiizor.Manager
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="size">Should in [12, 16]</param>
+        /// <returns></returns>
         private FontDescriptor CreateTextBoxDescriptor(int size)
         {
+            if (size > 16) size = 16;
+            if (size < 12) size = 12;
             return new FontDescriptor
-            {
-                FaceName = size >= 13 ? "Roboto Medium" : "Roboto",
-                PixelSize = size,
-                Weight = size >= 13
+            (
+                size >= 13 ? "Roboto Medium" : "Roboto",
+                size,
+                size >= 13
                     ? logFontWeight.FW_MEDIUM
                     : logFontWeight.FW_REGULAR,
-                Italic = 0
-            };
+                0
+            );
         }
 
 
@@ -108,23 +124,23 @@ namespace ReaLTaiizor.Manager
 
             fontDescriptors = new()
             {
-                { FontType.H1, new FontDescriptor { FaceName = "Roboto Light", PixelSize = 96, Weight = logFontWeight.FW_LIGHT } },
-                { FontType.H2, new FontDescriptor { FaceName = "Roboto Light", PixelSize = 60, Weight = logFontWeight.FW_LIGHT } },
-                { FontType.H3, new FontDescriptor { FaceName = "Roboto", PixelSize = 48, Weight = logFontWeight.FW_REGULAR } },
-                { FontType.H4, new FontDescriptor { FaceName = "Roboto", PixelSize = 34, Weight = logFontWeight.FW_REGULAR } },
-                { FontType.H5, new FontDescriptor { FaceName = "Roboto", PixelSize = 24, Weight = logFontWeight.FW_REGULAR } },
-                { FontType.H6, new FontDescriptor { FaceName = "Roboto Medium", PixelSize = 20, Weight = logFontWeight.FW_MEDIUM } },
+                { FontType.H1, new FontDescriptor ("Roboto Light", 96, logFontWeight.FW_LIGHT) },
+                { FontType.H2, new FontDescriptor ("Roboto Light", 60, logFontWeight.FW_LIGHT) },
+                { FontType.H3, new FontDescriptor ("Roboto", 48, logFontWeight.FW_REGULAR) },
+                { FontType.H4, new FontDescriptor ("Roboto", 34, logFontWeight.FW_REGULAR) },
+                { FontType.H5, new FontDescriptor ("Roboto", 24, logFontWeight.FW_REGULAR) },
+                { FontType.H6, new FontDescriptor ("Roboto Medium", 20, logFontWeight.FW_MEDIUM) },
 
-                { FontType.Subtitle1, new FontDescriptor { FaceName = "Roboto", PixelSize = 16, Weight = logFontWeight.FW_REGULAR } },
-                { FontType.Subtitle2, new FontDescriptor { FaceName = "Roboto Medium", PixelSize = 14, Weight = logFontWeight.FW_MEDIUM } },
-                { FontType.SubtleEmphasis, new FontDescriptor { FaceName = "Roboto", PixelSize = 12, Weight = logFontWeight.FW_NORMAL, Italic = 1 } },
+                { FontType.Subtitle1, new FontDescriptor ("Roboto", 16, logFontWeight.FW_REGULAR) },
+                { FontType.Subtitle2, new FontDescriptor ("Roboto Medium", 14, logFontWeight.FW_MEDIUM) },
+                { FontType.SubtleEmphasis, new FontDescriptor ("Roboto", 12, logFontWeight.FW_NORMAL, 1) },
 
-                { FontType.Body1, new FontDescriptor { FaceName = "Roboto", PixelSize = 14, Weight = logFontWeight.FW_REGULAR } },
-                { FontType.Body2, new FontDescriptor { FaceName = "Roboto", PixelSize = 12, Weight = logFontWeight.FW_REGULAR } },
+                { FontType.Body1, new FontDescriptor ("Roboto", 16, logFontWeight.FW_REGULAR) },
+                { FontType.Body2, new FontDescriptor ("Roboto", 14, logFontWeight.FW_REGULAR) },
 
-                { FontType.Button, new FontDescriptor { FaceName = "Roboto Medium", PixelSize = 14, Weight = logFontWeight.FW_MEDIUM } },
-                { FontType.Caption, new FontDescriptor { FaceName = "Roboto", PixelSize = 12, Weight = logFontWeight.FW_REGULAR } },
-                { FontType.Overline, new FontDescriptor { FaceName = "Roboto", PixelSize = 10, Weight = logFontWeight.FW_REGULAR } },
+                { FontType.Button, new FontDescriptor ("Roboto Medium", 14, logFontWeight.FW_MEDIUM) },
+                { FontType.Caption, new FontDescriptor ("Roboto", 12, logFontWeight.FW_REGULAR) },
+                { FontType.Overline, new FontDescriptor ("Roboto", 10, logFontWeight.FW_REGULAR) },
             };
 
             // NOTE:
@@ -138,6 +154,21 @@ namespace ReaLTaiizor.Manager
 
             // create and save font handles for GDI
             logicalFonts = [];
+            foreach (var item in fontDescriptors.Keys)
+            {
+                GetLogFontByType(item);
+                // Preload logical fonts for the default scale factor (1.0).
+                // This restores the original eager-initialization behavior for
+                // standard DPI environments (100%).
+                //
+                // In PerMonitorV2 DPI scenarios, the actual ScaleFactor may not be
+                // known at construction time. In those cases, fonts for other scale
+                // ratios will be created lazily on first request.
+                //
+                // This avoids breaking the previous initialization contract
+                // while still supporting dynamic DPI changes.
+
+            }
         }
 
         // Destructor
@@ -379,8 +410,6 @@ namespace ReaLTaiizor.Manager
         public IntPtr GetTextBoxFontBySize(int size)
         {
             return GetTextBoxFontBySize(size, 1f);
-            //string name = "textBox" + Math.Min(16, Math.Max(12, size)).ToString();
-            //return logicalFonts[name];
         }
 
         public IntPtr GetTextBoxFontBySize(int size, float scaleRatio)
