@@ -459,7 +459,12 @@ namespace ReaLTaiizor.Forms
             MaterialFlexibleForm.messageContainer.Location = new Point(1, (int)((STATUS_BAR_PADDING + ACTION_BAR_PADDING + 10) * MaterialFlexibleForm.ScaleFactor));
             MaterialFlexibleForm.pictureBoxForIcon.Size = new System.Drawing.Size((int)(32 * MaterialFlexibleForm.ScaleFactor), (int)(32 * MaterialFlexibleForm.ScaleFactor));
             MaterialFlexibleForm.pictureBoxForIcon.Location = new System.Drawing.Point((int)(12 * MaterialFlexibleForm.ScaleFactor), 12);
-            MaterialFlexibleForm.richTextBoxMessage.Location = new System.Drawing.Point((int)(56 * MaterialFlexibleForm.ScaleFactor), 12);
+            bool hasIcon = MaterialFlexibleForm.pictureBoxForIcon.Visible;
+            int contentLeft = hasIcon
+                ? (int)(56 * MaterialFlexibleForm.ScaleFactor)
+                : (int)(24 * MaterialFlexibleForm.ScaleFactor);
+            MaterialFlexibleForm.richTextBoxMessage.Location = new System.Drawing.Point(contentLeft, 12);
+            MaterialFlexibleForm.materialLabel1.Location = new System.Drawing.Point(contentLeft, 12);
             //First set the bounds for the maximum dialog size
             MaterialFlexibleForm.MaximumSize = new Size(Convert.ToInt32(SystemInformation.WorkingArea.Width * MaterialFlexibleForm.GetCorrectedWorkingAreaFactor(MAX_WIDTH_FACTOR)),
                                                           Convert.ToInt32(SystemInformation.WorkingArea.Height * MaterialFlexibleForm.GetCorrectedWorkingAreaFactor(MAX_HEIGHT_FACTOR)));
