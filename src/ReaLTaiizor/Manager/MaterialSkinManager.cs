@@ -59,7 +59,7 @@ namespace ReaLTaiizor.Manager
         }
 
         /// <summary>
-        /// 
+        /// Create LFont Descriptor Object for TextBox Rendering
         /// </summary>
         /// <param name="size">Should in [12, 16]</param>
         /// <returns></returns>
@@ -71,7 +71,7 @@ namespace ReaLTaiizor.Manager
             (
                 size <= 13 ? "Roboto Medium" : "Roboto",
                 size,
-                size >= 13
+                size <= 13
                     ? logFontWeight.FW_MEDIUM
                     : logFontWeight.FW_REGULAR,
                 0
@@ -490,19 +490,15 @@ namespace ReaLTaiizor.Manager
             }
             for (int i = 12; i < 17; i++)
             {
-                FontDescriptor fd = CreateTextBoxDescriptor(i);
                 string cacheKey = $"TextBox-{i}-scale{scaleKey}";
                 if (logicalFonts.TryGetValue(cacheKey, out IntPtr cached))
                 {
                     continue;
                 }
 
-                lock (_fontLock)
-                {
-                    FontDescriptor descriptor = CreateTextBoxDescriptor(i);
-                    IntPtr hFont = descriptor.Create(scaleRatio);
-                    logicalFonts[cacheKey] = hFont;
-                }
+                FontDescriptor descriptor = CreateTextBoxDescriptor(i);
+                IntPtr hFont = descriptor.Create(scaleRatio);
+                logicalFonts[cacheKey] = hFont;
             }
         }
 
