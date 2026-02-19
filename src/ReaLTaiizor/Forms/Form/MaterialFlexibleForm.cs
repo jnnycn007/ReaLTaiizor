@@ -524,8 +524,8 @@ namespace ReaLTaiizor.Forms
             {
                 case MessageBoxIcon.Information:
                     MaterialFlexibleForm.hasIcon = true;
-                    MaterialFlexibleForm.pictureBoxForIcon.Visible = true;
                     MaterialFlexibleForm.pictureBoxForIcon.Image = SystemIcons.Information.ToBitmap();
+                    MaterialFlexibleForm.pictureBoxForIcon.Visible = true;
                     break;
 
                 case MessageBoxIcon.Warning:
