@@ -23,6 +23,8 @@ namespace ReaLTaiizor.Forms
 
         public static Font FONT;
 
+        bool hasIcon;
+
         public static double MAX_WIDTH_FACTOR = 0.7;
 
         public static double MAX_HEIGHT_FACTOR = 0.9;
@@ -459,8 +461,8 @@ namespace ReaLTaiizor.Forms
             MaterialFlexibleForm.messageContainer.Location = new Point(1, (int)((STATUS_BAR_PADDING + ACTION_BAR_PADDING + 10) * MaterialFlexibleForm.ScaleFactor));
             MaterialFlexibleForm.pictureBoxForIcon.Size = new System.Drawing.Size((int)(32 * MaterialFlexibleForm.ScaleFactor), (int)(32 * MaterialFlexibleForm.ScaleFactor));
             MaterialFlexibleForm.pictureBoxForIcon.Location = new System.Drawing.Point((int)(12 * MaterialFlexibleForm.ScaleFactor), 12);
-            bool hasIcon = MaterialFlexibleForm.pictureBoxForIcon.Visible;
-            int contentLeft = hasIcon
+            // Form did not show and MaterialFlexibleForm.pictureBoxForIcon.Visible will return false forever.
+            int contentLeft = MaterialFlexibleForm.hasIcon
                 ? (int)(56 * MaterialFlexibleForm.ScaleFactor)
                 : (int)(24 * MaterialFlexibleForm.ScaleFactor);
             MaterialFlexibleForm.richTextBoxMessage.Location = new System.Drawing.Point(contentLeft, 12);
@@ -521,22 +523,30 @@ namespace ReaLTaiizor.Forms
             switch (icon)
             {
                 case MessageBoxIcon.Information:
+                    MaterialFlexibleForm.hasIcon = true;
+                    MaterialFlexibleForm.pictureBoxForIcon.Visible = true;
                     MaterialFlexibleForm.pictureBoxForIcon.Image = SystemIcons.Information.ToBitmap();
                     break;
 
                 case MessageBoxIcon.Warning:
+                    MaterialFlexibleForm.hasIcon = true;
                     MaterialFlexibleForm.pictureBoxForIcon.Image = SystemIcons.Warning.ToBitmap();
+                    MaterialFlexibleForm.pictureBoxForIcon.Visible = true;
                     break;
 
                 case MessageBoxIcon.Error:
+                    MaterialFlexibleForm.hasIcon = true;
                     MaterialFlexibleForm.pictureBoxForIcon.Image = SystemIcons.Error.ToBitmap();
+                    MaterialFlexibleForm.pictureBoxForIcon.Visible = true;
                     break;
 
                 case MessageBoxIcon.Question:
+                    MaterialFlexibleForm.hasIcon = true;
                     MaterialFlexibleForm.pictureBoxForIcon.Image = SystemIcons.Question.ToBitmap();
+                    MaterialFlexibleForm.pictureBoxForIcon.Visible = true;
                     break;
-
                 default:
+                    MaterialFlexibleForm.hasIcon = false;
                     //When no icon is used: Correct placement and width of rich text box.
                     MaterialFlexibleForm.pictureBoxForIcon.Visible = false;
                     MaterialFlexibleForm.richTextBoxMessage.Left -= MaterialFlexibleForm.pictureBoxForIcon.Width;
