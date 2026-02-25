@@ -23,9 +23,16 @@ namespace ReaLTaiizor.Forms
 
         public static Font FONT;
 
+        bool hasIcon;
+
         public static double MAX_WIDTH_FACTOR = 0.7;
 
         public static double MAX_HEIGHT_FACTOR = 0.9;
+
+        private const int STATUS_BAR_PADDING = 24;
+        private const int ACTION_BAR_PADDING = 40;
+        private const int BUTTON_BAR_PADDING = 10;
+        private const int BUTTONS_PADDING = 10;
 
         private MaterialMultiLineTextBoxEdit richTextBoxMessage;
         private MaterialLabel materialLabel1;
@@ -57,32 +64,32 @@ namespace ReaLTaiizor.Forms
 
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.MaterialFlexibleFormBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.components = new Container();
+            this.MaterialFlexibleFormBindingSource = new BindingSource(this.components);
             this.messageContainer = new System.Windows.Forms.Panel();
             this.materialLabel1 = new MaterialLabel();
-            this.pictureBoxForIcon = new System.Windows.Forms.PictureBox();
+            this.pictureBoxForIcon = new PictureBox();
             this.richTextBoxMessage = new MaterialMultiLineTextBoxEdit();
             this.leftButton = new MaterialButton();
             this.middleButton = new MaterialButton();
             this.rightButton = new MaterialButton();
-            ((System.ComponentModel.ISupportInitialize)this.MaterialFlexibleFormBindingSource).BeginInit();
+            ((ISupportInitialize)this.MaterialFlexibleFormBindingSource).BeginInit();
             this.messageContainer.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)this.pictureBoxForIcon).BeginInit();
+            ((ISupportInitialize)this.pictureBoxForIcon).BeginInit();
             this.SuspendLayout();
             // 
             // messageContainer
             // 
-            this.messageContainer.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom
-            | System.Windows.Forms.AnchorStyles.Left
-            | System.Windows.Forms.AnchorStyles.Right);
-            this.messageContainer.BackColor = System.Drawing.Color.White;
+            this.messageContainer.Anchor = (AnchorStyles)(AnchorStyles.Top | AnchorStyles.Bottom
+            | AnchorStyles.Left
+            | AnchorStyles.Right);
+            this.messageContainer.BackColor = Color.White;
             this.messageContainer.Controls.Add(this.materialLabel1);
             this.messageContainer.Controls.Add(this.pictureBoxForIcon);
             this.messageContainer.Controls.Add(this.richTextBoxMessage);
             this.messageContainer.Location = new System.Drawing.Point(1, 65);
             this.messageContainer.Name = "messageContainer";
-            this.messageContainer.Size = new System.Drawing.Size(382, 89);
+            this.messageContainer.Size = new System.Drawing.Size(445, 135);
             this.messageContainer.TabIndex = 1;
             // 
             // materialLabel1
@@ -94,9 +101,9 @@ namespace ReaLTaiizor.Forms
             this.materialLabel1.Depth = 0;
             this.materialLabel1.Font = new System.Drawing.Font("Roboto", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Pixel);
             this.materialLabel1.Location = new System.Drawing.Point(56, 12);
-            this.materialLabel1.MouseState = MaterialMouseState.HOVER;
+            this.materialLabel1.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             this.materialLabel1.Name = "materialLabel1";
-            this.materialLabel1.Size = new System.Drawing.Size(314, 65);
+            this.materialLabel1.Size = new System.Drawing.Size(377, 111);
             this.materialLabel1.TabIndex = 9;
             this.materialLabel1.Text = "<Message>";
             this.materialLabel1.Visible = false;
@@ -115,43 +122,55 @@ namespace ReaLTaiizor.Forms
             this.richTextBoxMessage.Anchor = (System.Windows.Forms.AnchorStyles)(System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom
             | System.Windows.Forms.AnchorStyles.Left
             | System.Windows.Forms.AnchorStyles.Right);
-            this.richTextBoxMessage.BackColor = System.Drawing.Color.FromArgb((int)(byte)255, (int)(byte)255, (int)(byte)255);
-            //this.richTextBoxMessage.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.richTextBoxMessage.AnimateReadOnly = false;
+            this.richTextBoxMessage.BackColor = System.Drawing.Color.White;
+            this.richTextBoxMessage.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.richTextBoxMessage.CharacterCasing = System.Windows.Forms.CharacterCasing.Normal;
+            this.richTextBoxMessage.Cursor = System.Windows.Forms.Cursors.IBeam;
             this.richTextBoxMessage.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.MaterialFlexibleFormBindingSource, "MessageText", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.richTextBoxMessage.Depth = 0;
-            this.richTextBoxMessage.Font = new System.Drawing.Font("Roboto", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
-            this.richTextBoxMessage.ForeColor = System.Drawing.Color.FromArgb((int)(byte)222, (int)(byte)0, (int)(byte)0, (int)(byte)0);
+            this.richTextBoxMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, (byte)0);
+            this.richTextBoxMessage.HideSelection = true;
             this.richTextBoxMessage.Location = new System.Drawing.Point(56, 12);
             this.richTextBoxMessage.Margin = new System.Windows.Forms.Padding(0);
-            this.richTextBoxMessage.MouseState = MaterialMouseState.HOVER;
+            this.richTextBoxMessage.MaxLength = 32767;
+            this.richTextBoxMessage.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.OUT;
             this.richTextBoxMessage.Name = "richTextBoxMessage";
+            this.richTextBoxMessage.PasswordChar = '\0';
             this.richTextBoxMessage.ReadOnly = true;
             this.richTextBoxMessage.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.richTextBoxMessage.Size = new System.Drawing.Size(314, 65);
+            this.richTextBoxMessage.SelectedText = "";
+            this.richTextBoxMessage.SelectionLength = 0;
+            this.richTextBoxMessage.SelectionStart = 0;
+            this.richTextBoxMessage.ShortcutsEnabled = true;
+            this.richTextBoxMessage.Size = new System.Drawing.Size(377, 111);
             this.richTextBoxMessage.TabIndex = 0;
             this.richTextBoxMessage.TabStop = false;
             this.richTextBoxMessage.Text = "<Message>";
-            //this.richTextBoxMessage.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.richTextBoxMessage_LinkClicked);
+            this.richTextBoxMessage.TextAlign = System.Windows.Forms.HorizontalAlignment.Left;
+            this.richTextBoxMessage.UseSystemPasswordChar = false;
             // 
             // leftButton
             // 
             this.leftButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.leftButton.AutoSize = false;
             this.leftButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.leftButton.Density = MaterialButton.MaterialButtonDensity.Default;
+            this.leftButton.Density = ReaLTaiizor.Controls.MaterialButton.MaterialButtonDensity.Default;
             this.leftButton.Depth = 0;
             this.leftButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.leftButton.HighEmphasis = false;
             this.leftButton.Icon = null;
-            this.leftButton.Location = new System.Drawing.Point(32, 163);
+            this.leftButton.IconType = ReaLTaiizor.Controls.MaterialButton.MaterialIconType.Rebase;
+            this.leftButton.Location = new System.Drawing.Point(63, 209);
             this.leftButton.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.leftButton.MinimumSize = new System.Drawing.Size(0, 24);
-            this.leftButton.MouseState = MaterialMouseState.HOVER;
+            this.leftButton.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             this.leftButton.Name = "leftButton";
+            this.leftButton.NoAccentTextColor = System.Drawing.Color.Empty;
             this.leftButton.Size = new System.Drawing.Size(108, 36);
             this.leftButton.TabIndex = 14;
             this.leftButton.Text = "OK";
-            this.leftButton.Type = MaterialButton.MaterialButtonType.Text;
+            this.leftButton.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Text;
             this.leftButton.UseAccentColor = false;
             this.leftButton.UseVisualStyleBackColor = true;
             this.leftButton.Visible = false;
@@ -161,20 +180,22 @@ namespace ReaLTaiizor.Forms
             this.middleButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.middleButton.AutoSize = false;
             this.middleButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.middleButton.Density = MaterialButton.MaterialButtonDensity.Default;
+            this.middleButton.Density = ReaLTaiizor.Controls.MaterialButton.MaterialButtonDensity.Default;
             this.middleButton.Depth = 0;
             this.middleButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.middleButton.HighEmphasis = true;
             this.middleButton.Icon = null;
-            this.middleButton.Location = new System.Drawing.Point(148, 163);
+            this.middleButton.IconType = ReaLTaiizor.Controls.MaterialButton.MaterialIconType.Rebase;
+            this.middleButton.Location = new System.Drawing.Point(179, 209);
             this.middleButton.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.middleButton.MinimumSize = new System.Drawing.Size(0, 24);
-            this.middleButton.MouseState = MaterialMouseState.HOVER;
+            this.middleButton.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             this.middleButton.Name = "middleButton";
+            this.middleButton.NoAccentTextColor = System.Drawing.Color.Empty;
             this.middleButton.Size = new System.Drawing.Size(102, 36);
             this.middleButton.TabIndex = 15;
             this.middleButton.Text = "OK";
-            this.middleButton.Type = MaterialButton.MaterialButtonType.Text;
+            this.middleButton.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Text;
             this.middleButton.UseAccentColor = false;
             this.middleButton.UseVisualStyleBackColor = true;
             this.middleButton.Visible = false;
@@ -184,20 +205,22 @@ namespace ReaLTaiizor.Forms
             this.rightButton.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
             this.rightButton.AutoSize = false;
             this.rightButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.rightButton.Density = MaterialButton.MaterialButtonDensity.Default;
+            this.rightButton.Density = ReaLTaiizor.Controls.MaterialButton.MaterialButtonDensity.Default;
             this.rightButton.Depth = 0;
             this.rightButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.rightButton.HighEmphasis = true;
             this.rightButton.Icon = null;
-            this.rightButton.Location = new System.Drawing.Point(258, 163);
+            this.rightButton.IconType = ReaLTaiizor.Controls.MaterialButton.MaterialIconType.Rebase;
+            this.rightButton.Location = new System.Drawing.Point(289, 209);
             this.rightButton.Margin = new System.Windows.Forms.Padding(4, 6, 4, 6);
             this.rightButton.MinimumSize = new System.Drawing.Size(0, 24);
-            this.rightButton.MouseState = MaterialMouseState.HOVER;
+            this.rightButton.MouseState = ReaLTaiizor.Helper.MaterialDrawHelper.MaterialMouseState.HOVER;
             this.rightButton.Name = "rightButton";
+            this.rightButton.NoAccentTextColor = System.Drawing.Color.Empty;
             this.rightButton.Size = new System.Drawing.Size(106, 36);
             this.rightButton.TabIndex = 13;
             this.rightButton.Text = "OK";
-            this.rightButton.Type = MaterialButton.MaterialButtonType.Contained;
+            this.rightButton.Type = ReaLTaiizor.Controls.MaterialButton.MaterialButtonType.Contained;
             this.rightButton.UseAccentColor = false;
             this.rightButton.UseVisualStyleBackColor = true;
             this.rightButton.Visible = false;
@@ -205,7 +228,7 @@ namespace ReaLTaiizor.Forms
             // MaterialFlexibleForm
             // 
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(384, 208);
+            this.ClientSize = new System.Drawing.Size(447, 254);
             this.Controls.Add(this.leftButton);
             this.Controls.Add(this.middleButton);
             this.Controls.Add(this.rightButton);
@@ -221,11 +244,17 @@ namespace ReaLTaiizor.Forms
             this.Text = "<Caption>";
             this.Load += new System.EventHandler(this.MaterialFlexibleForm_Load);
             this.Shown += new System.EventHandler(this.MaterialFlexibleForm_Shown);
-            ((System.ComponentModel.ISupportInitialize)this.MaterialFlexibleFormBindingSource).EndInit();
+            ((ISupportInitialize)this.MaterialFlexibleFormBindingSource).EndInit();
             this.messageContainer.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)this.pictureBoxForIcon).EndInit();
+            ((ISupportInitialize)this.pictureBoxForIcon).EndInit();
             this.ResumeLayout(false);
 
+        }
+
+        protected override void OnDpiChanged(DpiChangedEventArgs e)
+        {
+            ScaleFactor = SkinManager.GetDeviceScaleFactor(this);
+            base.OnDpiChanged(e);
         }
 
         private System.Windows.Forms.BindingSource MaterialFlexibleFormBindingSource;
@@ -320,7 +349,12 @@ namespace ReaLTaiizor.Forms
             /// <summary>
             /// Defines the tr
             /// </summary>
-            tr
+            tr,
+
+            /// <summary>
+            /// Defines the zh
+            /// </summary>
+            zh
         };
 
         private static readonly string[] BUTTON_TEXTS_ENGLISH_EN = { "OK", "Cancel", "&Yes", "&No", "&Abort", "&Retry", "&Ignore" }; //Note: This is also the fallback language
@@ -338,6 +372,8 @@ namespace ReaLTaiizor.Forms
         private static readonly string[] BUTTON_TEXTS_POLISH_PL = { "OK", "Anuluj", "Tak", "Nie", "Opuść", "Powtórz", "Ignoruj" };
 
         private static readonly string[] BUTTON_TEXTS_TURKISH_TR = { "Tamam", "İptal", "&Evet", "&Hayır", "&Sonlandır", "&Yeniden Dene", "&Yoksay" }; //Abort: &Durdur
+
+        private static readonly string[] BUTTON_TEXTS_SIMPLIFIED_CHINESE_ZH = { "确定", "取消", "&是", "&否", "&中止", "&重试", "&忽略" };
 
         private MessageBoxDefaultButton defaultButton;
 
@@ -357,7 +393,7 @@ namespace ReaLTaiizor.Forms
 
             materialManager = MaterialSkinManager.Instance;
             materialManager.AddFormToManage(this);
-            FONT = materialManager.GetFontByType(MaterialSkinManager.FontType.Body1);
+            FONT = materialManager.GetFontByType(MaterialSkinManager.FontType.Body1, ScaleFactor);
             messageContainer.BackColor = this.BackColor;
         }
 
@@ -385,6 +421,7 @@ namespace ReaLTaiizor.Forms
                 TwoLetterISOLanguageID.ro => BUTTON_TEXTS_ROMANIAN_RO[buttonTextArrayIndex],
                 TwoLetterISOLanguageID.pl => BUTTON_TEXTS_POLISH_PL[buttonTextArrayIndex],
                 TwoLetterISOLanguageID.tr => BUTTON_TEXTS_TURKISH_TR[buttonTextArrayIndex],
+                TwoLetterISOLanguageID.zh => BUTTON_TEXTS_SIMPLIFIED_CHINESE_ZH[buttonTextArrayIndex],
                 _ => BUTTON_TEXTS_ENGLISH_EN[buttonTextArrayIndex],
             };
         }
@@ -421,6 +458,15 @@ namespace ReaLTaiizor.Forms
 
         private static void SetDialogSizes(MaterialFlexibleForm MaterialFlexibleForm, string text, string caption)
         {
+            MaterialFlexibleForm.messageContainer.Location = new Point(1, (int)((STATUS_BAR_PADDING + ACTION_BAR_PADDING + 10) * MaterialFlexibleForm.ScaleFactor));
+            MaterialFlexibleForm.pictureBoxForIcon.Size = new System.Drawing.Size((int)(32 * MaterialFlexibleForm.ScaleFactor), (int)(32 * MaterialFlexibleForm.ScaleFactor));
+            MaterialFlexibleForm.pictureBoxForIcon.Location = new System.Drawing.Point((int)(12 * MaterialFlexibleForm.ScaleFactor), 12);
+            // Form did not show and MaterialFlexibleForm.pictureBoxForIcon.Visible will return false forever.
+            int contentLeft = MaterialFlexibleForm.hasIcon
+                ? (int)(56 * MaterialFlexibleForm.ScaleFactor)
+                : (int)(24 * MaterialFlexibleForm.ScaleFactor);
+            MaterialFlexibleForm.richTextBoxMessage.Location = new System.Drawing.Point(contentLeft, 12);
+            MaterialFlexibleForm.materialLabel1.Location = new System.Drawing.Point(contentLeft, 12);
             //First set the bounds for the maximum dialog size
             MaterialFlexibleForm.MaximumSize = new Size(Convert.ToInt32(SystemInformation.WorkingArea.Width * MaterialFlexibleForm.GetCorrectedWorkingAreaFactor(MAX_WIDTH_FACTOR)),
                                                           Convert.ToInt32(SystemInformation.WorkingArea.Height * MaterialFlexibleForm.GetCorrectedWorkingAreaFactor(MAX_HEIGHT_FACTOR)));
@@ -439,13 +485,13 @@ namespace ReaLTaiizor.Forms
             const int SCROLLBAR_WIDTH_OFFSET = 15;
             int longestTextRowWidth = stringRows.Max(textForRow => TextRenderer.MeasureText(textForRow, FONT).Width);
             int captionWidth = TextRenderer.MeasureText(caption, SystemFonts.CaptionFont).Width;
-            int textWidth = Math.Max(longestTextRowWidth + SCROLLBAR_WIDTH_OFFSET, captionWidth);
+            int textWidth = Math.Max(longestTextRowWidth + (int)(SCROLLBAR_WIDTH_OFFSET * MaterialFlexibleForm.ScaleFactor), captionWidth);
 
             //Calculate margins
             int marginWidth = MaterialFlexibleForm.Width - MaterialFlexibleForm.richTextBoxMessage.Width;
             int marginHeight = MaterialFlexibleForm.Height - MaterialFlexibleForm.richTextBoxMessage.Height;
 
-            int minimumHeight = MaterialFlexibleForm.messageContainer.Top + MaterialFlexibleForm.pictureBoxForIcon.Height + (2 * 8) + 54;
+            int minimumHeight = MaterialFlexibleForm.messageContainer.Top + MaterialFlexibleForm.pictureBoxForIcon.Height + (int)(2 * 8 * MaterialFlexibleForm.ScaleFactor) + (int)(54 * MaterialFlexibleForm.ScaleFactor);
             if (marginHeight < minimumHeight)
             {
                 marginHeight = minimumHeight;
@@ -453,7 +499,23 @@ namespace ReaLTaiizor.Forms
 
             //Set calculated dialog size (if the calculated values exceed the maximums, they were cut by windows forms automatically)
             MaterialFlexibleForm.Size = new Size(textWidth + marginWidth,
-                                                   textHeight + marginHeight);
+                                                   textHeight + marginHeight + (int)(MaterialFlexibleForm.leftButton.Height * MaterialFlexibleForm.ScaleFactor * (MaterialFlexibleForm.ScaleFactor - 1)));
+            // NOTE:
+            // This uses a quadratic term: H * S * (S - 1).
+            // The method is executed before the buttons are actually scaled.
+            // At this point, leftButton.Height still represents the original size (H),
+            // while the layout pass will later apply scaling (S).
+            //
+            // A simple linear compensation (H * (S - 1)) was insufficient,
+            // because WinForms DPI layout applies additional scaling during layout.
+            // The extra * S term compensates for this pre-layout scaling stage
+            // and avoids clipping at high DPI (e.g., 200%).
+            //
+            // Verified visually at 100% and 200% scaling.
+            // If layout order changes in the future, this formula may need adjustment.
+
+            MaterialFlexibleForm.messageContainer.Height = MaterialFlexibleForm.Height - (int)((ACTION_BAR_PADDING + STATUS_BAR_PADDING + BUTTON_BAR_PADDING) * MaterialFlexibleForm.ScaleFactor) - MaterialFlexibleForm.rightButton.Height - ((int)(MaterialFlexibleForm.leftButton.Height * MaterialFlexibleForm.ScaleFactor * (MaterialFlexibleForm.ScaleFactor - 1)));
+            
         }
 
         private static void SetDialogIcon(MaterialFlexibleForm MaterialFlexibleForm, MessageBoxIcon icon)
@@ -461,22 +523,30 @@ namespace ReaLTaiizor.Forms
             switch (icon)
             {
                 case MessageBoxIcon.Information:
+                    MaterialFlexibleForm.hasIcon = true;
                     MaterialFlexibleForm.pictureBoxForIcon.Image = SystemIcons.Information.ToBitmap();
+                    MaterialFlexibleForm.pictureBoxForIcon.Visible = true;
                     break;
 
                 case MessageBoxIcon.Warning:
+                    MaterialFlexibleForm.hasIcon = true;
                     MaterialFlexibleForm.pictureBoxForIcon.Image = SystemIcons.Warning.ToBitmap();
+                    MaterialFlexibleForm.pictureBoxForIcon.Visible = true;
                     break;
 
                 case MessageBoxIcon.Error:
+                    MaterialFlexibleForm.hasIcon = true;
                     MaterialFlexibleForm.pictureBoxForIcon.Image = SystemIcons.Error.ToBitmap();
+                    MaterialFlexibleForm.pictureBoxForIcon.Visible = true;
                     break;
 
                 case MessageBoxIcon.Question:
+                    MaterialFlexibleForm.hasIcon = true;
                     MaterialFlexibleForm.pictureBoxForIcon.Image = SystemIcons.Question.ToBitmap();
+                    MaterialFlexibleForm.pictureBoxForIcon.Visible = true;
                     break;
-
                 default:
+                    MaterialFlexibleForm.hasIcon = false;
                     //When no icon is used: Correct placement and width of rich text box.
                     MaterialFlexibleForm.pictureBoxForIcon.Visible = false;
                     MaterialFlexibleForm.richTextBoxMessage.Left -= MaterialFlexibleForm.pictureBoxForIcon.Width;
@@ -663,6 +733,22 @@ namespace ReaLTaiizor.Forms
 
         public string MessageText { get; set; }
 
+
+        private float? _scaleRatio; // Cache
+        private float ScaleFactor
+        {
+            get
+            {
+                if (!_scaleRatio.HasValue)
+                {
+                    _scaleRatio = SkinManager.GetDeviceScaleFactor(this);
+                }
+                return _scaleRatio.Value;
+            }
+
+            set => _scaleRatio = value;
+        }
+
         public static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons buttons, MessageBoxIcon icon, MessageBoxDefaultButton defaultButton, bool UseRichTextBox = true, ButtonsPosition buttonsPosition = ButtonsPosition.Right)
         {
             //Create a new instance of the FlexibleMessageBox form
@@ -675,6 +761,9 @@ namespace ReaLTaiizor.Forms
                 CaptionText = caption,
                 MessageText = text
             };
+
+            MaterialFlexibleForm.Width = (int)(MaterialFlexibleForm.Width * MaterialFlexibleForm.ScaleFactor);
+            MaterialFlexibleForm.Height = (int)(MaterialFlexibleForm.Height * MaterialFlexibleForm.ScaleFactor);
             MaterialFlexibleForm.MaterialFlexibleFormBindingSource.DataSource = MaterialFlexibleForm;
 
 
@@ -708,7 +797,11 @@ namespace ReaLTaiizor.Forms
 
         private static void SetButtonsPosition(MaterialFlexibleForm fMF, ButtonsPosition buttonsPosition)
         {
-            const int padding = 10;
+            const int padding = BUTTONS_PADDING;
+            fMF.leftButton.Size = new((int)(fMF.leftButton.Width * fMF.ScaleFactor), (int)(fMF.leftButton.Height * fMF.ScaleFactor));
+            fMF.middleButton.Size = new((int)(fMF.middleButton.Width * fMF.ScaleFactor), (int)(fMF.middleButton.Height * fMF.ScaleFactor));
+            fMF.rightButton.Size = new((int)(fMF.rightButton.Width * fMF.ScaleFactor), (int)(fMF.rightButton.Height * fMF.ScaleFactor));
+            
             int visibleButtonsWidth = 0;
             switch (buttonsPosition)
             {
@@ -717,18 +810,18 @@ namespace ReaLTaiizor.Forms
                     {
                         case 3:
                             fMF.middleButton.Left = (fMF.Width / 2) - (fMF.middleButton.Width / 2);
-                            fMF.leftButton.Left = fMF.middleButton.Left - fMF.leftButton.Width - (padding * 2);
-                            fMF.rightButton.Left = fMF.middleButton.Right + (padding * 2);
-                            visibleButtonsWidth = fMF.leftButton.Width + fMF.middleButton.Width + fMF.rightButton.Width + (padding * 6);
+                            fMF.leftButton.Left = fMF.middleButton.Left - fMF.leftButton.Width - ((int)(padding * fMF.ScaleFactor) * 2);
+                            fMF.rightButton.Left = fMF.middleButton.Right + ((int)(padding * fMF.ScaleFactor) * 2);
+                            visibleButtonsWidth = fMF.leftButton.Width + fMF.middleButton.Width + fMF.rightButton.Width + ((int)(padding * fMF.ScaleFactor) * 6);
                             break;
                         case 2:
-                            fMF.middleButton.Left = (fMF.Width / 2) - fMF.middleButton.Width - padding;
-                            fMF.rightButton.Left = (fMF.Width / 2) + padding;
-                            visibleButtonsWidth = fMF.middleButton.Width + fMF.rightButton.Width + (padding * 4);
+                            fMF.middleButton.Left = (fMF.Width / 2) - fMF.middleButton.Width - (int)(padding * fMF.ScaleFactor);
+                            fMF.rightButton.Left = (fMF.Width / 2) + (int)(padding * fMF.ScaleFactor);
+                            visibleButtonsWidth = fMF.middleButton.Width + fMF.rightButton.Width + ((int)(padding * fMF.ScaleFactor) * 4);
                             break;
                         case 1:
                             fMF.rightButton.Left = (fMF.Width / 2) - (fMF.rightButton.Width / 2);
-                            visibleButtonsWidth = fMF.rightButton.Width + (padding * 2);
+                            visibleButtonsWidth = fMF.rightButton.Width + ((int)(padding * fMF.ScaleFactor) * 2);
                             break;
                         default:
                             break;
@@ -738,19 +831,19 @@ namespace ReaLTaiizor.Forms
                     switch (fMF.visibleButtonsCount)
                     {
                         case 3:
-                            fMF.leftButton.Left = padding;
-                            fMF.middleButton.Left = fMF.leftButton.Right + (padding * 2);
-                            fMF.rightButton.Left = fMF.middleButton.Right + (padding * 2);
-                            visibleButtonsWidth = fMF.leftButton.Width + fMF.middleButton.Width + fMF.rightButton.Width + (padding * 6);
+                            fMF.leftButton.Left = (int)(padding * fMF.ScaleFactor);
+                            fMF.middleButton.Left = fMF.leftButton.Right + ((int)(padding * fMF.ScaleFactor) * 2);
+                            fMF.rightButton.Left = fMF.middleButton.Right + ((int)(padding * fMF.ScaleFactor) * 2);
+                            visibleButtonsWidth = fMF.leftButton.Width + fMF.middleButton.Width + fMF.rightButton.Width + ((int)(padding * fMF.ScaleFactor) * 6);
                             break;
                         case 2:
-                            fMF.middleButton.Left = padding;
-                            fMF.rightButton.Left = fMF.middleButton.Right + (padding * 2);
-                            visibleButtonsWidth = fMF.middleButton.Width + fMF.rightButton.Width + (padding * 4);
+                            fMF.middleButton.Left = (int)(padding * fMF.ScaleFactor);
+                            fMF.rightButton.Left = fMF.middleButton.Right + ((int)(padding * fMF.ScaleFactor) * 2);
+                            visibleButtonsWidth = fMF.middleButton.Width + fMF.rightButton.Width + ((int)(padding * fMF.ScaleFactor) * 4);
                             break;
                         case 1:
-                            fMF.rightButton.Left = padding;
-                            visibleButtonsWidth = fMF.rightButton.Width + (padding * 2);
+                            fMF.rightButton.Left = (int)(padding * fMF.ScaleFactor);
+                            visibleButtonsWidth = fMF.rightButton.Width + ((int)(padding * fMF.ScaleFactor) * 2);
                             break;
                         default:
                             break;
@@ -759,19 +852,19 @@ namespace ReaLTaiizor.Forms
                 case ButtonsPosition.Right:
                     // This alignment is simplest, in this alignment doesn't care how many buttons are visible.
                     // Always the buttons visibility order is right, right + middle, right + middle + left
-                    fMF.rightButton.Left = fMF.Width - fMF.rightButton.Width - padding;
-                    fMF.middleButton.Left = fMF.rightButton.Left - fMF.middleButton.Width - (padding * 2);
-                    fMF.leftButton.Left = fMF.middleButton.Left - fMF.leftButton.Width - (padding * 2);
+                    fMF.rightButton.Left = fMF.Width - fMF.rightButton.Width - (int)(padding * fMF.ScaleFactor);
+                    fMF.middleButton.Left = fMF.rightButton.Left - fMF.middleButton.Width - ((int)(padding * fMF.ScaleFactor) * 2);
+                    fMF.leftButton.Left = fMF.middleButton.Left - fMF.leftButton.Width - ((int)(padding * fMF.ScaleFactor) * 2);
                     switch (fMF.visibleButtonsCount)
                     {
                         case 3:
-                            visibleButtonsWidth = fMF.leftButton.Width + fMF.middleButton.Width + fMF.rightButton.Width + (padding * 6);
+                            visibleButtonsWidth = fMF.leftButton.Width + fMF.middleButton.Width + fMF.rightButton.Width + ((int)(padding * fMF.ScaleFactor) * 6);
                             break;
                         case 2:
-                            visibleButtonsWidth = fMF.middleButton.Width + fMF.rightButton.Width + (padding * 4);
+                            visibleButtonsWidth = fMF.middleButton.Width + fMF.rightButton.Width + ((int)(padding * fMF.ScaleFactor) * 4);
                             break;
                         case 1:
-                            visibleButtonsWidth = fMF.rightButton.Width + (padding * 2);
+                            visibleButtonsWidth = fMF.rightButton.Width + ((int)(padding * fMF.ScaleFactor) * 2);
                             break;
                         default:
                             break;
@@ -781,19 +874,19 @@ namespace ReaLTaiizor.Forms
                     switch (fMF.visibleButtonsCount)
                     {
                         case 3:
-                            fMF.leftButton.Left = padding;
+                            fMF.leftButton.Left = (int)(padding * fMF.ScaleFactor);
                             fMF.middleButton.Left = (fMF.Width / 2) - (fMF.middleButton.Width / 2);
-                            fMF.rightButton.Left = fMF.Width - fMF.rightButton.Width - (padding * 2);
-                            visibleButtonsWidth = fMF.leftButton.Width + fMF.middleButton.Width + fMF.rightButton.Width + (padding * 6);
+                            fMF.rightButton.Left = fMF.Width - fMF.rightButton.Width - ((int)(padding * fMF.ScaleFactor) * 2);
+                            visibleButtonsWidth = fMF.leftButton.Width + fMF.middleButton.Width + fMF.rightButton.Width + ((int)(padding * fMF.ScaleFactor) * 6);
                             break;
                         case 2:
-                            fMF.middleButton.Left = padding;
-                            fMF.rightButton.Left = fMF.Width - fMF.rightButton.Width - (padding * 2);
-                            visibleButtonsWidth = fMF.middleButton.Width + fMF.rightButton.Width + (padding * 4);
+                            fMF.middleButton.Left = (int)(padding * fMF.ScaleFactor);
+                            fMF.rightButton.Left = fMF.Width - fMF.rightButton.Width - ((int)(padding * fMF.ScaleFactor) * 2);
+                            visibleButtonsWidth = fMF.middleButton.Width + fMF.rightButton.Width + ((int)(padding * fMF.ScaleFactor) * 4);
                             break;
                         case 1:
                             fMF.rightButton.Left = (fMF.Width / 2) - (fMF.middleButton.Width / 2);
-                            visibleButtonsWidth = fMF.rightButton.Width + (padding * 2);
+                            visibleButtonsWidth = fMF.rightButton.Width + ((int)(padding * fMF.ScaleFactor) * 2);
                             break;
                         default:
                             break;
