@@ -192,36 +192,45 @@ namespace ReaLTaiizor.Controls
             CellBorderStyle = DataGridViewCellBorderStyle.None;
             EnableHeadersVisualStyles = false;
             SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            BackColor = PoisonPaint.BackColor.Form(Theme);
-            BackgroundColor = PoisonPaint.BackColor.Form(Theme);
-            GridColor = PoisonPaint.BackColor.Form(Theme);
-            ForeColor = PoisonPaint.ForeColor.Button.Disabled(Theme);
+
+            if (!UseCustomForeColor)
+            {
+                ForeColor = PoisonPaint.ForeColor.Button.Disabled(Theme);
+            }
+
             Font = new("Segoe UI", 11f, FontStyle.Regular, GraphicsUnit.Pixel);
 
             RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             AllowUserToResizeRows = false;
 
             ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            ColumnHeadersDefaultCellStyle.BackColor = PoisonPaint.GetStyleColor(Style);
-            ColumnHeadersDefaultCellStyle.ForeColor = PoisonPaint.ForeColor.Button.Press(Theme);
-
             RowHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            RowHeadersDefaultCellStyle.BackColor = PoisonPaint.GetStyleColor(Style);
-            RowHeadersDefaultCellStyle.ForeColor = PoisonPaint.ForeColor.Button.Press(Theme);
 
-            DefaultCellStyle.BackColor = PoisonPaint.BackColor.Form(Theme);
+            if (!UseCustomBackColor)
+            {
+                BackColor = PoisonPaint.BackColor.Form(Theme);
+                BackgroundColor = PoisonPaint.BackColor.Form(Theme);
+                GridColor = PoisonPaint.BackColor.Form(Theme);
 
-            DefaultCellStyle.SelectionBackColor = ControlPaint.Light(PoisonPaint.GetStyleColor(Style), HighLightPercentage);
-            DefaultCellStyle.SelectionForeColor = Color.FromArgb(17, 17, 17);
+                ColumnHeadersDefaultCellStyle.BackColor = PoisonPaint.GetStyleColor(Style);
+                RowHeadersDefaultCellStyle.BackColor = PoisonPaint.GetStyleColor(Style);
 
-            DefaultCellStyle.SelectionBackColor = ControlPaint.Light(PoisonPaint.GetStyleColor(Style), HighLightPercentage);
-            DefaultCellStyle.SelectionForeColor = Color.FromArgb(17, 17, 17);
+                DefaultCellStyle.BackColor = PoisonPaint.BackColor.Form(Theme);
 
-            RowHeadersDefaultCellStyle.SelectionBackColor = ControlPaint.Light(PoisonPaint.GetStyleColor(Style), HighLightPercentage);
-            RowHeadersDefaultCellStyle.SelectionForeColor = Color.FromArgb(17, 17, 17);
+                DefaultCellStyle.SelectionBackColor = ControlPaint.Light(PoisonPaint.GetStyleColor(Style), HighLightPercentage);
+                RowHeadersDefaultCellStyle.SelectionBackColor = ControlPaint.Light(PoisonPaint.GetStyleColor(Style), HighLightPercentage);
+                ColumnHeadersDefaultCellStyle.SelectionBackColor = ControlPaint.Light(PoisonPaint.GetStyleColor(Style), HighLightPercentage);
+            }
 
-            ColumnHeadersDefaultCellStyle.SelectionBackColor = ControlPaint.Light(PoisonPaint.GetStyleColor(Style), HighLightPercentage);
-            ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.FromArgb(17, 17, 17);
+            if (!UseCustomForeColor)
+            {
+                ColumnHeadersDefaultCellStyle.ForeColor = PoisonPaint.ForeColor.Button.Press(Theme);
+                RowHeadersDefaultCellStyle.ForeColor = PoisonPaint.ForeColor.Button.Press(Theme);
+
+                DefaultCellStyle.SelectionForeColor = Color.FromArgb(17, 17, 17);
+                RowHeadersDefaultCellStyle.SelectionForeColor = Color.FromArgb(17, 17, 17);
+                ColumnHeadersDefaultCellStyle.SelectionForeColor = Color.FromArgb(17, 17, 17);
+            }
         }
     }
 
