@@ -7,6 +7,7 @@ using ReaLTaiizor.Interface.Poison;
 using ReaLTaiizor.Manager;
 using ReaLTaiizor.Util;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
@@ -164,6 +165,68 @@ namespace ReaLTaiizor.Controls
         private bool isHovered = false;
         private bool isPressed = false;
         private bool isFocused = false;
+        private int selectedFieldIndex = 0;
+
+        #endregion
+
+        #region Selection Helpers
+
+        private List<(int Start, int Length)> GetDateTextParts()
+        {
+            string text = Text;
+            List<(int Start, int Length)> parts = new();
+            int i = 0;
+
+            while (i < text.Length)
+            {
+                if (char.IsLetterOrDigit(text[i]))
+                {
+                    int start = i;
+                    while (i < text.Length && char.IsLetterOrDigit(text[i]))
+                    {
+                        i++;
+                    }
+
+                    parts.Add((start, i - start));
+                }
+                else
+                {
+                    i++;
+                }
+            }
+
+            return parts;
+        }
+
+        private RectangleF GetTextPartBounds(Graphics g, int start, int length, RectangleF layoutRect)
+        {
+            string text = Text;
+
+            if (string.IsNullOrEmpty(text) || start < 0 || start + length > text.Length)
+            {
+                return RectangleF.Empty;
+            }
+
+            TextFormatFlags drawFlags = TextFormatFlags.Left | TextFormatFlags.VerticalCenter;
+            TextFormatFlags measureFlags = drawFlags | TextFormatFlags.NoPadding;
+            Size proposedSize = new(int.MaxValue, (int)layoutRect.Height);
+
+            int withPad = TextRenderer.MeasureText(g, text, Font, proposedSize, drawFlags).Width;
+            int noPad = TextRenderer.MeasureText(g, text, Font, proposedSize, measureFlags).Width;
+            int leftPad = (withPad - noPad + 1) / 2;
+
+            int xBefore = start > 0
+                ? TextRenderer.MeasureText(g, text.Substring(0, start), Font, proposedSize, measureFlags).Width
+                : 0;
+            int xThrough = TextRenderer.MeasureText(g, text.Substring(0, start + length), Font, proposedSize, measureFlags).Width;
+
+            return new RectangleF(
+                layoutRect.X + leftPad + xBefore,
+                layoutRect.Y,
+                xThrough - xBefore,
+                layoutRect.Height
+            );
+        }
 
         #endregion
 
@@ -321,6 +384,39 @@ namespace ReaLTaiizor.Controls
 
             TextRenderer.DrawText(e.Graphics, Text, Font, textRect, foreColor, TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
 
+            if (isFocused && Enabled)
+            {
+                List<(int Start, int Length)> parts = GetDateTextParts();
+
+                if (parts.Count > 0)
+                {
+                    int idx = Math.Min(selectedFieldIndex, parts.Count - 1);
+                    RectangleF layoutRect = new(textRect.X, textRect.Y, textRect.Width, textRect.Height);
+                    RectangleF selBounds = GetTextPartBounds(e.Graphics, parts[idx].Start, parts[idx].Length, layoutRect);
+
+                    if (selBounds.Width > 0)
+                    {
+                        Color highlightColor = PoisonPaint.GetStyleColor(Style);
+                        Rectangle highlightRect = new(
+                            (int)Math.Floor(selBounds.X) - 1,
+                            textRect.Y + 1,
+                            (int)Math.Ceiling(selBounds.Width) + 2,
+                            textRect.Height - 2
+                        );
+
+                        using (SolidBrush hb = new(highlightColor))
+                        {
+                            e.Graphics.FillRectangle(hb, highlightRect);
+                        }
+
+                        var gfxState = e.Graphics.Save();
+                        e.Graphics.SetClip(highlightRect);
+                        TextRenderer.DrawText(e.Graphics, Text, Font, textRect, Color.White, TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
+                        e.Graphics.Restore(gfxState);
+                    }
+                }
+            }
+
             OnCustomPaintForeground(new PoisonPaintEventArgs(Color.Empty, foreColor, e.Graphics));
 
             if (DisplayFocus && isFocused)
@@ -343,6 +439,7 @@ namespace ReaLTaiizor.Controls
         {
             isFocused = true;
             isHovered = true;
+            selectedFieldIndex = 0;
             Invalidate();
 
             base.OnGotFocus(e);
@@ -362,6 +459,7 @@ namespace ReaLTaiizor.Controls
         {
             isFocused = true;
             isHovered = true;
+            selectedFieldIndex = 0;
             Invalidate();
 
             base.OnEnter(e);
@@ -383,7 +481,24 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Space)
+            if (e.KeyCode == Keys.Left)
+            {
+                if (selectedFieldIndex > 0)
+                {
+                    selectedFieldIndex--;
+                    Invalidate();
+                }
+            }
+            else if (e.KeyCode == Keys.Right)
+            {
+                List<(int Start, int Length)> parts = GetDateTextParts();
+                if (selectedFieldIndex < parts.Count - 1)
+                {
+                    selectedFieldIndex++;
+                    Invalidate();
+                }
+            }
+            else if (e.KeyCode == Keys.Space)
             {
                 isHovered = true;
                 isPressed = true;
@@ -419,6 +534,45 @@ namespace ReaLTaiizor.Controls
             if (e.Button == MouseButtons.Left)
             {
                 isPressed = true;
+
+                int _check = ShowCheckBox ? 15 : 0;
+
+                if (e.X >= 2 + _check && e.X < Width - 20)
+                {
+                    List<(int Start, int Length)> parts = GetDateTextParts();
+
+                    if (parts.Count > 0)
+                    {
+                        RectangleF layoutRect = new(2 + _check, 2, Width - 20, Height - 4);
+
+                        using Graphics g = CreateGraphics();
+                        int bestIndex = 0;
+                        float bestDistance = float.MaxValue;
+
+                        for (int i = 0; i < parts.Count; i++)
+                        {
+                            RectangleF bounds = GetTextPartBounds(g, parts[i].Start, parts[i].Length, layoutRect);
+
+                            if (e.X >= bounds.Left && e.X <= bounds.Right)
+                            {
+                                bestIndex = i;
+                                bestDistance = 0;
+                                break;
+                            }
+
+                            float dist = Math.Min(Math.Abs(e.X - bounds.Left), Math.Abs(e.X - bounds.Right));
+
+                            if (dist < bestDistance)
+                            {
+                                bestDistance = dist;
+                                bestIndex = i;
+                            }
+                        }
+
+                        selectedFieldIndex = bestIndex;
+                    }
+                }
+
                 Invalidate();
             }
 
