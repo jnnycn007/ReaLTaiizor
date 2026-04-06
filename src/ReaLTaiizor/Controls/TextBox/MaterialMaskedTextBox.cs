@@ -366,6 +366,8 @@ namespace ReaLTaiizor.Controls
 
         public void Paste() { baseTextBox.Paste(); }
 
+        public void ScrollToCaret() { baseTextBox.ScrollToCaret(); }
+
         #region "Events"
 
         [Category("Action")]

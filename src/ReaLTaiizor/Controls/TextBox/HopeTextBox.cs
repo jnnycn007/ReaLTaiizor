@@ -45,6 +45,7 @@ namespace ReaLTaiizor.Controls
         public void SelectAll() { _baseTextBox.SelectAll(); }
         public void Clear() { _baseTextBox.Clear(); }
         public new void Focus() { _baseTextBox.Focus(); }
+        public void ScrollToCaret() { _baseTextBox.ScrollToCaret(); }
 
         public override Font Font
         {

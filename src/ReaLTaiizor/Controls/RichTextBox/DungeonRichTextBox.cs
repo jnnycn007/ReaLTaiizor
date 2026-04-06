@@ -134,6 +134,11 @@ namespace ReaLTaiizor.Controls
 
         #endregion
 
+        public void ScrollToCaret()
+        {
+            DungeonRTB.ScrollToCaret();
+        }
+
         public void AddRichTextBox()
         {
             RichTextBox _RTB = DungeonRTB;

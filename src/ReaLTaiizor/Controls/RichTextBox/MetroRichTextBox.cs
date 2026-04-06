@@ -513,6 +513,11 @@ namespace ReaLTaiizor.Controls
             _richTextBox.Select(start, length);
         }
 
+        public void ScrollToCaret()
+        {
+            _richTextBox?.ScrollToCaret();
+        }
+
         public void Paste(DataFormats.Format clipFormat)
         {
             if (_richTextBox == null)

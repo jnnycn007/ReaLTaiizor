@@ -611,6 +611,11 @@ namespace ReaLTaiizor.Controls
             baseTextBox.AppendText(text);
         }
 
+        public void ScrollToCaret()
+        {
+            baseTextBox.ScrollToCaret();
+        }
+
         #endregion
 
         #region Paint Methods

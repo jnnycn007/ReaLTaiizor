@@ -185,6 +185,11 @@ namespace ReaLTaiizor.Controls
 
         #endregion
 
+        public void ScrollToCaret()
+        {
+            DungeonTB.ScrollToCaret();
+        }
+
         public void AddTextBox()
         {
             TextBox _TB = DungeonTB;

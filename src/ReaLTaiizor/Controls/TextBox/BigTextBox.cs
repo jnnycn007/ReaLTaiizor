@@ -201,6 +201,11 @@ namespace ReaLTaiizor.Controls
 
         #endregion
 
+        public void ScrollToCaret()
+        {
+            RT_TB.ScrollToCaret();
+        }
+
         public void AddTextBox()
         {
             TextBox _TB = RT_TB;

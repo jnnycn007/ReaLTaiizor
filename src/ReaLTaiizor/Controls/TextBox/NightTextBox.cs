@@ -400,6 +400,11 @@ namespace ReaLTaiizor.Controls
             Size = new(145, 49);
         }
 
+        public void ScrollToCaret()
+        {
+            tbCtrl.ScrollToCaret();
+        }
+
         private void AddTextBox()
         {
             tbCtrl.Size = new(Width - 10, 49);

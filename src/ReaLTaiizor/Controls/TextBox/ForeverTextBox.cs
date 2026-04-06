@@ -318,6 +318,11 @@ namespace ReaLTaiizor.Controls
 
         #endregion
 
+        public void ScrollToCaret()
+        {
+            TB.ScrollToCaret();
+        }
+
         private void UpdateColors()
         {
             ForeverColors Colors = ForeverLibrary.GetColors(this);

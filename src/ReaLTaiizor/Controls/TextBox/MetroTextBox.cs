@@ -472,6 +472,11 @@ namespace ReaLTaiizor.Controls
             _textBox?.Select(start, length);
         }
 
+        public void ScrollToCaret()
+        {
+            _textBox?.ScrollToCaret();
+        }
+
         #endregion
 
         #region Properties

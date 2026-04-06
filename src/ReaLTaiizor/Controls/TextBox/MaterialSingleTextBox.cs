@@ -54,6 +54,7 @@ namespace ReaLTaiizor.Controls
         public void SelectAll() { _baseTextBox.SelectAll(); }
         public void Clear() { _baseTextBox.Clear(); }
         public void Focus() { _baseTextBox.Focus(); }
+        public void ScrollToCaret() { _baseTextBox.ScrollToCaret(); }
 
         # region Forwarding events to baseTextBox
         public event EventHandler AcceptsTabChanged

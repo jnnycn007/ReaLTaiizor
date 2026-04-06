@@ -469,6 +469,11 @@ namespace ReaLTaiizor.Controls
             TextButton = textBox.Text;
         }
 
+        public void ScrollToCaret()
+        {
+            textBox.ScrollToCaret();
+        }
+
         public void Update_TextBox(bool Visible)
         {
             textBox.Visible = Visible;

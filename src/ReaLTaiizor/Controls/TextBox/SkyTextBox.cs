@@ -101,6 +101,11 @@ namespace ReaLTaiizor.Controls
             txtbox.Text = Text;
         }
 
+        public void ScrollToCaret()
+        {
+            txtbox.ScrollToCaret();
+        }
+
         public void NewTextBox()
         {
             {

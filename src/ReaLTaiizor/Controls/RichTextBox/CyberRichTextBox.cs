@@ -400,6 +400,11 @@ namespace ReaLTaiizor.Controls
 
         #region Event Region
 
+        public void ScrollToCaret()
+        {
+            richTextBox.ScrollToCaret();
+        }
+
         public void Update_RichTextBox(bool Visible)
         {
             richTextBox.Visible = Visible;

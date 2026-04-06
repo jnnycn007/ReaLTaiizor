@@ -162,6 +162,11 @@ namespace ReaLTaiizor.Controls
             Text = TB.Text;
         }
 
+        public void ScrollToCaret()
+        {
+            TB.ScrollToCaret();
+        }
+
         public void NewTextBox()
         {
             TextBox _with1 = TB;
