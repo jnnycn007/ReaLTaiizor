@@ -311,6 +311,20 @@ namespace ReaLTaiizor.Controls
         }
 
         [Category("Cyber")]
+        [DefaultValue(HorizontalAlignment.Center)]
+        [Description("Text alignment in the textbox")]
+        public HorizontalAlignment TextAlign
+        {
+            get;
+            set
+            {
+                field = value;
+                textBox.TextAlign = field;
+                Refresh();
+            }
+        } = HorizontalAlignment.Center;
+
+        [Category("Cyber")]
         [Description("TextBox style")]
         public StateStyle CyberTextBoxStyle
         {
@@ -456,7 +470,7 @@ namespace ReaLTaiizor.Controls
             textBox.BorderStyle = BorderStyle.None;
             Font = new Font(Font.Name, Height / 4, Font.Style);
             textBox.Font = Font;
-            textBox.TextAlign = HorizontalAlignment.Center;
+            textBox.TextAlign = TextAlign;
             textBox.MaxLength = 10000;
             textBox.PasswordChar = Password ? textBox.PasswordChar = PasswordChar : textBox.PasswordChar = '\0';
         }
