@@ -436,8 +436,8 @@ namespace ReaLTaiizor.Forms
                 return;
             }
 
-            int x = (int)(message.LParam.ToInt64() & 65535);
-            int y = (int)((message.LParam.ToInt64() & -65536) >> 0x10);
+            int x = (short)(message.LParam.ToInt64() & 0xFFFF);
+            int y = (short)((message.LParam.ToInt64() >> 16) & 0xFFFF);
             Point point = PointToClient(new Point(x, y));
 
             #region  From Corners  
