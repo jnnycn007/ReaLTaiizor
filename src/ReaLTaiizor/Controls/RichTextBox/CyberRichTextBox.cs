@@ -285,6 +285,24 @@ namespace ReaLTaiizor.Controls
         }
 
         [Category("Cyber")]
+        [DefaultValue(HorizontalAlignment.Left)]
+        [Description("Text alignment in the richtextbox")]
+        public HorizontalAlignment TextAlign
+        {
+            get;
+            set
+            {
+                field = value;
+                int selStart = richTextBox.SelectionStart;
+                int selLength = richTextBox.SelectionLength;
+                richTextBox.SelectAll();
+                richTextBox.SelectionAlignment = field;
+                richTextBox.Select(selStart, selLength);
+                Refresh();
+            }
+        } = HorizontalAlignment.Left;
+
+        [Category("Cyber")]
         [Description("RichTextBox style")]
         public StateStyle CyberRichTextBoxStyle
         {
@@ -399,6 +417,7 @@ namespace ReaLTaiizor.Controls
             richTextBox.BorderStyle = BorderStyle.None;
             richTextBox.Font = Font;
             richTextBox.ScrollBars = RichTextBoxScrollBars.None;
+            richTextBox.SelectionAlignment = TextAlign;
             richTextBox.MaxLength = 10000;
         }
 

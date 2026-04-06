@@ -325,6 +325,20 @@ namespace ReaLTaiizor.Controls
         } = HorizontalAlignment.Center;
 
         [Category("Cyber")]
+        [DefaultValue(false)]
+        [Description("On/Off multiline mode")]
+        public bool Multiline
+        {
+            get;
+            set
+            {
+                field = value;
+                textBox.Multiline = field;
+                Refresh();
+            }
+        }
+
+        [Category("Cyber")]
         [Description("TextBox style")]
         public StateStyle CyberTextBoxStyle
         {
@@ -458,7 +472,12 @@ namespace ReaLTaiizor.Controls
         public void Update_TextBox(bool Visible)
         {
             textBox.Visible = Visible;
-            textBox.Size = new Size((int)(size_cybertextbox.Width - (RoundingInt / 2) - (Background_WidthPen / 2)), size_cybertextbox.Height / 2);
+            textBox.Multiline = Multiline;
+            textBox.Size = new Size(
+                (int)(size_cybertextbox.Width - (RoundingInt / 2) - (Background_WidthPen / 2)),
+                Multiline
+                    ? (int)(size_cybertextbox.Height - (RoundingInt / 2) - (Background_WidthPen / 2))
+                    : size_cybertextbox.Height / 2);
             textBox.Location = new Point((Width / 2) - (textBox.Size.Width / 2), (Height / 2) - (textBox.Size.Height / 2));
 
             if (ColorBackground.Name != "Transparent")
