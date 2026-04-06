@@ -205,10 +205,19 @@ namespace ReaLTaiizor.Controls
                 };
                 field.ControlAdded += delegate
                 {
+                    UpdateTabRects();
+                    preProcessIcons();
                     Invalidate();
                 };
                 field.ControlRemoved += delegate
                 {
+                    if (_previousSelectedTabIndex >= field.TabCount)
+                    {
+                        _previousSelectedTabIndex = field.TabCount - 1;
+                    }
+
+                    UpdateTabRects();
+                    preProcessIcons();
                     Invalidate();
                 };
             }
