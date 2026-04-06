@@ -15,23 +15,23 @@ namespace ReaLTaiizor.Util
 
     public static class HopeStringAlign
     {
-        public static StringFormat TopLeft => new() { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Near };
+        public static readonly StringFormat TopLeft = new() { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Near };
 
-        public static StringFormat TopCenter => new() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Near };
+        public static readonly StringFormat TopCenter = new() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Near };
 
-        public static StringFormat TopRight => new() { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Near };
+        public static readonly StringFormat TopRight = new() { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Near };
 
-        public static StringFormat Left => new() { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Center };
+        public static readonly StringFormat Left = new() { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Center };
 
-        public static StringFormat Center => new() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
+        public static readonly StringFormat Center = new() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Center };
 
-        public static StringFormat Right => new() { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Center };
+        public static readonly StringFormat Right = new() { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Center };
 
-        public static StringFormat BottomLeft => new() { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Far };
+        public static readonly StringFormat BottomLeft = new() { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Far };
 
-        public static StringFormat BottomCenter => new() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Far };
+        public static readonly StringFormat BottomCenter = new() { Alignment = StringAlignment.Center, LineAlignment = StringAlignment.Far };
 
-        public static StringFormat BottomRight => new() { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Far };
+        public static readonly StringFormat BottomRight = new() { Alignment = StringAlignment.Far, LineAlignment = StringAlignment.Far };
     }
 
     public enum HopeButtonType

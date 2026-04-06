@@ -166,18 +166,23 @@ namespace ReaLTaiizor.Controls
         {
             base.OnMouseMove(e);
 
+            int previousIndex = enterIndex;
+            bool previousFlag = enterFlag;
             enterFlag = true;
 
             for (int i = 0; i < TabCount; i++)
             {
-                Rectangle tempRect = GetTabRect(i);
-                if (tempRect.Contains(e.Location))
+                if (GetTabRect(i).Contains(e.Location))
                 {
                     enterIndex = i;
+                    break;
                 }
             }
 
-            Invalidate();
+            if (enterIndex != previousIndex || enterFlag != previousFlag)
+            {
+                Invalidate();
+            }
         }
 
         protected override void OnMouseLeave(EventArgs e)
@@ -195,23 +200,29 @@ namespace ReaLTaiizor.Controls
             graphics.TextRenderingHint = TextRenderingType;
             graphics.Clear(BaseColor);
 
+            using SolidBrush themeABrush = new(ThemeColorA);
+            using SolidBrush themeBBrush = new(ThemeColorB);
+            using SolidBrush foreABrush = new(ForeColorA);
+            using SolidBrush foreBBrush = new(ForeColorB);
+            using SolidBrush foreCBrush = new(ForeColorC);
+
             for (int i = 0; i < TabCount; i++)
             {
                 if (i == SelectedIndex)
                 {
-                    graphics.FillRectangle(new SolidBrush(ThemeColorA), GetTabRect(i).X + 3, ItemSize.Height - 3, ItemSize.Width - 6, 3);
-                    graphics.DrawString(TitleText(TabPages[i].Text), Font, new SolidBrush(ForeColorA), GetTabRect(i), HopeStringAlign.Center);
+                    graphics.FillRectangle(themeABrush, GetTabRect(i).X + 3, ItemSize.Height - 3, ItemSize.Width - 6, 3);
+                    graphics.DrawString(TitleText(TabPages[i].Text), Font, foreABrush, GetTabRect(i), HopeStringAlign.Center);
                 }
                 else
                 {
                     if (i == enterIndex && enterFlag)
                     {
-                        graphics.FillRectangle(new SolidBrush(ThemeColorB), GetTabRect(i).X + 3, ItemSize.Height - 3, ItemSize.Width - 6, 3);
-                        graphics.DrawString(TitleText(TabPages[i].Text), Font, new SolidBrush(ForeColorC), GetTabRect(i), HopeStringAlign.Center);
+                        graphics.FillRectangle(themeBBrush, GetTabRect(i).X + 3, ItemSize.Height - 3, ItemSize.Width - 6, 3);
+                        graphics.DrawString(TitleText(TabPages[i].Text), Font, foreCBrush, GetTabRect(i), HopeStringAlign.Center);
                     }
                     else
                     {
-                        graphics.DrawString(TitleText(TabPages[i].Text), Font, new SolidBrush(ForeColorB), GetTabRect(i), HopeStringAlign.Center);
+                        graphics.DrawString(TitleText(TabPages[i].Text), Font, foreBBrush, GetTabRect(i), HopeStringAlign.Center);
                     }
                 }
             }

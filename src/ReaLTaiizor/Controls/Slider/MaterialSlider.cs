@@ -468,8 +468,6 @@ namespace ReaLTaiizor.Controls
 
             Color _inactiveTrackColor;
             Color _accentColor;
-            Brush _accentBrush;
-            Brush _disabledBrush;
             Color _disabledColor;
             Color _thumbHoverColor;
             Color _thumbPressedColor;
@@ -483,8 +481,8 @@ namespace ReaLTaiizor.Controls
                 _accentColor = SkinManager.ColorScheme.PrimaryColor;
             }
 
-            _accentBrush = new SolidBrush(_accentColor);
-            _disabledBrush = new SolidBrush(Color.FromArgb(255, 158, 158, 158));
+            using SolidBrush _accentBrush = new(_accentColor);
+            using SolidBrush _disabledBrush = new(Color.FromArgb(255, 158, 158, 158));
 
             if (SkinManager.Theme == MaterialSkinManager.Themes.DARK)
             {
@@ -508,14 +506,14 @@ namespace ReaLTaiizor.Controls
             //g.DrawLine(LinePen, _indicatorSize / 2, Height / 2 + (Height - _indicatorSize) / 2, Width - _indicatorSize / 2, Height / 2 + (Height - _indicatorSize) / 2);
             //g.DrawLine(LinePen, _sliderRectangle.X + (_indicatorSize / 2), Height / 2 , _sliderRectangle.Right - (_indicatorSize / 2), Height / 2 );
 
-            GraphicsPath _inactiveTrackPath = CreateRoundRect(
+            using GraphicsPath _inactiveTrackPath = CreateRoundRect(
                 _sliderRectangle.X + (int)Math.Round(_thumbRadius * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
                 _sliderRectangle.Y + (int)Math.Round(Height / 2f, MidpointRounding.AwayFromZero) - (int)Math.Round(_inactiveTrack * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
                 _sliderRectangle.Width - (int)Math.Round(_thumbRadius * ScaleFactor, MidpointRounding.AwayFromZero),
                 (int)Math.Round(_inactiveTrack * ScaleFactor, MidpointRounding.AwayFromZero),
                 2);
             //g.FillPath(_disabledBrush, (int)(_inactiveTrack * ScaleFactor)Path);
-            GraphicsPath _activeTrackPath = CreateRoundRect(
+            using GraphicsPath _activeTrackPath = CreateRoundRect(
                 _sliderRectangle.X + (int)Math.Round(_thumbRadius * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
                 _sliderRectangle.Y + (int)Math.Round(Height / 2f, MidpointRounding.AwayFromZero) - (int)Math.Round(_activeTrack * ScaleFactor / 2f, MidpointRounding.AwayFromZero),
                 _indicatorRectangleNormal.X - _sliderRectangle.X,
@@ -525,7 +523,8 @@ namespace ReaLTaiizor.Controls
             if (Enabled)
             {
                 //Draw inactive track
-                g.FillPath(new SolidBrush(_inactiveTrackColor), _inactiveTrackPath);
+                using SolidBrush _inactiveTrackBrush = new(_inactiveTrackColor);
+                g.FillPath(_inactiveTrackBrush, _inactiveTrackPath);
 
                 //Draw active track
                 //g.DrawLine(SkinManager.ColorScheme.AccentPen, _indicatorSize / 2, Height / 2 + (Height - _indicatorSize) / 2, _indicatorRectangleNormal.X, Height / 2 + (Height - _indicatorSize) / 2);
@@ -537,7 +536,8 @@ namespace ReaLTaiizor.Controls
                 {
                     //g.FillEllipse(_accentBrush, _indicatorRectanglePressed);
                     g.FillEllipse(_accentBrush, _indicatorRectangleNormal);
-                    g.FillEllipse(new SolidBrush(_thumbPressedColor), _indicatorRectanglePressed);
+                    using SolidBrush _thumbPressedBrush = new(_thumbPressedColor);
+                    g.FillEllipse(_thumbPressedBrush, _indicatorRectanglePressed);
 
                 }
                 else
@@ -546,14 +546,16 @@ namespace ReaLTaiizor.Controls
 
                     if (_hovered)
                     {
-                        g.FillEllipse(new SolidBrush(_thumbHoverColor), _indicatorRectanglePressed);
+                        using SolidBrush _thumbHoverBrush = new(_thumbHoverColor);
+                        g.FillEllipse(_thumbHoverBrush, _indicatorRectanglePressed);
                     }
                 }
             }
             else
             {
                 //Draw inactive track
-                g.FillPath(new SolidBrush(_disabledColor.Lighten(0.25f)), _inactiveTrackPath);
+                using SolidBrush _disabledLightBrush = new(_disabledColor.Lighten(0.25f));
+                g.FillPath(_disabledLightBrush, _inactiveTrackPath);
 
                 //Draw active track
                 g.FillPath(_disabledBrush, _activeTrackPath);
