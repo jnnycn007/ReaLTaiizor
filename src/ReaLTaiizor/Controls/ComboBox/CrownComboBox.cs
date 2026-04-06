@@ -159,7 +159,7 @@ namespace ReaLTaiizor.Controls
             Bitmap icon = Properties.Resources.scrollbar_arrow_hot;
             g.DrawImageUnscaled(icon, rect.Right - icon.Width - (ThemeProvider.Theme.Sizes.Padding / 2), (rect.Height / 2) - (icon.Height / 2));
 
-            string text = SelectedItem != null ? SelectedItem.ToString() : Text;
+            string text = SelectedItem != null ? GetItemText(SelectedItem) : Text;
 
             using (SolidBrush b = new(textColor))
             {
@@ -210,7 +210,7 @@ namespace ReaLTaiizor.Controls
 
             if (e.Index >= 0 && e.Index < Items.Count)
             {
-                string text = Items[e.Index].ToString();
+                string text = GetItemText(Items[e.Index]);
 
                 using SolidBrush b = new(textColor);
                 int padding = 2;
