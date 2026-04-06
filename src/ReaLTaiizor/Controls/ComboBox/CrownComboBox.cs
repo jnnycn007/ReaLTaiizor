@@ -198,7 +198,7 @@ namespace ReaLTaiizor.Controls
             Color textColor = ThemeProvider.Theme.Colors.LightText;
             Color fillColor = ThemeProvider.Theme.Colors.LightBackground;
 
-            if ((e.State & DrawItemState.Selected) == DrawItemState.Selected || (e.State & DrawItemState.Focus) == DrawItemState.Focus || (e.State & DrawItemState.NoFocusRect) != DrawItemState.NoFocusRect)
+            if ((e.State & DrawItemState.Selected) == DrawItemState.Selected || (e.State & DrawItemState.Focus) == DrawItemState.Focus)
             {
                 fillColor = ThemeProvider.Theme.Colors.BlueSelection;
             }
