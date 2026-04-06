@@ -4,6 +4,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 #endregion
@@ -22,6 +23,11 @@ namespace ReaLTaiizor.Controls
         private Size _ImageSize;
         private readonly Pen P1;
         private readonly SolidBrush B1;
+
+        private const int EM_SETCUEBANNER = 0x1501;
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, string lParam);
 
         #endregion
 
@@ -123,6 +129,22 @@ namespace ReaLTaiizor.Controls
 
         protected Size ImageSize => _ImageSize;
 
+        [Category("Behavior")]
+        [Description("The placeholder text displayed when the textbox is empty")]
+        [DefaultValue("")]
+        public string PlaceholderText
+        {
+            get;
+            set
+            {
+                field = value ?? string.Empty;
+                if (RT_TB.IsHandleCreated)
+                {
+                    SendMessage(RT_TB.Handle, EM_SETCUEBANNER, (IntPtr)1, field);
+                }
+            }
+        } = string.Empty;
+
         #endregion
 
         #region EventArgs
@@ -218,6 +240,13 @@ namespace ReaLTaiizor.Controls
             _TB.Multiline = false;
             RT_TB.KeyDown += _OnKeyDown;
             RT_TB.TextChanged += OnBaseTextChanged;
+            RT_TB.HandleCreated += (s, e) =>
+            {
+                if (!string.IsNullOrEmpty(PlaceholderText))
+                {
+                    SendMessage(RT_TB.Handle, EM_SETCUEBANNER, (IntPtr)1, PlaceholderText);
+                }
+            };
         }
 
         public BigTextBox()
