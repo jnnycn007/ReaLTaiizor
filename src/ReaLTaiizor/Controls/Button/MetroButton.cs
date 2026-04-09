@@ -22,8 +22,27 @@ namespace ReaLTaiizor.Controls
     [Designer(typeof(MetroButtonDesigner))]
     [DefaultEvent("Click")]
     [DefaultProperty("Text")]
-    public class MetroButton : Control, IMetroControl
+    public class MetroButton : Control, IMetroControl, IButtonControl
     {
+        #region IButtonControl
+
+        [Category("Metro")]
+        [DefaultValue(DialogResult.None)]
+        [Description("Gets or sets the dialog result produced when this button is clicked.")]
+        public DialogResult DialogResult { get; set; } = DialogResult.None;
+
+        public void NotifyDefault(bool value)
+        {
+            Invalidate();
+        }
+
+        public void PerformClick()
+        {
+            OnClick(EventArgs.Empty);
+        }
+
+        #endregion IButtonControl
+
         #region Interfaces
 
         [Category("Metro"), Description("Gets or sets the style associated with the control.")]
