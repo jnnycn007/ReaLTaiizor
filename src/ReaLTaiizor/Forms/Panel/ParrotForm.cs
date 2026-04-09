@@ -694,13 +694,18 @@ namespace ReaLTaiizor.Forms
 
         private void Maximize_Click(object sender, EventArgs e)
         {
-            if (base.FindForm().WindowState == FormWindowState.Maximized)
+            Form form = base.FindForm();
+            if (form.WindowState == FormWindowState.Maximized)
             {
-                base.FindForm().WindowState = FormWindowState.Normal;
+                form.MaximumSize = Size.Empty;
+                form.WindowState = FormWindowState.Normal;
                 return;
             }
 
-            base.FindForm().WindowState = FormWindowState.Maximized;
+            Screen screen = Screen.FromControl(form);
+            form.MaximumSize = screen.WorkingArea.Size;
+            form.Location = screen.WorkingArea.Location;
+            form.WindowState = FormWindowState.Maximized;
         }
 
         private void Minimize_Click(object sender, EventArgs e)
