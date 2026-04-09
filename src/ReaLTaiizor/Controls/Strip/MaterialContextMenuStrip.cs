@@ -265,12 +265,28 @@ namespace ReaLTaiizor.Controls
             Rectangle textRect = new((int)(LEFT_PADDING * ScaleFactor), itemRect.Y, itemRect.Width - ((int)(LEFT_PADDING * ScaleFactor) + (int)(RIGHT_PADDING * ScaleFactor)), itemRect.Height);
 
             IntPtr font = SkinManager.GetLogFontByType(MaterialSkinManager.FontType.Body2, ScaleFactor);
+            Color textColor = e.Item.Enabled ? SkinManager.TextHighEmphasisColor : SkinManager.TextDisabledOrHintColor;
             using MaterialNativeTextRenderer NativeText = new(g);
-            NativeText.DrawTransparentText(e.Text, font,
-                e.Item.Enabled ? SkinManager.TextHighEmphasisColor : SkinManager.TextDisabledOrHintColor,
-                textRect.Location,
-                textRect.Size,
-                MaterialNativeTextRenderer.TextAlignFlags.Left | MaterialNativeTextRenderer.TextAlignFlags.Middle);
+
+            string text = e.Text;
+            int tabIndex = text.IndexOf('\t');
+
+            if (tabIndex >= 0)
+            {
+                NativeText.DrawTransparentText(text.Substring(0, tabIndex), font, textColor,
+                    textRect.Location, textRect.Size,
+                    MaterialNativeTextRenderer.TextAlignFlags.Left | MaterialNativeTextRenderer.TextAlignFlags.Middle);
+
+                NativeText.DrawTransparentText(text.Substring(tabIndex + 1), font, textColor,
+                    textRect.Location, textRect.Size,
+                    MaterialNativeTextRenderer.TextAlignFlags.Right | MaterialNativeTextRenderer.TextAlignFlags.Middle);
+            }
+            else
+            {
+                NativeText.DrawTransparentText(text, font, textColor,
+                    textRect.Location, textRect.Size,
+                    MaterialNativeTextRenderer.TextAlignFlags.Left | MaterialNativeTextRenderer.TextAlignFlags.Middle);
+            }
         }
 
         protected override void OnRenderMenuItemBackground(ToolStripItemRenderEventArgs e)
