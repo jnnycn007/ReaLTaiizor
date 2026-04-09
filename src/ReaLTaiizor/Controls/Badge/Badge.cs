@@ -63,12 +63,12 @@ namespace ReaLTaiizor.Controls
 
         public Badge()
         {
-            SetStyle(ControlStyles.SupportsTransparentBackColor, true);
-            SetStyle(ControlStyles.UserPaint, true);
+            SetStyle(ControlStyles.SupportsTransparentBackColor | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
 
             Text = null;
             Size = new(20, 20);
             DoubleBuffered = true;
+            BackColor = Color.Transparent;
             ForeColor = Color.FromArgb(255, 255, 253);
             Font = new("Segoe UI", 8, FontStyle.Bold);
         }
@@ -79,7 +79,11 @@ namespace ReaLTaiizor.Controls
 
             Graphics _G = e.Graphics;
 
-            _G.Clear(BackColor);
+            if (BackColor != Color.Transparent)
+            {
+                _G.Clear(BackColor);
+            }
+
             _G.SmoothingMode = SmoothingMode.AntiAlias;
 
             LinearGradientBrush LGB = new(new Rectangle(new Point(0, 0), new Size(Width - 2, Height)), BGColorA, BGColorB, 90f);
@@ -96,7 +100,6 @@ namespace ReaLTaiizor.Controls
                 LineAlignment = StringAlignment.Center
             });
 
-            e.Dispose();
         }
 
     }
