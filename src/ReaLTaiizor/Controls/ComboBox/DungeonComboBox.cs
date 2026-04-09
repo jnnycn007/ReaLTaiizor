@@ -67,23 +67,29 @@ namespace ReaLTaiizor.Controls
         protected override void OnDrawItem(DrawItemEventArgs e)
         {
             base.OnDrawItem(e);
+
+            if (e.Index == -1)
+            {
+                e.Graphics.FillRectangle(new SolidBrush(ColorC), e.Bounds);
+                if (!string.IsNullOrEmpty(Text))
+                {
+                    e.Graphics.DrawString(Text, e.Font, new SolidBrush(ForeColor), e.Bounds);
+                }
+
+                return;
+            }
+
             LinearGradientBrush LGB = new(e.Bounds, ColorA, ColorB, 90.0F);
 
             if (Convert.ToInt32(e.State & DrawItemState.Selected) == (int)DrawItemState.Selected)
             {
-                if (!(e.Index == -1))
-                {
-                    e.Graphics.FillRectangle(LGB, e.Bounds);
-                    e.Graphics.DrawString(GetItemText(Items[e.Index]), e.Font, Brushes.WhiteSmoke, e.Bounds);
-                }
+                e.Graphics.FillRectangle(LGB, e.Bounds);
+                e.Graphics.DrawString(GetItemText(Items[e.Index]), e.Font, Brushes.WhiteSmoke, e.Bounds);
             }
             else
             {
-                if (!(e.Index == -1))
-                {
-                    e.Graphics.FillRectangle(new SolidBrush(ColorC), e.Bounds);
-                    e.Graphics.DrawString(GetItemText(Items[e.Index]), e.Font, Brushes.DimGray, e.Bounds);
-                }
+                e.Graphics.FillRectangle(new SolidBrush(ColorC), e.Bounds);
+                e.Graphics.DrawString(GetItemText(Items[e.Index]), e.Font, Brushes.DimGray, e.Bounds);
             }
 
             LGB.Dispose();
@@ -92,9 +98,7 @@ namespace ReaLTaiizor.Controls
         protected override void OnLostFocus(EventArgs e)
         {
             base.OnLostFocus(e);
-            SuspendLayout();
-            Update();
-            ResumeLayout();
+            Invalidate();
         }
 
         protected override void OnPaintBackground(PaintEventArgs e)
