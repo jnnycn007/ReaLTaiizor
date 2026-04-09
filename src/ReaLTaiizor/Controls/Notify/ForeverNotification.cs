@@ -193,8 +193,9 @@ namespace ReaLTaiizor.Controls
             // Vertical centering calculations
             int iconOuterY = (Height - 24) / 2;
             int iconInnerY = (Height - 20) / 2;
-            int textY = (Height - Font.Height) / 2;
             int closeY = (Height - 17) / 2;
+            int textWidth = W - 48 - (Close ? 35 : 0);
+            StringFormat textSF = new() { Alignment = StringAlignment.Near, LineAlignment = StringAlignment.Center };
 
             Graphics _with14 = G;
             _with14.SmoothingMode = SmoothingMode.HighQuality;
@@ -213,7 +214,7 @@ namespace ReaLTaiizor.Controls
 
                     //-- Checked Sign
                     _with14.DrawString("ü", new Font("Wingdings", 22), new SolidBrush(SuccessText), new Rectangle(7, iconOuterY - 2, W, H), ForeverLibrary.NearSF);
-                    _with14.DrawString(Text, Font, new SolidBrush(SuccessText), new Rectangle(48, textY, W - 48, H), ForeverLibrary.NearSF);
+                    _with14.DrawString(Text, Font, new SolidBrush(SuccessText), new Rectangle(48, 0, textWidth, Height), textSF);
 
                     //-- X button
                     if (Close)
@@ -241,7 +242,7 @@ namespace ReaLTaiizor.Controls
 
                     //-- X Sign
                     _with14.DrawString("r", new Font("Marlett", 16), new SolidBrush(ErrorText), new Rectangle(6, iconInnerY, W, H), ForeverLibrary.NearSF);
-                    _with14.DrawString(Text, Font, new SolidBrush(ErrorText), new Rectangle(48, textY, W - 48, H), ForeverLibrary.NearSF);
+                    _with14.DrawString(Text, Font, new SolidBrush(ErrorText), new Rectangle(48, 0, textWidth, Height), textSF);
 
                     //-- X button
                     if (Close)
@@ -269,7 +270,7 @@ namespace ReaLTaiizor.Controls
 
                     //-- Info Sign
                     _with14.DrawString("¡", new Font("Segoe UI", 20, FontStyle.Bold), new SolidBrush(InfoText), new Rectangle(12, iconOuterY - 13, W, H), ForeverLibrary.NearSF);
-                    _with14.DrawString(Text, Font, new SolidBrush(InfoText), new Rectangle(48, textY, W - 48, H), ForeverLibrary.NearSF);
+                    _with14.DrawString(Text, Font, new SolidBrush(InfoText), new Rectangle(48, 0, textWidth, Height), textSF);
 
                     //-- X button
                     if (Close)
