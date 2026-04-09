@@ -36,6 +36,30 @@ namespace ReaLTaiizor.Controls
             }
         }
 
+        [Category("Appearance")]
+        [Description("The background color of the section header.")]
+        public Color SectionHeaderColor
+        {
+            get;
+            set
+            {
+                field = value;
+                Invalidate();
+            }
+        } = Color.Empty;
+
+        [Category("Appearance")]
+        [Description("The text color of the section header.")]
+        public Color SectionHeaderTextColor
+        {
+            get;
+            set
+            {
+                field = value;
+                Invalidate();
+            }
+        } = Color.Empty;
+
         #endregion
 
         #region Constructor Region
@@ -87,13 +111,15 @@ namespace ReaLTaiizor.Controls
             Rectangle rect = ClientRectangle;
 
             // Fill body
-            using (SolidBrush b = new(ThemeProvider.Theme.Colors.GreyBackground))
+            using (SolidBrush b = new(BackColor != Control.DefaultBackColor && BackColor != Color.Empty ? BackColor : ThemeProvider.Theme.Colors.GreyBackground))
             {
                 g.FillRectangle(b, rect);
             }
 
             // Draw header
-            Color bgColor = ContainsFocus ? ThemeProvider.Theme.Colors.BlueBackground : ThemeProvider.Theme.Colors.HeaderBackground;
+            Color bgColor = SectionHeaderColor != Color.Empty
+                ? SectionHeaderColor
+                : (ContainsFocus ? ThemeProvider.Theme.Colors.BlueBackground : ThemeProvider.Theme.Colors.HeaderBackground);
             Color darkColor = ContainsFocus ? ThemeProvider.Theme.Colors.DarkBlueBorder : ThemeProvider.Theme.Colors.DarkBorder;
             Color lightColor = ContainsFocus ? ThemeProvider.Theme.Colors.LightBlueBorder : ThemeProvider.Theme.Colors.LightBorder;
 
@@ -116,7 +142,7 @@ namespace ReaLTaiizor.Controls
 
             int xOffset = 3;
 
-            using (SolidBrush b = new(ThemeProvider.Theme.Colors.LightText))
+            using (SolidBrush b = new(SectionHeaderTextColor != Color.Empty ? SectionHeaderTextColor : ThemeProvider.Theme.Colors.LightText))
             {
                 Rectangle textRect = new(xOffset, 0, rect.Width - 4 - xOffset, 25);
 
