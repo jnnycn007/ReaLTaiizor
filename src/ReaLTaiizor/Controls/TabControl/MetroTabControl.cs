@@ -515,6 +515,11 @@ namespace ReaLTaiizor.Controls
                 return;
             }
 
+            if (_oldIndex < 0 || _oldIndex >= TabCount || e.TabPageIndex < 0 || e.TabPageIndex >= TabCount)
+            {
+                return;
+            }
+
             DoSlideAnimate(TabPages[_oldIndex], TabPages[e.TabPageIndex], _oldIndex > e.TabPageIndex);
         }
 
