@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 #endregion
@@ -23,6 +24,7 @@ namespace ReaLTaiizor.Forms
         private readonly int MoveHeight = 50;
         private Size _ImageSize;
         private const int wmNcHitTest = 0x84;
+        private const int wmNcLButtonDown = 0xA1;
         private const int htLeft = 10;
         private const int htRight = 11;
         private const int htTop = 12;
@@ -31,6 +33,12 @@ namespace ReaLTaiizor.Forms
         private const int htBottom = 15;
         private const int htBottomLeft = 16;
         private const int htBottomRight = 17;
+
+        [DllImport("user32.dll")]
+        private static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+
+        [DllImport("user32.dll")]
+        private static extern bool ReleaseCapture();
 
         [Category("Colors")]
         public Color HeaderColor { get; set; } = Color.FromArgb(45, 47, 49);
@@ -89,77 +97,92 @@ namespace ReaLTaiizor.Forms
 
         protected override void WndProc(ref Message m)
         {
+            if (Sizable && FindForm() != null && FindForm().WindowState != FormWindowState.Maximized
+                && m.Msg == wmNcLButtonDown)
+            {
+                int hitTest = (int)m.WParam;
+                if (hitTest >= htLeft && hitTest <= htBottomRight)
+                {
+                    ReleaseCapture();
+                    SendMessage(FindForm().Handle, wmNcLButtonDown, hitTest, 0);
+                    return;
+                }
+            }
+
             base.WndProc(ref m);
 
-            if (Sizable && m.Msg == wmNcHitTest && FindForm().WindowState != FormWindowState.Maximized)
+            if (Sizable && FindForm() != null && FindForm().WindowState != FormWindowState.Maximized
+                && m.Msg == wmNcHitTest)
             {
-                int gripDist = 10;
-
-                //int x = (int)(m.LParam.ToInt64() & 0xFFFF);
-                //int x = Cursor.Position.X;
-                //Console.WriteLine(x);
-
-                // int y = (int)((m.LParam.ToInt64() & 0xFFFF0000) >> 16);
-                //Console.WriteLine(y);
-
                 Point pt = PointToClient(Cursor.Position);
-                //Console.WriteLine(pt);
-
-                Size clientSize = ClientSize;
-
-                ///allow resize on the lower right corner
-                if (pt.X >= clientSize.Width - gripDist && pt.Y >= clientSize.Height - gripDist && clientSize.Height >= gripDist)
+                int dir = GetResizeDirection(pt, ClientSize);
+                if (dir != 0)
                 {
-                    m.Result = (IntPtr)(IsMirrored ? htBottomLeft : htBottomRight);
-                    return;
-                }
-                ///allow resize on the lower left corner
-                if (pt.X <= gripDist && pt.Y >= clientSize.Height - gripDist && clientSize.Height >= gripDist)
-                {
-                    m.Result = (IntPtr)(IsMirrored ? htBottomRight : htBottomLeft);
-                    return;
-                }
-                ///allow resize on the upper right corner
-                if (pt.X <= gripDist && pt.Y <= gripDist && clientSize.Height >= gripDist)
-                {
-                    m.Result = (IntPtr)(IsMirrored ? htTopRight : htTopLeft);
-                    return;
-                }
-                ///allow resize on the upper left corner
-                if (pt.X >= clientSize.Width - gripDist && pt.Y <= gripDist && clientSize.Height >= gripDist)
-                {
-                    m.Result = (IntPtr)(IsMirrored ? htTopLeft : htTopRight);
-                    return;
-                }
-                ///allow resize on the top border
-                if (pt.Y <= 2 && clientSize.Height >= 2)
-                {
-                    m.Result = (IntPtr)htTop;
-                    return;
-                }
-                ///allow resize on the bottom border
-                if (pt.Y >= clientSize.Height - gripDist && clientSize.Height >= gripDist)
-                {
-                    m.Result = (IntPtr)htBottom;
-                    return;
-                }
-                ///allow resize on the left border
-                if (pt.X <= gripDist && clientSize.Height >= gripDist)
-                {
-                    m.Result = (IntPtr)htLeft;
-                    return;
-                }
-                ///allow resize on the right border
-                if (pt.X >= clientSize.Width - gripDist && clientSize.Height >= gripDist)
-                {
-                    m.Result = (IntPtr)htRight;
-                    return;
+                    m.Result = (IntPtr)dir;
                 }
             }
         }
 
+        private int GetResizeDirection(Point pt, Size clientSize)
+        {
+            int gripDist = 10;
+
+            if (pt.X >= clientSize.Width - gripDist && pt.Y >= clientSize.Height - gripDist)
+            {
+                return IsMirrored ? htBottomLeft : htBottomRight;
+            }
+
+            if (pt.X <= gripDist && pt.Y >= clientSize.Height - gripDist)
+            {
+                return IsMirrored ? htBottomRight : htBottomLeft;
+            }
+
+            if (pt.X <= gripDist && pt.Y <= gripDist)
+            {
+                return IsMirrored ? htTopRight : htTopLeft;
+            }
+
+            if (pt.X >= clientSize.Width - gripDist && pt.Y <= gripDist)
+            {
+                return IsMirrored ? htTopLeft : htTopRight;
+            }
+
+            if (pt.Y <= 2)
+            {
+                return htTop;
+            }
+
+            if (pt.Y >= clientSize.Height - gripDist)
+            {
+                return htBottom;
+            }
+
+            if (pt.X <= gripDist)
+            {
+                return htLeft;
+            }
+
+            if (pt.X >= clientSize.Width - gripDist)
+            {
+                return htRight;
+            }
+
+            return 0;
+        }
+
         protected override void OnMouseDown(MouseEventArgs e)
         {
+            if (Sizable && e.Button == MouseButtons.Left && FindForm().WindowState != FormWindowState.Maximized)
+            {
+                int dir = GetResizeDirection(e.Location, ClientSize);
+                if (dir != 0)
+                {
+                    ReleaseCapture();
+                    SendMessage(FindForm().Handle, wmNcLButtonDown, dir, 0);
+                    return;
+                }
+            }
+
             base.OnMouseDown(e);
             if (e.Button == MouseButtons.Left & new Rectangle(0, 0, Width, MoveHeight).Contains(e.Location))
             {
@@ -200,8 +223,21 @@ namespace ReaLTaiizor.Forms
 
             if (Cap)
             {
-                // Parent.Location = MousePosition - MousePoint;
                 Parent.Location = new(MousePosition.X - MousePoint.X, MousePosition.Y - MousePoint.Y);
+                return;
+            }
+
+            if (Sizable && FindForm().WindowState != FormWindowState.Maximized)
+            {
+                int dir = GetResizeDirection(e.Location, ClientSize);
+                Cursor = dir switch
+                {
+                    htBottomRight or htTopLeft => Cursors.SizeNWSE,
+                    htBottomLeft or htTopRight => Cursors.SizeNESW,
+                    htTop or htBottom => Cursors.SizeNS,
+                    htLeft or htRight => Cursors.SizeWE,
+                    _ => Cursors.Default
+                };
             }
         }
 
