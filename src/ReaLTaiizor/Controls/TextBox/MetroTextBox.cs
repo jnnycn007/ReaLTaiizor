@@ -157,7 +157,8 @@ namespace ReaLTaiizor.Controls
                 Height = _textBox.Height + 11;
             }
 
-            _textBox.MouseHover += T_MouseHover;
+            _textBox.MouseEnter += T_MouseEnter;
+            _textBox.MouseLeave += T_MouseLeave;
             _textBox.Leave += T_Leave;
             _textBox.Enter += T_Enter;
             _textBox.KeyDown += T_KeyDown;
@@ -181,11 +182,13 @@ namespace ReaLTaiizor.Controls
                 using Pen p = new(BorderColor);
                 using Pen ph = new(HoverColor);
                 g.FillRectangle(bg, rect);
+                _textBox.BackColor = BackColor;
+                _textBox.ForeColor = ForeColor;
                 if (_state == MouseMode.Normal)
                 {
                     g.DrawRectangle(p, rect);
                 }
-                else if (_state == MouseMode.Hovered)
+                else
                 {
                     g.DrawRectangle(ph, rect);
                 }
@@ -308,8 +311,8 @@ namespace ReaLTaiizor.Controls
 
         public void T_Leave(object sender, EventArgs e)
         {
-            base.OnMouseLeave(e);
             Leave?.Invoke(sender, e);
+            Invalidate();
         }
 
         public void T_KeyPress(object sender, KeyPressEventArgs e)
@@ -320,8 +323,14 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnMouseLeave(EventArgs e)
         {
-            _state = MouseMode.Normal;
+            Point pt = PointToClient(MousePosition);
+            if (!ClientRectangle.Contains(pt))
+            {
+                _state = MouseMode.Normal;
+            }
+
             base.OnMouseLeave(e);
+            Invalidate();
         }
 
         protected override void OnMouseUp(MouseEventArgs e)
@@ -334,7 +343,7 @@ namespace ReaLTaiizor.Controls
         protected override void OnMouseEnter(EventArgs e)
         {
             base.OnMouseEnter(e);
-            _state = MouseMode.Pushed;
+            _state = MouseMode.Hovered;
             Invalidate();
         }
 
@@ -345,10 +354,20 @@ namespace ReaLTaiizor.Controls
             Invalidate();
         }
 
-        public void T_MouseHover(object sender, EventArgs e)
+        private void T_MouseEnter(object sender, EventArgs e)
         {
-            base.OnMouseHover(e);
+            _state = MouseMode.Hovered;
             Invalidate();
+        }
+
+        private void T_MouseLeave(object sender, EventArgs e)
+        {
+            Point pt = PointToClient(MousePosition);
+            if (!ClientRectangle.Contains(pt))
+            {
+                _state = MouseMode.Normal;
+                Invalidate();
+            }
         }
 
         protected override void OnResize(EventArgs e)
@@ -368,7 +387,6 @@ namespace ReaLTaiizor.Controls
 
         public void T_Enter(object sender, EventArgs e)
         {
-            base.OnMouseEnter(e);
             Invalidate();
         }
 
