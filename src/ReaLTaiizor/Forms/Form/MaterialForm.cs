@@ -690,6 +690,8 @@ namespace ReaLTaiizor.Forms
             drawerControl.DrawerBeginOpen += (sender) =>
             {
                 _drawerShowHideAnimManager.StartNewAnimation(AnimationDirection.In);
+                drawerOverlay.BringToFront();
+                drawerForm.BringToFront();
             };
 
             drawerControl.DrawerBeginClose += (sender) =>
