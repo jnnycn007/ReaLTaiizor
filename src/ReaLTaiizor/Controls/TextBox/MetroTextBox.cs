@@ -408,7 +408,7 @@ namespace ReaLTaiizor.Controls
 
         private void T_TextChanged(object sender, EventArgs e)
         {
-            Text = _textBox.Text;
+            base.Text = _textBox.Text;
             TextChanged?.Invoke(this, e);
             Invalidate();
         }

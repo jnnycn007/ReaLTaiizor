@@ -393,7 +393,7 @@ namespace ReaLTaiizor.Controls
 
         private void T_TextChanged(object sender, EventArgs e)
         {
-            Text = _richTextBox.Text;
+            base.Text = _richTextBox.Text;
             TextChanged?.Invoke(this);
             Invalidate();
         }
