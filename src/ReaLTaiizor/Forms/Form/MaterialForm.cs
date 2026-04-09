@@ -1001,7 +1001,9 @@ namespace ReaLTaiizor.Forms
         {
             WM message = (WM)m.Msg;
             // Prevent the base class from receiving the message
-            if (message == WM.NonClientCalcSize)
+            // Allow WM_NCCALCSIZE through for MDI children so the MDI parent
+            // can properly calculate the child form's client area
+            if (message == WM.NonClientCalcSize && !IsMdiChild)
             {
                 return;
             }
