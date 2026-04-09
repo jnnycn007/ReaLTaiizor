@@ -192,6 +192,8 @@ namespace ReaLTaiizor.Controls
 
         protected override void OnDrawItem(DrawItemEventArgs e)
         {
+            base.OnDrawItem(e);
+
             Graphics g = e.Graphics;
             Rectangle rect = e.Bounds;
 
