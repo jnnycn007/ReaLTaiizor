@@ -350,6 +350,34 @@ namespace ReaLTaiizor.Controls
             }
         } = true;
 
+        [Category("Metro"), Description("Gets or sets whether the close button is shown on each tab.")]
+        [DefaultValue(false)]
+        public bool ShowCloseButton
+        {
+            get;
+            set
+            {
+                field = value;
+                Invalidate();
+            }
+        }
+
+        [Category("Metro"), Description("Gets or sets the close button color.")]
+        public Color CloseButtonColor
+        {
+            get;
+            set
+            {
+                field = value;
+                Invalidate();
+            }
+        } = Color.Gray;
+
+        public delegate void TabClosingEventHandler(object sender, TabControlCancelEventArgs e);
+
+        [Category("Metro"), Description("Occurs when a tab is about to be closed via the close button.")]
+        public event TabClosingEventHandler TabClosing;
+
         #endregion Properties
 
         #region Draw Control
@@ -378,8 +406,14 @@ namespace ReaLTaiizor.Controls
                             g.FillRectangle(sb, r);
                         }
 
+                        Rectangle textRect = ShowCloseButton ? new(r.X, r.Y, r.Width - 20, r.Height) : r;
                         using SolidBrush tb = new(i == SelectedIndex ? SelectedTextColor : UnselectedTextColor);
-                        g.DrawString(TabPages[i].Text, Font, tb, r, _mth.SetPosition());
+                        g.DrawString(TabPages[i].Text, Font, tb, textRect, _mth.SetPosition());
+
+                        if (ShowCloseButton)
+                        {
+                            DrawCloseButton(g, r, i == SelectedIndex);
+                        }
                     }
                     break;
                 case TabStyle.Style2:
@@ -393,8 +427,14 @@ namespace ReaLTaiizor.Controls
                             g.DrawLine(sb, r.X, r.Height, r.X + r.Width, r.Height);
                         }
 
+                        Rectangle textRect2 = ShowCloseButton ? new(r.X, r.Y, r.Width - 20, r.Height) : r;
                         using SolidBrush tb = new(i == SelectedIndex ? SelectedTextColor : UnselectedTextColor);
-                        g.DrawString(TabPages[i].Text, Font, tb, r, _mth.SetPosition());
+                        g.DrawString(TabPages[i].Text, Font, tb, textRect2, _mth.SetPosition());
+
+                        if (ShowCloseButton)
+                        {
+                            DrawCloseButton(g, r, i == SelectedIndex);
+                        }
                     }
                     break;
             }
@@ -403,6 +443,30 @@ namespace ReaLTaiizor.Controls
         #endregion Draw Control
 
         #region Events
+
+        protected override void OnMouseClick(MouseEventArgs e)
+        {
+            if (ShowCloseButton && e.Button == MouseButtons.Left)
+            {
+                for (int i = 0; i < TabCount; i++)
+                {
+                    Rectangle closeRect = GetCloseButtonRect(GetTabRect(i));
+                    if (closeRect.Contains(e.Location))
+                    {
+                        TabControlCancelEventArgs args = new(TabPages[i], i, false, TabControlAction.Deselected);
+                        TabClosing?.Invoke(this, args);
+                        if (!args.Cancel)
+                        {
+                            TabPages.RemoveAt(i);
+                        }
+
+                        return;
+                    }
+                }
+            }
+
+            base.OnMouseClick(e);
+        }
 
         protected override void OnMouseMove(MouseEventArgs e)
         {
@@ -582,6 +646,21 @@ namespace ReaLTaiizor.Controls
         #endregion Events
 
         #region Methods
+
+        private Rectangle GetCloseButtonRect(Rectangle tabRect)
+        {
+            int size = 14;
+            return new Rectangle(tabRect.Right - size - 6, tabRect.Y + (tabRect.Height - size) / 2, size, size);
+        }
+
+        private void DrawCloseButton(Graphics g, Rectangle tabRect, bool isSelected)
+        {
+            Rectangle closeRect = GetCloseButtonRect(tabRect);
+            using Pen p = new(isSelected ? SelectedTextColor : CloseButtonColor, 1.5f);
+            int pad = 3;
+            g.DrawLine(p, closeRect.X + pad, closeRect.Y + pad, closeRect.Right - pad, closeRect.Bottom - pad);
+            g.DrawLine(p, closeRect.Right - pad, closeRect.Y + pad, closeRect.X + pad, closeRect.Bottom - pad);
+        }
 
         private void InvalidateTabPage(Color c)
         {
