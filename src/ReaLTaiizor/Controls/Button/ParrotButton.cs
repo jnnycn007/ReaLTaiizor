@@ -14,8 +14,26 @@ namespace ReaLTaiizor.Controls
 {
     #region ParrotButton
 
-    public class ParrotButton : Control
+    public class ParrotButton : Control, IButtonControl
     {
+        #region IButtonControl
+
+        [Category("Parrot")]
+        [DefaultValue(DialogResult.None)]
+        [Description("The dialog result produced when this button is clicked")]
+        public DialogResult DialogResult { get; set; } = DialogResult.None;
+
+        public void NotifyDefault(bool value)
+        {
+            Invalidate();
+        }
+
+        public void PerformClick()
+        {
+            OnClick(EventArgs.Empty);
+        }
+
+        #endregion
         public ParrotButton()
         {
             base.SetStyle(ControlStyles.ResizeRedraw | ControlStyles.SupportsTransparentBackColor, true);
