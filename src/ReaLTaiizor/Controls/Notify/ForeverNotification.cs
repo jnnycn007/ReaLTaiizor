@@ -89,7 +89,10 @@ namespace ReaLTaiizor.Controls
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-            Height = 42;
+            if (Height < 42)
+            {
+                Height = 42;
+            }
         }
 
         public void ShowControl(_Kind Kind, string Str, int Interval)
@@ -187,6 +190,12 @@ namespace ReaLTaiizor.Controls
 
             Rectangle Base = new(0, 0, W, H);
 
+            // Vertical centering calculations
+            int iconOuterY = (Height - 24) / 2;
+            int iconInnerY = (Height - 20) / 2;
+            int textY = (Height - Font.Height) / 2;
+            int closeY = (Height - 17) / 2;
+
             Graphics _with14 = G;
             _with14.SmoothingMode = SmoothingMode.HighQuality;
             _with14.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
@@ -199,24 +208,24 @@ namespace ReaLTaiizor.Controls
                     _with14.FillRectangle(new SolidBrush(SuccessColor), Base);
 
                     //-- Ellipse
-                    _with14.FillEllipse(new SolidBrush(SuccessText), new Rectangle(8, 9, 24, 24));
-                    _with14.FillEllipse(new SolidBrush(SuccessColor), new Rectangle(10, 11, 20, 20));
+                    _with14.FillEllipse(new SolidBrush(SuccessText), new Rectangle(8, iconOuterY, 24, 24));
+                    _with14.FillEllipse(new SolidBrush(SuccessColor), new Rectangle(10, iconInnerY, 20, 20));
 
                     //-- Checked Sign
-                    _with14.DrawString("ü", new Font("Wingdings", 22), new SolidBrush(SuccessText), new Rectangle(7, 7, W, H), ForeverLibrary.NearSF);
-                    _with14.DrawString(Text, Font, new SolidBrush(SuccessText), new Rectangle(48, 12, W, H), ForeverLibrary.NearSF);
+                    _with14.DrawString("ü", new Font("Wingdings", 22), new SolidBrush(SuccessText), new Rectangle(7, iconOuterY - 2, W, H), ForeverLibrary.NearSF);
+                    _with14.DrawString(Text, Font, new SolidBrush(SuccessText), new Rectangle(48, textY, W - 48, H), ForeverLibrary.NearSF);
 
                     //-- X button
                     if (Close)
                     {
-                        _with14.FillEllipse(new SolidBrush(Color.FromArgb(35, Color.Black)), new Rectangle(W - 30, H - 29, 17, 17));
-                        _with14.DrawString("r", new Font("Marlett", 8), new SolidBrush(SuccessColor), new Rectangle(W - 28, 16, W, H), ForeverLibrary.NearSF);
+                        _with14.FillEllipse(new SolidBrush(Color.FromArgb(35, Color.Black)), new Rectangle(W - 30, closeY, 17, 17));
+                        _with14.DrawString("r", new Font("Marlett", 8), new SolidBrush(SuccessColor), new Rectangle(W - 28, closeY + 4, W, H), ForeverLibrary.NearSF);
 
                         switch (State)
                         {
                             // -- Mouse Over
                             case MouseStateForever.Over:
-                                _with14.DrawString("r", new Font("Marlett", 8), new SolidBrush(Color.FromArgb(25, Color.White)), new Rectangle(W - 28, 16, W, H), ForeverLibrary.NearSF);
+                                _with14.DrawString("r", new Font("Marlett", 8), new SolidBrush(Color.FromArgb(25, Color.White)), new Rectangle(W - 28, closeY + 4, W, H), ForeverLibrary.NearSF);
                                 break;
                         }
                     }
@@ -227,24 +236,24 @@ namespace ReaLTaiizor.Controls
                     _with14.FillRectangle(new SolidBrush(ErrorColor), Base);
 
                     //-- Ellipse
-                    _with14.FillEllipse(new SolidBrush(ErrorText), new Rectangle(8, 9, 24, 24));
-                    _with14.FillEllipse(new SolidBrush(ErrorColor), new Rectangle(10, 11, 20, 20));
+                    _with14.FillEllipse(new SolidBrush(ErrorText), new Rectangle(8, iconOuterY, 24, 24));
+                    _with14.FillEllipse(new SolidBrush(ErrorColor), new Rectangle(10, iconInnerY, 20, 20));
 
                     //-- X Sign
-                    _with14.DrawString("r", new Font("Marlett", 16), new SolidBrush(ErrorText), new Rectangle(6, 11, W, H), ForeverLibrary.NearSF);
-                    _with14.DrawString(Text, Font, new SolidBrush(ErrorText), new Rectangle(48, 12, W, H), ForeverLibrary.NearSF);
+                    _with14.DrawString("r", new Font("Marlett", 16), new SolidBrush(ErrorText), new Rectangle(6, iconInnerY, W, H), ForeverLibrary.NearSF);
+                    _with14.DrawString(Text, Font, new SolidBrush(ErrorText), new Rectangle(48, textY, W - 48, H), ForeverLibrary.NearSF);
 
                     //-- X button
                     if (Close)
                     {
-                        _with14.FillEllipse(new SolidBrush(Color.FromArgb(35, Color.Black)), new Rectangle(W - 32, H - 29, 17, 17));
-                        _with14.DrawString("r", new Font("Marlett", 8), new SolidBrush(ErrorColor), new Rectangle(W - 30, 17, W, H), ForeverLibrary.NearSF);
+                        _with14.FillEllipse(new SolidBrush(Color.FromArgb(35, Color.Black)), new Rectangle(W - 32, closeY, 17, 17));
+                        _with14.DrawString("r", new Font("Marlett", 8), new SolidBrush(ErrorColor), new Rectangle(W - 30, closeY + 4, W, H), ForeverLibrary.NearSF);
 
                         switch (State)
                         {
                             case MouseStateForever.Over:
                                 // -- Mouse Over
-                                _with14.DrawString("r", new Font("Marlett", 8), new SolidBrush(Color.FromArgb(25, Color.White)), new Rectangle(W - 30, 15, W, H), ForeverLibrary.NearSF);
+                                _with14.DrawString("r", new Font("Marlett", 8), new SolidBrush(Color.FromArgb(25, Color.White)), new Rectangle(W - 30, closeY + 4, W, H), ForeverLibrary.NearSF);
                                 break;
                         }
                     }
@@ -255,24 +264,24 @@ namespace ReaLTaiizor.Controls
                     _with14.FillRectangle(new SolidBrush(InfoColor), Base);
 
                     //-- Ellipse
-                    _with14.FillEllipse(new SolidBrush(InfoText), new Rectangle(8, 9, 24, 24));
-                    _with14.FillEllipse(new SolidBrush(InfoColor), new Rectangle(10, 11, 20, 20));
+                    _with14.FillEllipse(new SolidBrush(InfoText), new Rectangle(8, iconOuterY, 24, 24));
+                    _with14.FillEllipse(new SolidBrush(InfoColor), new Rectangle(10, iconInnerY, 20, 20));
 
                     //-- Info Sign
-                    _with14.DrawString("¡", new Font("Segoe UI", 20, FontStyle.Bold), new SolidBrush(InfoText), new Rectangle(12, -4, W, H), ForeverLibrary.NearSF);
-                    _with14.DrawString(Text, Font, new SolidBrush(InfoText), new Rectangle(48, 12, W, H), ForeverLibrary.NearSF);
+                    _with14.DrawString("¡", new Font("Segoe UI", 20, FontStyle.Bold), new SolidBrush(InfoText), new Rectangle(12, iconOuterY - 13, W, H), ForeverLibrary.NearSF);
+                    _with14.DrawString(Text, Font, new SolidBrush(InfoText), new Rectangle(48, textY, W - 48, H), ForeverLibrary.NearSF);
 
                     //-- X button
                     if (Close)
                     {
-                        _with14.FillEllipse(new SolidBrush(Color.FromArgb(35, Color.Black)), new Rectangle(W - 32, H - 29, 17, 17));
-                        _with14.DrawString("r", new Font("Marlett", 8), new SolidBrush(InfoColor), new Rectangle(W - 30, 17, W, H), ForeverLibrary.NearSF);
+                        _with14.FillEllipse(new SolidBrush(Color.FromArgb(35, Color.Black)), new Rectangle(W - 32, closeY, 17, 17));
+                        _with14.DrawString("r", new Font("Marlett", 8), new SolidBrush(InfoColor), new Rectangle(W - 30, closeY + 4, W, H), ForeverLibrary.NearSF);
 
                         switch (State)
                         {
                             case MouseStateForever.Over:
                                 // -- Mouse Over
-                                _with14.DrawString("r", new Font("Marlett", 8), new SolidBrush(Color.FromArgb(25, Color.White)), new Rectangle(W - 30, 17, W, H), ForeverLibrary.NearSF);
+                                _with14.DrawString("r", new Font("Marlett", 8), new SolidBrush(Color.FromArgb(25, Color.White)), new Rectangle(W - 30, closeY + 4, W, H), ForeverLibrary.NearSF);
                                 break;
                         }
                     }
