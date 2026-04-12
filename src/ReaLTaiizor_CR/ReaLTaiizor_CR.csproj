@@ -5,12 +5,12 @@
         <!--<TargetFramework>net8.0-windows</TargetFramework>-->
         <!--<TargetFrameworks>net48;net6.0-windows</TargetFrameworks>-->
         <!--<TargetFrameworks>net48;net6.0-windows;net7.0-windows;net8.0-windows</TargetFrameworks>-->
-        <TargetFrameworks>net48;net481;netcoreapp3.1-windows;net6.0-windows;net7.0-windows;net8.0-windows;net9.0-windows;net10.0-windows</TargetFrameworks>
+        <TargetFrameworks>net48;net481;netcoreapp3.1-windows;net6.0-windows;net7.0-windows;net8.0-windows;net9.0-windows;net10.0-windows;net11.0-windows</TargetFrameworks>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'GitHub|AnyCPU'">
         <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
-        <TargetFrameworks>net48;net481;netcoreapp3.1-windows;net6.0-windows;net7.0-windows;net8.0-windows;net9.0-windows;net10.0-windows</TargetFrameworks>
+        <TargetFrameworks>net48;net481;netcoreapp3.1-windows;net6.0-windows;net7.0-windows;net8.0-windows;net9.0-windows;net10.0-windows;net11.0-windows</TargetFrameworks>
     </PropertyGroup>
 
     <PropertyGroup>

@@ -239,7 +239,7 @@ namespace ReaLTaiizor.Controls
             remove => _baseTextBox.ClientSizeChanged -= value;
         }
 
-#if !NETCOREAPP3_1 && !NET7_0 && !NET8_0 && !NET9_0 && !NET10_0
+#if !NETCOREAPP3_1 && !NET7_0 && !NET8_0 && !NET9_0 && !NET10_0 && !NET11_0
         public new event EventHandler ContextMenuChanged
         {
             add => _baseTextBox.ContextMenuChanged += value;
@@ -698,7 +698,7 @@ namespace ReaLTaiizor.Controls
                 }
             }
 
-#if NETCOREAPP3_1 || NET6_0 || NET7_0 || NET8_0 || NET9_0 || NET10_0
+#if NETCOREAPP3_1 || NET6_0 || NET7_0 || NET8_0 || NET9_0 || NET10_0 || NET11_0
             //public EventHandler ContextMenuChanged { get; internal set; }
             public event EventHandler ContextMenuChanged;
 #endif

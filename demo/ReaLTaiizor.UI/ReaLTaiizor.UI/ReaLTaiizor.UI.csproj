@@ -2,7 +2,7 @@
     <PropertyGroup>
         <!--<TargetFramework>net48</TargetFramework>-->
         <!--<TargetFrameworks>net48;net8.0-windows</TargetFrameworks>-->
-        <TargetFrameworks>net48;net481;netcoreapp3.1-windows;net6.0-windows;net7.0-windows;net8.0-windows;net9.0-windows;net10.0-windows</TargetFrameworks>
+        <TargetFrameworks>net48;net481;netcoreapp3.1-windows;net6.0-windows;net7.0-windows;net8.0-windows;net9.0-windows;net10.0-windows;net11.0-windows</TargetFrameworks>
         <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
         <OutputType>WinExe</OutputType>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -85,7 +85,7 @@
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.5-beta1" />
-        <PackageReference Include="ReaLTaiizor" Version="3.8.1.6" />
+        <PackageReference Include="ReaLTaiizor" Version="3.8.1.7" />
         <!--<Reference Include="ReaLTaiizor">
             <HintPath>..\..\..\src\ReaLTaiizor\bin\Release\$(TargetFramework)\ReaLTaiizor.dll</HintPath>
         </Reference>-->

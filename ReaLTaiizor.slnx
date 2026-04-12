@@ -1,0 +1,97 @@
+<Solution>
+  <Configurations>
+    <BuildType Name="Debug" />
+    <BuildType Name="GitHub" />
+    <BuildType Name="Release" />
+  </Configurations>
+  <Folder Name="/demo/">
+    <Project Path="demo/ReaLTaiizor.UI/ReaLTaiizor.UI/ReaLTaiizor.UI.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="demo/ReaLTaiizor.UX/ReaLTaiizor.UX/ReaLTaiizor.UX.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+  </Folder>
+  <Folder Name="/ready/">
+    <Project Path="ready/ReaLTaiizor.AppLocker/ReaLTaiizor.AppLocker/ReaLTaiizor.AppLocker.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="ready/ReaLTaiizor.Hashing/ReaLTaiizor.Hashing/ReaLTaiizor.Hashing.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="ready/ReaLTaiizor.MAChanger/ReaLTaiizor.MAChanger/ReaLTaiizor.MAChanger.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="ready/ReaLTaiizor.Nerator/ReaLTaiizor.Nerator/ReaLTaiizor.Nerator.csproj" />
+    <Project Path="ready/ReaLTaiizor.Portscan/ReaLTaiizor.Portscan/ReaLTaiizor.Portscan.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="ready/ReaLTaiizor.Stopwatch/ReaLTaiizor.Stopwatch/ReaLTaiizor.Stopwatch.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="ready/ReaLTaiizor.Translate/ReaLTaiizor.Translate/ReaLTaiizor.Translate.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+  </Folder>
+  <Folder Name="/sample/">
+    <Project Path="sample/ReaLTaiizor.Defender/ReaLTaiizor.Defender/ReaLTaiizor.Defender.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="sample/ReaLTaiizor.GenshinImpact/ReaLTaiizor.GenshinImpact/ReaLTaiizor.GenshinImpact.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="sample/ReaLTaiizor.Instagram/ReaLTaiizor.Instagram/ReaLTaiizor.Instagram.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="sample/ReaLTaiizor.Kaspersky/ReaLTaiizor.Kaspersky/ReaLTaiizor.Kaspersky.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="sample/ReaLTaiizor.Login/ReaLTaiizor.Login/ReaLTaiizor.Login.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="sample/ReaLTaiizor.Payment/ReaLTaiizor.Payment/ReaLTaiizor.Payment.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="sample/ReaLTaiizor.Player/ReaLTaiizor.Player/ReaLTaiizor.Player.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="sample/ReaLTaiizor.Rufus/ReaLTaiizor.Rufus/ReaLTaiizor.Rufus.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="sample/ReaLTaiizor.Splash/ReaLTaiizor.Splash/ReaLTaiizor.Splash.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="sample/ReaLTaiizor.Store/ReaLTaiizor.Store/ReaLTaiizor.Store.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="sample/ReaLTaiizor.XAMPP/ReaLTaiizor.XAMPP/ReaLTaiizor.XAMPP.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+  </Folder>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="global.json" />
+    <File Path="NuGet.Config" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/ReaLTaiizor/ReaLTaiizor.csproj" />
+    <Project Path="src/ReaLTaiizor_CR/ReaLTaiizor_CR.csproj" />
+  </Folder>
+  <Folder Name="/tutorial/" />
+  <Folder Name="/tutorial/CS/">
+    <Project Path="tutorial/C#/#001 install-from-nuget/install-from-nuget/install-from-nuget.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="tutorial/C#/#002 form-summon/form-summon/form-summon.csproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+  </Folder>
+  <Folder Name="/tutorial/VB/">
+    <Project Path="tutorial/VB/#001 install-from-nuget/install-from-nuget/install-from-nuget.vbproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+    <Project Path="tutorial/VB/#002 form-summon/form-summon/form-summon.vbproj">
+      <BuildType Solution="GitHub|*" Project="Debug" />
+    </Project>
+  </Folder>
+</Solution>
