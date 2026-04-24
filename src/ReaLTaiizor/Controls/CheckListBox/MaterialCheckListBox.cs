@@ -117,6 +117,7 @@ namespace ReaLTaiizor.Controls
                 base.Add(value);
                 _parent.Controls.Add(value);
                 value.Dock = DockStyle.Top;
+                value.SendToBack();
             }
 
             public new void Remove(MaterialCheckBox value)
