@@ -17,7 +17,7 @@
         <ApplicationIcon>Resources\ICO.ico</ApplicationIcon>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Costura.Fody" Version="6.0.0">
+        <PackageReference Include="Costura.Fody" Version="6.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive; compile</IncludeAssets>
         </PackageReference>
@@ -27,7 +27,7 @@
         <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
     </PropertyGroup>
     <ItemGroup Condition="'$(Configuration)|$(Platform)' == 'GitHub|AnyCPU'">
-        <PackageReference Include="System.Resources.Extensions" Version="10.0.5" />
-        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="10.0.5" />
+        <PackageReference Include="System.Resources.Extensions" Version="10.0.9" />
+        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="10.0.9" />
     </ItemGroup>
 </Project>

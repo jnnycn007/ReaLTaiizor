@@ -44,8 +44,8 @@
     </PropertyGroup>
 
     <ItemGroup Condition="'$(Configuration)|$(Platform)'=='GitHub|AnyCPU'">
-        <PackageReference Include="System.Resources.Extensions" Version="10.0.5" />
-        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="10.0.5" />
+        <PackageReference Include="System.Resources.Extensions" Version="10.0.9" />
+        <PackageReference Include="System.Diagnostics.DiagnosticSource" Version="10.0.9" />
     </ItemGroup>
 
     <ItemGroup Condition="$(TargetFramework.StartsWith('net48'))">
@@ -62,8 +62,8 @@
     <ItemGroup>
         <PackageReference Include="ReaLTaiizor" Version="3.8.1.8" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.5-beta1" />
-        <PackageReference Include="Skylark.Clipboard" Version="3.1.5.4" />
-        <PackageReference Include="Costura.Fody" Version="6.0.0">
+        <PackageReference Include="Skylark.Clipboard" Version="3.1.5.6" />
+        <PackageReference Include="Costura.Fody" Version="6.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive; compile</IncludeAssets>
         </PackageReference>
