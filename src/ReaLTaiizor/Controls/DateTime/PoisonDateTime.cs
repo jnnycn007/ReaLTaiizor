@@ -213,7 +213,7 @@ namespace ReaLTaiizor.Controls
 
             int withPad = TextRenderer.MeasureText(g, text, Font, proposedSize, drawFlags).Width;
             int noPad = TextRenderer.MeasureText(g, text, Font, proposedSize, measureFlags).Width;
-            int leftPad = (withPad - noPad + 1) / 2;
+            int leftPad = (withPad - noPad) / 2;
 
             int xBefore = start > 0
                 ? TextRenderer.MeasureText(g, text.Substring(0, start), Font, proposedSize, measureFlags).Width
@@ -382,7 +382,6 @@ namespace ReaLTaiizor.Controls
 
             Rectangle textRect = new(2 + _check, 2, Width - 20, Height - 4);
 
-            TextRenderer.DrawText(e.Graphics, Text, Font, textRect, foreColor, TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
 
             if (isFocused && Enabled)
             {
@@ -409,12 +408,68 @@ namespace ReaLTaiizor.Controls
                             e.Graphics.FillRectangle(hb, highlightRect);
                         }
 
-                        var gfxState = e.Graphics.Save();
-                        e.Graphics.SetClip(highlightRect);
-                        TextRenderer.DrawText(e.Graphics, Text, Font, textRect, Color.White, TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
-                        e.Graphics.Restore(gfxState);
+                        if (!string.IsNullOrEmpty(Text)) {
+                            string beforeSel = Text.Substring(0, parts[idx].Start);
+                            string selected = Text.Substring(parts[idx].Start, parts[idx].Length);
+                            string afterSel = Text.Substring(parts[idx].Start + parts[idx].Length);
+
+                            TextFormatFlags flags = TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPadding;
+
+                            int getLeftPad(Graphics g, string text) {
+                                int withPad = TextRenderer.MeasureText(g, text, Font, Size.Empty, TextFormatFlags.Left | TextFormatFlags.VerticalCenter).Width;
+                                int noPad = TextRenderer.MeasureText(g, text, Font, Size.Empty, flags).Width;
+                                return (withPad - noPad) / 2;
+                            }
+
+                            int x = textRect.X;
+                            int y = textRect.Y;
+
+                            //绘制在选中文本前的文本
+                            //Draw the text that appears before the selected text
+                            if (!string.IsNullOrEmpty(beforeSel)) {
+                                x += getLeftPad(e.Graphics, beforeSel);
+
+                                Size size = TextRenderer.MeasureText(e.Graphics, beforeSel, Font, Size.Empty, flags);
+                                TextRenderer.DrawText(e.Graphics, beforeSel, Font, 
+                                    new Rectangle(x, y, size.Width, textRect.Height), foreColor, flags);
+
+                                x += size.Width;
+                            }
+
+                            //绘制选中的文本
+                            //Draw the selected text
+                            if (!string.IsNullOrEmpty(selected)) {
+                                //如果开头是被选中的文本，则在左侧添加内边距以保持文本位置正确
+                                //If the selected text is at the beginning, add left padding to keep the text position correct
+                                if (string.IsNullOrEmpty(beforeSel))
+                                    x += getLeftPad(e.Graphics, selected);
+
+                                Size size = TextRenderer.MeasureText(e.Graphics, selected, Font, Size.Empty, flags);
+                                TextRenderer.DrawText(e.Graphics, selected, Font,
+                                    new Rectangle(x, y, size.Width, textRect.Height), Color.White, flags);
+
+                                x += size.Width;
+                            }
+
+                            //绘制在选中文本后的文本
+                            //Draw the text that appears after the selected text
+                            if (!string.IsNullOrEmpty(afterSel)) {
+                                Size size = TextRenderer.MeasureText(e.Graphics, afterSel, Font, Size.Empty, flags);
+                                TextRenderer.DrawText(e.Graphics, afterSel, Font,
+                                    new Rectangle(x, y, Math.Min(size.Width, textRect.Right - x), textRect.Height), foreColor, flags);
+                            }
+                        }
+                    }
+                    else {
+                        TextRenderer.DrawText(e.Graphics, Text, Font, textRect, foreColor, TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
                     }
                 }
+                else {
+                    TextRenderer.DrawText(e.Graphics, Text, Font, textRect, foreColor, TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
+                }
+            }
+            else {
+                TextRenderer.DrawText(e.Graphics, Text, Font, textRect, foreColor, TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
             }
 
             OnCustomPaintForeground(new PoisonPaintEventArgs(Color.Empty, foreColor, e.Graphics));
