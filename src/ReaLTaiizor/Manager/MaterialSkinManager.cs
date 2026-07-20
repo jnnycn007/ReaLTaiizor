@@ -65,8 +65,16 @@ namespace ReaLTaiizor.Manager
         /// <returns></returns>
         private FontDescriptor CreateTextBoxDescriptor(int size)
         {
-            if (size > 16) size = 16;
-            if (size < 12) size = 12;
+            if (size > 16)
+            {
+                size = 16;
+            }
+
+            if (size < 12)
+            {
+                size = 12;
+            }
+
             return new FontDescriptor
             (
                 size <= 13 ? "Roboto Medium" : "Roboto",
