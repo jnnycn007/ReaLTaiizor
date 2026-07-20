@@ -14,7 +14,7 @@ using System.Windows.Forms;
 //     Website: www.vegalya.com
 //     Created: 15.May.2019
 //     Changed: 20.Jul.2026
-//     Version: 3.8.2.1
+//     Version: 3.8.2.2
 //
 // |---------DO-NOT-REMOVE---------|
 
