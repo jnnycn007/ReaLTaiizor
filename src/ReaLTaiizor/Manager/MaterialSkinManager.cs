@@ -154,7 +154,7 @@ namespace ReaLTaiizor.Manager
 
             // create and save font handles for GDI
             logicalFonts = [];
-            foreach (var item in fontDescriptors.Keys)
+            foreach (FontType item in fontDescriptors.Keys)
             {
                 GetLogFontByType(item);
                 // Preload logical fonts for the default scale factor (1.0).
@@ -473,14 +473,14 @@ namespace ReaLTaiizor.Manager
         private void PreloadSpecifiedScaleLFonts(float scaleRatio)
         {
             int scaleKey = (int)Math.Round(scaleRatio * 100);
-            foreach (var type in fontDescriptors.Keys)
+            foreach (FontType type in fontDescriptors.Keys)
             {
                 string cacheKey = $"{type}-scale{scaleKey}";
                 if (logicalFonts.TryGetValue(cacheKey, out IntPtr cached))
                 {
                     continue;
                 }
-                var descriptor = fontDescriptors[type];
+                FontDescriptor descriptor = fontDescriptors[type];
                 IntPtr hFont = descriptor.Create(scaleRatio);
                 logicalFonts[cacheKey] = hFont;
             }

@@ -515,7 +515,7 @@ namespace ReaLTaiizor.Forms
             // If layout order changes in the future, this formula may need adjustment.
 
             MaterialFlexibleForm.messageContainer.Height = MaterialFlexibleForm.Height - (int)((ACTION_BAR_PADDING + STATUS_BAR_PADDING + BUTTON_BAR_PADDING) * MaterialFlexibleForm.ScaleFactor) - MaterialFlexibleForm.rightButton.Height - ((int)(MaterialFlexibleForm.leftButton.Height * MaterialFlexibleForm.ScaleFactor * (MaterialFlexibleForm.ScaleFactor - 1)));
-            
+
         }
 
         private static void SetDialogIcon(MaterialFlexibleForm MaterialFlexibleForm, MessageBoxIcon icon)
@@ -801,7 +801,7 @@ namespace ReaLTaiizor.Forms
             fMF.leftButton.Size = new((int)(fMF.leftButton.Width * fMF.ScaleFactor), (int)(fMF.leftButton.Height * fMF.ScaleFactor));
             fMF.middleButton.Size = new((int)(fMF.middleButton.Width * fMF.ScaleFactor), (int)(fMF.middleButton.Height * fMF.ScaleFactor));
             fMF.rightButton.Size = new((int)(fMF.rightButton.Width * fMF.ScaleFactor), (int)(fMF.rightButton.Height * fMF.ScaleFactor));
-            
+
             int visibleButtonsWidth = 0;
             switch (buttonsPosition)
             {

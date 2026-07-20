@@ -101,7 +101,7 @@ namespace ReaLTaiizor.Forms
                 && m.Msg == wmNcLButtonDown)
             {
                 int hitTest = (int)m.WParam;
-                if (hitTest >= htLeft && hitTest <= htBottomRight)
+                if (hitTest is >= htLeft and <= htBottomRight)
                 {
                     ReleaseCapture();
                     SendMessage(FindForm().Handle, wmNcLButtonDown, hitTest, 0);

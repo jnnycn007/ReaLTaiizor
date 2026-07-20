@@ -650,7 +650,7 @@ namespace ReaLTaiizor.Controls
         private Rectangle GetCloseButtonRect(Rectangle tabRect)
         {
             int size = 14;
-            return new Rectangle(tabRect.Right - size - 6, tabRect.Y + (tabRect.Height - size) / 2, size, size);
+            return new Rectangle(tabRect.Right - size - 6, tabRect.Y + ((tabRect.Height - size) / 2), size, size);
         }
 
         private void DrawCloseButton(Graphics g, Rectangle tabRect, bool isSelected)
