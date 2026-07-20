@@ -174,7 +174,7 @@ namespace ReaLTaiizor.Controls
         private List<(int Start, int Length)> GetDateTextParts()
         {
             string text = Text;
-            List<(int Start, int Length)> parts = new();
+            List<(int Start, int Length)> parts = [];
             int i = 0;
 
             while (i < text.Length)
@@ -408,14 +408,16 @@ namespace ReaLTaiizor.Controls
                             e.Graphics.FillRectangle(hb, highlightRect);
                         }
 
-                        if (!string.IsNullOrEmpty(Text)) {
+                        if (!string.IsNullOrEmpty(Text))
+                        {
                             string beforeSel = Text.Substring(0, parts[idx].Start);
                             string selected = Text.Substring(parts[idx].Start, parts[idx].Length);
                             string afterSel = Text.Substring(parts[idx].Start + parts[idx].Length);
 
                             TextFormatFlags flags = TextFormatFlags.Left | TextFormatFlags.VerticalCenter | TextFormatFlags.NoPadding;
 
-                            int getLeftPad(Graphics g, string text) {
+                            int getLeftPad(Graphics g, string text)
+                            {
                                 int withPad = TextRenderer.MeasureText(g, text, Font, Size.Empty, TextFormatFlags.Left | TextFormatFlags.VerticalCenter).Width;
                                 int noPad = TextRenderer.MeasureText(g, text, Font, Size.Empty, flags).Width;
                                 return (withPad - noPad) / 2;
@@ -426,11 +428,12 @@ namespace ReaLTaiizor.Controls
 
                             //绘制在选中文本前的文本
                             //Draw the text that appears before the selected text
-                            if (!string.IsNullOrEmpty(beforeSel)) {
+                            if (!string.IsNullOrEmpty(beforeSel))
+                            {
                                 x += getLeftPad(e.Graphics, beforeSel);
 
                                 Size size = TextRenderer.MeasureText(e.Graphics, beforeSel, Font, Size.Empty, flags);
-                                TextRenderer.DrawText(e.Graphics, beforeSel, Font, 
+                                TextRenderer.DrawText(e.Graphics, beforeSel, Font,
                                     new Rectangle(x, y, size.Width, textRect.Height), foreColor, flags);
 
                                 x += size.Width;
@@ -438,11 +441,14 @@ namespace ReaLTaiizor.Controls
 
                             //绘制选中的文本
                             //Draw the selected text
-                            if (!string.IsNullOrEmpty(selected)) {
+                            if (!string.IsNullOrEmpty(selected))
+                            {
                                 //如果开头是被选中的文本，则在左侧添加内边距以保持文本位置正确
                                 //If the selected text is at the beginning, add left padding to keep the text position correct
                                 if (string.IsNullOrEmpty(beforeSel))
+                                {
                                     x += getLeftPad(e.Graphics, selected);
+                                }
 
                                 Size size = TextRenderer.MeasureText(e.Graphics, selected, Font, Size.Empty, flags);
                                 TextRenderer.DrawText(e.Graphics, selected, Font,
@@ -453,22 +459,26 @@ namespace ReaLTaiizor.Controls
 
                             //绘制在选中文本后的文本
                             //Draw the text that appears after the selected text
-                            if (!string.IsNullOrEmpty(afterSel)) {
+                            if (!string.IsNullOrEmpty(afterSel))
+                            {
                                 Size size = TextRenderer.MeasureText(e.Graphics, afterSel, Font, Size.Empty, flags);
                                 TextRenderer.DrawText(e.Graphics, afterSel, Font,
                                     new Rectangle(x, y, Math.Min(size.Width, textRect.Right - x), textRect.Height), foreColor, flags);
                             }
                         }
                     }
-                    else {
+                    else
+                    {
                         TextRenderer.DrawText(e.Graphics, Text, Font, textRect, foreColor, TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
                     }
                 }
-                else {
+                else
+                {
                     TextRenderer.DrawText(e.Graphics, Text, Font, textRect, foreColor, TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
                 }
             }
-            else {
+            else
+            {
                 TextRenderer.DrawText(e.Graphics, Text, Font, textRect, foreColor, TextFormatFlags.Left | TextFormatFlags.VerticalCenter);
             }
 
