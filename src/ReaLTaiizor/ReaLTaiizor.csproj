@@ -16,7 +16,7 @@
     <PropertyGroup>
         <UseWindowsForms>true</UseWindowsForms>
         <ApplicationIcon>Resources\Taiizor.ico</ApplicationIcon>
-        <Version>3.8.1.9</Version>
+        <Version>3.8.2.1</Version>
         <AssemblyVersion>$(Version)</AssemblyVersion>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <Title>ReaLTaiizor</Title>
@@ -63,7 +63,7 @@ Changes are detailed at https://github.com/Taiizor/ReaLTaiizor/releases</Package
     </PropertyGroup>
 
     <ItemGroup Condition="'$(Configuration)|$(Platform)' == 'GitHub|AnyCPU'">
-        <PackageReference Include="System.Resources.Extensions" Version="10.0.9" />
+        <PackageReference Include="System.Resources.Extensions" Version="10.0.10" />
     </ItemGroup>
 
     <ItemGroup>

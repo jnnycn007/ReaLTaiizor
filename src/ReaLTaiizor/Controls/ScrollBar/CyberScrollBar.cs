@@ -1,4 +1,4 @@
-﻿#region Imports
+#region Imports
 
 using ReaLTaiizor.Enum.Cyber;
 using System;
@@ -711,8 +711,6 @@ namespace ReaLTaiizor.Controls
 
         private void Settings_Load(Graphics graphics)
         {
-            BackColor = Color.Transparent;
-
             graphics.SmoothingMode = SmoothingMode;
             graphics.TextRenderingHint = TextRenderingHint;
         }
